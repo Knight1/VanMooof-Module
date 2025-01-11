@@ -15,7 +15,6 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
     - /ping-response
       - 'guid':'%s','statistics':{'batt':%d,'mac':'%s','swv':'%s','dist':%d}
     - /bike-message
-  - 
 - fmn key
 - all Firmwares
     - Mainware (STM32F413VGT6 LQFP100)
@@ -26,7 +25,7 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 - Logs
 - Shell (UART) for the Module, BLE, 
 
-
+```
 m2m.vanmoof.com
 ALARM_BMS_REMOVED
 SET_SHIPPING
@@ -96,17 +95,21 @@ WST_DISCHARGE_MODE
 WST_CHARGE_MODE
 WST_BYPASS_MODE
 WST_NONE
+```
 
 ### How to get started?
 
 You need the backside of the PCB from the Module to dump the SPI Flash
 
+Tools needed: Torx Screw set. I used my iFixit Kit.
+
 1. unlock bike and remove Module from the Frame
    2. if you do not unlock the bike, the Alarm stays on and will annoy you. I used duct tape to cover the speaker if i forgot it.
-2. open Module and unscrew all internal screws of the PCB to remove the PCB.
+2. open Module and unscrew all internal screws of the PCB to remove the PCB. Make sure you unplug the Matrix LCD Cable carefully! You can replace the cable if you break it. 
 3. On the backside of the PCB is the Macronix 16 Pin SPI Flash Chip near the port for the back light. 
 4. Dump that Flash with an 16 Pin! SPI Flash Chip clamp and a Pi
-   5. I used an Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
+   4.1 I used an Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
+5. If you screw it back to getter make sure to use Screw glue like Loctite. The (in)rush current from/to the battery and the ac voltage to the Motor is high especially if the battery has low charge thus low voltage. If a screw gets lose while you ride you create little sparks. 
 
 ```console
 # sudo flashrom -p linux_spi:dev=/dev/spidev0.0 -r rom.rom
@@ -145,6 +148,7 @@ PBNjh0V46Eev8CcfS4LPJg
 The Module is looking for a SIM Card with a specific ICCID (Integrated Circuit Card Identifier).
 
 The Prefix of that is 
+```console
 89 31 44 0400 
 MM CC II N{12} C
 
@@ -153,11 +157,13 @@ CC = 31 (Netherlands, The)
 II = 4X Vodafone
 N{12} = Account ID
 C = Checksum
-
+```
 
 ### Firmware
 We are looking for
+```
 50 41 43 4B BC 16 09 00 40 01 00 00 4F 41 44 20 (PACK¼	�@��OAD)
+```
 
 rom.rom
 
@@ -169,7 +175,7 @@ shifterware.bin
 batteryware.bin
 
 
-
+```
 0x0002000 ?
 0x005A000 BLE Secrets (60)
 0x005af80 M-ID/M-KEY (60)
@@ -234,7 +240,7 @@ READ AND DECODE LOGS
 1723060261 Modem ready
 1723060261 GSM_CMD_IDLE
 1723060280
-
+```
 
 ### Important caveats.
 
