@@ -126,6 +126,57 @@ Reading flash... done.
 
 Press ESC until the MCU reboots and holds itself in the Bootloader.
 
+Example Bootloader Output:
+```
+'MT' (@) 2019 STM32F4, Stop
+top
+
+help
+For more information on a specific command, type HELP command-name
+help         This tekst
+ver          Software version
+reboot       reboot CPU
+stm32        STM32 internal bootlaoder
+crc          CRC32 check
+ea           Erase application
+es           Erase shadow app
+em           Erase motor app
+eb           Erase battery app
+ec           Erase shifter app
+ua           Upload app (Y-modem)
+us           Upload shadow app (Y-modem)
+um           Upload motor app (Y-modem)
+ub           Upload battery app (Y-modem)
+uc           Upload shifter app (Y-modem)
+st           Start application
+vi           Version information
+
+ver
+STM32 bootloader <1.09> Muco Technologies (c)2019
+
+crc
+APP CRC ok
+No shadow application
+MotorPcb CRC ok
+Battery CRC ok
+No Shifter application
+
+vi
+STM32 bootloader v1.09 (Feb 21 2020 14:50:53)
+Loaded Application: v1.06.08 (Apr  9 2021 11:22:41) size 215108 bytes
+No Shadow Application
+No Shifter Application
+Motor Application: v0.00.16 ( 03 2021 00:48:35) size 61720 bytes
+Battery Application: v1.11.01 (Apr 19 2021 18:17:22) size 84020 bytes
+
+ec
+Erasing shifter flash 128 Kb... Erase sector 4
+OK
+```
+
+
+
+
 pack-process�ÀFÀprocess pack files in external flash memory�source/monitor/cmd_packfs.c�Processing pakfs
 
 
