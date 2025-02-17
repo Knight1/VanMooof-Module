@@ -126,6 +126,12 @@ Reading flash... done.
 
 Press ESC until the MCU reboots and holds itself in the Bootloader.
 
+> [!CAUTION]
+>Be careful to not delete the application with ea.
+> 
+>Otherwise you have a briked Cartdrige, as till now no Y-Modem Compatible Firmware file is available
+
+
 Example Bootloader Output:
 ```
 'MT' (@) 2019 STM32F4, Stop
@@ -190,6 +196,159 @@ the sha512sum of the Password is
 
 PBNjh0V46Eev8CcfS4LPJg
 
+Commands available:
+```
+help
+Available commands:
+help              This tekst
+reboot            reboot CPU
+login             Login shell
+logout            Logout shell
+ver               Software version
+distance          Manual set dst
+gear              set gear
+region            Region 0..3
+blereset          hard reset BLE
+bledebug          redirect uart8
+show              Parameters
+motorupdate       Update F2806 CPU
+vollow            Audio volume
+volmid            Audio volume
+volhigh           Audio volume
+wheelsize         Wheel 24/28 inch
+speed             override speed
+loop              main loop time
+shipping          Shipping mode
+logprn            Print log
+logclr            Clear log 6
+logapp            1/ 0
+powerchange       1/ 0
+factory           Load factory defaults
+battery           Show battery
+batware           Battery update
+batreset          Battery reset
+shiftware         Battery update
+shifterstatus     Show shifter
+shiftdebug        Show Modbus
+shiftresetcounter   Reset shift counter
+motorstatus       
+gsminfo           Info from Ublox
+gsmstart          start GSM function
+gsmdebug          redirect uart2
+bmsdebug          Show Modbus
+sound             sample,volume,times
+adc               read adc
+bwritereg         Modbus Bat write register
+bwritedata        Modbus Bat write data
+breadreg          Modbus Bat read register
+swritereg         Modbus Shift write register
+swritedata        Modbus Shift write data
+sreadreg          Modbus Shift read register
+stc               read lipo monitor
+stcreset          
+setoad            test
+setgear           save muco shifter
+```
+### bledebug Shell
+enter the shell with `bledebug`
+then execute reset to get this output:
+```
+bledebug
+Connect to UART8
+reset
+Mon Feb 17 20:00:34 2025: Platform reset
+Thu Dec 31 23:00:00 2020: This image is not provisioned
+
+
+*** VANMOOF S3/X3 Monitor Program ***
+
+BLE MAC Address: "74:d2:85:00:00:00"
+
+Device name ................ : ES3-74D285000000
+Firmware version ........... : 2.04.01
+Compile date / time ........ : Mar 29 2021 / 14:17:30
+Find-My accessory UUID ..... : N/A
+Serialnumber ............... : N/A
+BIM firmware version ....... : 1.00.01
+BIM compile date / time .... : Jul 17 2020 / 14:53:15
+reset type ................. : system reset
+systick .................... : 705246
+FMNA status ................ : not provisioned, deactivated
+Time ....................... : Mon Feb 17 20:00:29 2025
+
+
+Type 'help' for a list of all available commands.
+
+```
+Help output:
+
+```
+> help
+The following commands are available:
+
+    firmware-update                   - update a new image of firmware to the external flash
+    extflash-verify                   - verify the current flashchip
+    log-count                         - get log-count statistic
+    log-dump <start-index> <n>        - print <n> blocks starting at address <start-index> 
+    log-flush                         - flush all log-entries
+    log-inject <n>                    - Create <n> fake-logs
+    audio-play <index>                - play audio bound to the specified index
+    audio-stop                        - stop playing the current audio file
+    audio-dump                        - dump all audio files in external memory
+    audio-upload <index>              - upload audio binary using Y-Modem at the address linked to the specified index
+    audio-volume-set-all <level>      - set audio level of all audio-clips (0-3)
+    pack-upload                       - upload a PACK file by Y-Modem
+    pack-list                         - list the contents of a PACK file
+    pack-delete                       - delete a PACK file
+    pack-process                      - process pack files in external flash memory
+    ble-info                          - dump current BLE connection info / statistics
+    ble-disconnect                    - force a disconnect of all connected devices
+    ble-erase-all-bonds               - erase all bonds
+    fmna-get-auth-uuid                - Get the FMNA authentication UUID
+    fmna-get-serialnumber             - Get the FMNA serialnumber
+    fmna-set-serialnumber             - Set the serialnumber (hexstring, 8 bytes / 16 hexdigits)
+    fmna-erase-external               - erases the external provisioned data (will be reset on reboot if internal exists)
+    ble-erase-fmna-bonds              - will erase all fmna bonds
+    fmna-blob-upload-int              - upload a FMNA factory blob
+    fmna-rework                       - Replace provisioning data using Y-Modem
+    fmna-enable-pairing               - enables pairing (if unpaired)
+    fmna-unpair                       - Force FMNA unpair (i.e. 5x reset)
+    shutdown                          - shutdown the system
+    rtos-statistics                   - dump memory stats every 500ms
+    rtos-nvm-compact                  - Compact the non-volatile storage
+    reset                             - perform software reset of the MCU
+    info/ver                          - show basic firmware info
+    exit                              - exit from shell
+    help                              - show all monitor commands
+
+```
+```
+
+> pack-list
+Scanning PACK archive...
+ 4,294,967,295 bytes ����������������������������������������������������������
+ 4,294,967,295 bytes ����������������������������������������������������������
+ 4,294,967,295 bytes ����������������������������������������������������������
+ 4,294,967,295 bytes ����������������������������������������������������������
+ 4,294,967,295 bytes ����������������������������������������������������������
+```
+```
+
+> pack-process
+Processing pakfs, expect a small startup delay because of mainware erasing its shadowflash, which blocks all serial I/O
+Mon Feb 17 20:05:44 2025: Couldn't get new bleware image data
+
+> Mon Feb 17 20:05:44 2025: Couldn't get new bleware image data
+Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
+Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
+Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
+Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
+Wake Reason: WAKE_SRC_BLE
+```
+```
+> log-flush
+Done erasing logs
+```
 
 ### Err 23
 
