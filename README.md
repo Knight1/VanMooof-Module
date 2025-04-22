@@ -4,9 +4,9 @@ This currently covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4
 
 This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 
-https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go
-https://pkg.go.dev/github.com/sandacn/ymodem/ymodem
-https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz
+<https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go>
+<https://pkg.go.dev/github.com/sandacn/ymodem/ymodem>
+<https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz>
 
 ### Features
 
@@ -14,23 +14,78 @@ https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz
   - bike comm
   - bike Sharing
   - Workshop
-  - bikecomm.vanmoof.com / ublox1.vanmoof.com
-    - /upload
-    - /ping-response
-      - 'guid':'%s','statistics':{'batt':%d,'mac':'%s','swv':'%s','dist':%d}
-    - /bike-message
-- fmn key
+- bikecomm.vanmoof.com / ublox1.vanmoof.com
+  - /upload
+  - /ping-response
+    - 'guid':'%s','statistics':{'batt':%d,'mac':'%s','swv':'%s','dist':%d}
+  - /bike-message
+- fmna key
+  - fmna-rework (if you happen to have access to Apples FMNA API)
 - all Firmwares
     - Mainware (STM32F413VGT6 LQFP100)
     - Batteryware (STM32L072CZT6 LQFP48)
     - Shifterware 
-    - Motorware
+    - Motorware (F2806)
     - bleware (TMS320F28054F)
 - Logs
 - Shell (UART) for the Module, BLE, GSM
 
+
+### Dead Module?
+
+You can apply 12Vdc via the DC Plug and it only charges the Module. 
+
+### Some Communication from the Bike to the VanMoof Backend via self-signed Certs.
+
+The Backend only supports 
+```aiignore
+Hexcode  Cipher Suite Name (OpenSSL)       KeyExch.   Encryption  Bits     Cipher Suite Name (IANA/RFC)
+ x3c     AES128-SHA256                     RSA        AES         128      TLS_RSA_WITH_AES_128_CBC_SHA256
 ```
-m2m.vanmoof.com
+
+The uuid is without dashes, 32chars, numbers and chars. No duplication checking.
+dist is in Kilometers with hectometer. So 5,5 kilometers become 55 here.
+responds with result true. 
+```
+curl -vk https://bikecomm.vanmoof.com/ping-response \
+-H "Content-Type: application/json" \
+-d '{"guid":"UUID","statistics":{"batt":95,"mac":"MAC","swv":"1.6.8","dist":37154}}'
+```
+
+Message Type(s) unknown
+```
+curl -vk https://bikecomm.vanmoof.com/bike-message 
+-H "Content-Type: application/json" 
+-d '{"mac_address":"MAC","message_type":"","message_data":""}'
+```
+
+/upload expects ublox Data. => InvalidUBloxDataException
+
+
+## Known Firmware File SHA512 Sums
+
+### Mainware
+1.08.02 66cee63020ea35447fc7dcf41b61300715937f0f19d02ffdc1626ca0e8356fe00fff57fab0ef043077829129c4b66c40bd823a9e6ae0325c4d048227a5664587
+1.09.03 52780d5fb984d954cc81a4ab2f72e612639b6573ea1c250bc96c0ee0707444a6fef7f82c6c3a347813ab14ca661116aef51a45eb9852ddf9cd53e83f16b35256
+
+### Motorware
+S.0.00.22 ce5815d55366a10decf724224d03a44d2d43ce3093de4d9f85a5ea646594b3cec59dd3a82227146f8069f41fcf381e341f391ccbf1f339c296cd768368a177cc
+
+### Shifterware
+0.237 8f454dfc1e600dfeae772465dd9791cde1b7588be22f7d88e88e61c9708634173a730be85ba19214d6c4544576ebeb8ea7e51e2686a163b77f7693292da97409
+
+### BMSBoot
+unknown cd2fdb29adc315da8b99d81d0ac18cacf13fbe0399a3763bc737df8b214fd6628804c1b55929da3d8a0f906ae8fc00884e108755152f6a840acfcb17460b3bcf
+
+### BLEware
+1.04.01 118084995f7423cf8b1c5589d49b20f203c06a4116213b4264a4c30d25060fee2fe057e1906e8a3ec9ab5323a02b2f72ee454fbc2c9cc7e6ca550ab71abcfe52
+2.04.01 467f425f8ff329204876159697a71e04dec2b9fc7336892d233f68d7ce8ab8a4eb9b3dea506d5f885008a602301eb9a2ecbba66327379eb860115edd37a3057c
+
+### Batteryware
+1.14.1 dc3c1e3e731936f3c20dd6432e9a2b2855e7a699a179488e3d878438a2663d779d8640df2692e2008a885a0917fb270a95738ce75f731503ec70e7f3a6c72e02
+
+### m2m.vanmoof.com (SMS the bike sends)
+```
 ALARM_BMS_REMOVED
 SET_SHIPPING
 START_FROM_SHIPPING
@@ -103,7 +158,7 @@ WST_NONE
 
 ### How to get started?
 
-You need the backside of the PCB from the Module to dump the SPI Flash
+You need the backside of the PCB from the Module to dump the SPI Flash.
 
 Tools needed: Torx Screw set. I used my iFixit Kit.
 
@@ -128,15 +183,10 @@ Reading flash... done.
 
 ### Bootloader
 
-Press ESC until the MCU reboots and holds itself in the Bootloader.
+Press ESC on the UART Port until the MCU reboots and holds itself in the Bootloader. It will display.
 ```console
 STM32 bootloader <1.09> Muco Technologies (c)2019
 ```
-
-> [!CAUTION]
->Be careful to not delete the application with ea.
-> 
->Otherwise you have a briked Cartdrige, as till now no Y-Modem Compatible Firmware file is available
 
 
 Example Bootloader Output:
@@ -188,18 +238,18 @@ OK
 ```
 
 
-
-
 pack-process�ÀFÀprocess pack files in external flash memory�source/monitor/cmd_packfs.c�Processing pakfs
 
 
 ### Shell login
 
-Look for a HEX Value starting with 76 45 56 6A 47 46 and ending with 00 00 00
+Look for a HEX Value with ex. HxD starting with ```76 45 56 6A 47 46``` and ending with ```00 00 00```
 If you search for it in a Hex Editor you will notice the end very clearly because the next line begins with "Welcome to ES3"
 
 the sha512sum of the Password is
+```
 7edd23b1c75e070db66475bb1869bee9dc64def2cb163dfea39ef8efcb534bf44db2da9e7307590222c516875fb4b07c7450556efd6520d986c5757ce3441bdd
+```
 
 PBNjh0V46Eev8CcfS4LPJg
 
@@ -257,7 +307,7 @@ setoad            test
 setgear           save muco shifter
 ```
 ### bledebug Shell
-enter the shell with `bledebug`
+enter the BLE Chip shell with `bledebug`
 then execute reset to get this output:
 ```
 bledebug
@@ -329,8 +379,8 @@ The following commands are available:
     help                              - show all monitor commands
 
 ```
-```
 
+```
 > pack-list
 Scanning PACK archive...
  4,294,967,295 bytes ����������������������������������������������������������
@@ -339,8 +389,8 @@ Scanning PACK archive...
  4,294,967,295 bytes ����������������������������������������������������������
  4,294,967,295 bytes ����������������������������������������������������������
 ```
-```
 
+```
 > pack-process
 Processing pakfs, expect a small startup delay because of mainware erasing its shadowflash, which blocks all serial I/O
 Mon Feb 17 20:05:44 2025: Couldn't get new bleware image data
@@ -352,13 +402,14 @@ Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
 Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
 Wake Reason: WAKE_SRC_BLE
 ```
+
 ```
 > log-flush
 Done erasing logs
 ```
 
+## Fixing some Errors
 ### Err 23
-
 
 ### Err missing DiSPlay
 
