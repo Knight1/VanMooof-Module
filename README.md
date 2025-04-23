@@ -61,6 +61,100 @@ curl -vk https://bikecomm.vanmoof.com/bike-message
 
 /upload expects ublox Data. => InvalidUBloxDataException
 
+## Firmware Changelogs
+#### 1.1.15
+- Initial version
+
+#### 1.1.18
+- Alarm tweaks
+- Improved riding behavior for Japan
+
+#### 1.2.0
+- Improves the firmware update process
+- Fix for persistent battery charging issues
+- Fix for potential battery error 17, 19, and 20
+- Several other small bug fixes
+
+#### 1.2.2
+- Fixes discoverability issue for affected Android phones
+
+#### 1.2.4
+- Improved light sensor settings
+- A tuned amplifier for better speaker performance
+- A more efficient software update process
+- Several other small bug fixes
+
+#### 1.2.7
+- Improved light sensor settings
+
+#### 1.4.5
+- Resetting restores factory setting
+- Optimized alarm timings
+- Fine-tuned tracking mode
+- Improved E-shifter accuracy
+- Battery levels are more reliable
+- Multiple bug fixes
+
+#### 1.4.7 (Beta Firmware)
+motor:.20,shifter:0.237
+region 
+#### 1.6.8 16. April 2021 BLE Firmware 2.04.01
+- Prepared for PowerBank
+- Failed updates automatically restart at shut down
+- Resetting bike restores factory settings
+- Fine-tuned tracking mode
+- Improved E-shifter accuracy
+- Various small bug fixes
+
+#### 1.6.13 15. Juni 2021
+- Prepared for PowerBank
+- Alarm sensitivity optimization
+- Improved battery management
+- Various small bug fixes
+
+#### 1.7.1 2. August 2021
+- manual shifting using the handlebar buttons
+- change motor assistance level while riding
+- alarm stays active when the lock is unintentionally unlocked
+- prevents rare accidental battery drains when stationary
+- fix for possible update loop
+- fix for error 13 and 16
+- various small bug fixes
+
+#### 1.7.2 27. August 2021
+- manual shifting using the handlebar buttons
+- change motor assistance level while riding
+- alarm stays active when the lock is unintentionally unlocked
+- prevents rare accidental battery drains when stationary
+- fix for possible update loop
+- fix for error 12 and 13
+- various small bug fixes
+
+#### 1.7.3 12. Oktober 2021
+1.7.2 + improvements
+#### 1.7.6 1. November 2021
+ble:X.4.1,motor:.22,shifter:0.237,bms:1.20.1
+- improved interaction for Back Up unlock code
+- optimised power management at lower battery levels
+- fix for possible boost issues after power level change
+- fix for Error 16
+- various small bug fixes.
+#### 1.8.1 22. Februar 2022
+ble:X.4.1,motor:.22,shifter:0.237,bms:1.20.1
+- Removal of testing module settings
+- Gear settings not reset after a firmware update
+- Deep sleep after 14 days of inactivity
+- Allows motor support in case of error 57
+
+#### 1.8.2 ✅ 16 June 2022
+#### 1.9.1 11. Juni 2023
+(Part 1)
+- You can now unlock your bike with the Boost button, as well as the Bell button.
+- When your bike is standing still, it will automatically shut down after 7 minutes. This is longer than before.
+- A new update to the battery means that whenever your bike hasn’t been used for a while, you’ll need to press the Power button to wake up the bike.
+#### 1.9.3 ✅ 12 June 2023
+(Part 2)
+- Other important updates in battery management, firmware, error management and sounds.
 
 ## Known Firmware File SHA512 Sums
 
@@ -941,4 +1035,89 @@ CMD_BLE_VERSION_INFO
 CMD_BLE_MAC
 Disable Advertise
 01/02:15:50 LiPo state changed to LIPO_ERROR
+```
+
+### Update mainware by updating shadow
+```console
+'MT' (@) 2019 STM32F4, Stop
+top
+es
+Erasing shadow flash 256 Kb... Erase sector 7
+Erase sector 8
+OK
+us
+Send .bin Ymodem
+CCC
+vi
+STM32 bootloader v1.09 (Feb 21 2020 14:50:53)
+Loaded Application: v1.01.15 (Jun  7 2023 07:21:48) size 195784 bytes
+Shadow Application: v1.01.0F (Jun  7 2023 07:21:48) size 195784 bytes
+Shifter Application: v0.ed.02 (Oct 23 2020 14:09:11) size 11944 bytes
+Motor Application: v0.00.16 ( 03 2021 00:48:35) size 61720 bytes
+No Battery Application
+st
+<Start application>
+
+Wake Reason: WAKE_SRC_BUTTON_1 WAKE_SRC_MEMS WAKE_KICKLOCK
+ES3 v1.01.21
+  ERR ST3115 wake
+01/00:11:03 SIM: Holder
+RCC_FLAG_WWDGRST
+RCC_FLAG_PINRST
+01/00:11:03 GSM_CMD_IDLE
+01/00:11:03 Set power state to PWR_NORMAL (Current limit: 20.0 A, SOC: -1 %)
+01/00:11:03 BIKE_INIT
+01/00:11:03 Restore power level 4
+01/00:11:03 LiPo SoC 0% (first read)
+01/00:11:03 Wake from shipping
+01/00:11:03 BIKE_LIPOCHARGE
+01/00:11:03 CMD_BLE_VERSION_INFO
+CMD_BLE_MAC
+ ERR Read STC
+TIME;LiPOSOC;BMSSOC;BATTEMP;BATVOLTAGE;BATCURRENT;MOTORCURRENT;MOTORTMP;DRIVERTMP;SPEED;ODO;BOOST;LUX;BATDSG
+01/00:11:04 ;0.0;-1;-247.-6;0.00;0.00;0.0;0;0;0.0;4119.5;0;0;0
+'MT' (@) 2019 STM32F4, Stop
+Copy Shadow to App..Erase sector 5
+Erase sector 6
+Erasing shadow flash... Erase sector 7
+Erase sector 8
+OK
+Jump
+
+Wake Reason: WAKE_SRC_BUTTON_1 WAKE_SRC_MEMS WAKE_KICKLOCK
+ES3 v1.01.15
+```
+
+```aiignore
+shipping
+Set shipping mode
+01/00:24:53 BIKE_SHIPPING
+01/00:24:53 SOUND_SO vol 26
+Lights P2c
+CMD_AUDIO_STOPPED
+01/00:25:02 BIKE_SET_SHIPPING
+01/00:25:02 BIKE_CPU_STOP_MODE
+01/00:25:02 BIKE_SPECIAL_GEAR_OPERATION
+01/00:25:07 Shipping mode sets gear:2
+01/00:25:07 BIKE_END_SPECIAL_OPERATION
+01/00:25:09 BIKE_CPU_STOP_MODE
+01/00:25:09 Wake counter 254 of 168, type 10
+01/00:25:09 Force Lights Off
+01/00:25:09 BMS off
+01/00:25:09 BIKE_CPU_STOPPED
+No MOTOR_SLEEP_MODE from motor 0x0404
+01/00:25:09 EnterSTOPMode 0 min Wake:Shipping
+```
+
+### To save the distance i put the bike into shipping. That saved the distance into eeprom.
+```aiignore
+distance 0
+Set 0.0 Km
+```
+
+```aiignore
+factory-shipping
+Set factory shipping mode
+BLE remove id 112 nr 5C
+01/00:27:36 EnterSTOPMode 0 min Wake:Shipping
 ```
