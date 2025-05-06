@@ -28,8 +28,18 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
     - Motorware (F2806)
     - bleware (TMS320F28054F)
 - Logs
-- Shell (UART) for the Module, BLE, GSM
+- Shell (UART) for 
+  - Module
+  - BLE (bledebug)
+  - GSM (gsmdebug)
 
+### Special Thanks!
+- Tim
+- Chris
+- DOPEPIGON
+- dab
+- Martin
+- Kai
 
 ### Dead Module?
 
@@ -98,7 +108,8 @@ curl -vk https://bikecomm.vanmoof.com/bike-message
 #### 1.4.7 (Beta Firmware)
 motor:.20,shifter:0.237
 region 
-#### 1.6.8 16. April 2021 BLE Firmware 2.04.01
+#### 1.6.8 16. April 2021 
+ble:X.4.1
 - Prepared for PowerBank
 - Failed updates automatically restart at shut down
 - Resetting bike restores factory settings
@@ -160,13 +171,41 @@ ble:X.4.1,motor:.22,shifter:0.237,bms:1.20.1
 
 ### Mainware
 1.08.02 66cee63020ea35447fc7dcf41b61300715937f0f19d02ffdc1626ca0e8356fe00fff57fab0ef043077829129c4b66c40bd823a9e6ae0325c4d048227a5664587
+version 010802f4
+CRC 0x4e0f9854
+length 0x00035bf0
+date May  9 2022
+time 10:58:01
+
+1.09.01 c891be8c0a81a5901143343ba8b65bec4354d81886c63df75cb82410dbaf9c6261e159c110328058fdd0d2492ac21bbdaf6b45d64b2e128c231f9f533c545502
+version 010901f4
+CRC 0x1016bdd5
+length 0x0002fcac
+date May  9 2023
+time 14:11:15
+
 1.09.03 52780d5fb984d954cc81a4ab2f72e612639b6573ea1c250bc96c0ee0707444a6fef7f82c6c3a347813ab14ca661116aef51a45eb9852ddf9cd53e83f16b35256
+version 010903f4
+CRC 0x76c1ab9d
+length 0x0002fcc8
+date Jun  7 2023
+time 07:21:48
 
 ### Motorware
 S.0.00.22 ce5815d55366a10decf724224d03a44d2d43ce3093de4d9f85a5ea646594b3cec59dd3a82227146f8069f41fcf381e341f391ccbf1f339c296cd768368a177cc
+version 000016a1
+CRC 0x9e5dd658
+length 0x0000f118
+date  03 2021
+time 00:48:35
 
 ### Shifterware
 0.237 8f454dfc1e600dfeae772465dd9791cde1b7588be22f7d88e88e61c9708634173a730be85ba19214d6c4544576ebeb8ea7e51e2686a163b77f7693292da97409
+version 00ed02c1
+CRC 0x1e8eb125
+length 0x00002ea8
+date Oct 23 2020
+time 14:09:11
 
 ### BMSBoot
 unknown cd2fdb29adc315da8b99d81d0ac18cacf13fbe0399a3763bc737df8b214fd6628804c1b55929da3d8a0f906ae8fc00884e108755152f6a840acfcb17460b3bcf
@@ -177,6 +216,16 @@ unknown cd2fdb29adc315da8b99d81d0ac18cacf13fbe0399a3763bc737df8b214fd6628804c1b5
 
 ### Batteryware
 1.14.1 dc3c1e3e731936f3c20dd6432e9a2b2855e7a699a179488e3d878438a2663d779d8640df2692e2008a885a0917fb270a95738ce75f731503ec70e7f3a6c72e02
+version 011401b1
+CRC 0x27f3de41
+length 0x000147e4
+date Nov  1 2021
+time 14:32:13
+
+1.17.01 e74f4db508323c486bcd149b972a44d8116a8fa1b9daa50b760a2ba70ac87745677cc3846dabdc471950c0470e915d749f42c4218554eb1171544e93bc6301de
+version 011701b1
+CRC 0x2e0150da
+length 0x00015610
 
 ### m2m.vanmoof.com (SMS the bike sends)
 ```
