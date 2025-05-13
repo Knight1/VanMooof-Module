@@ -24,9 +24,9 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 - all Firmwares
     - Mainware (STM32F413VGT6 LQFP100)
     - Batteryware (STM32L072CZT6 LQFP48)
-    - Shifterware 
-    - Motorware (F2806)
-    - bleware (TMS320F28054F)
+    - Shifterware (MM32F031F6U6)
+    - Motorware (F2806 / TMS320F28054F)
+    - bleware (CC2642R1F)
 - Logs
 - Shell (UART) for 
   - Module
