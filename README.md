@@ -9,7 +9,7 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [https://pkg.go.dev/github.com/sandacn/ymodem/ymodem](https://pkg.go.dev/github.com/sandacn/ymodem/ymodem)  
 [https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)  
 
-If you need Firmware or bms Tools contact me on Discord or Telegram  
+If you need Firmware, bms Tools or generall assistance contact me on Discord or Telegram  
 If you need in-dept Information about the Firmware i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
 ### Features
@@ -52,7 +52,6 @@ If you need in-dept Information about the Firmware i recommend [chwdt/vanmoof-to
 You can apply 12Vdc via the DC Plug and it only charges the Module. 
 
 ## How to get started?
-
 ### Getting Firmware, Bike Keys, Logs from the SPI Flash
 You need the backside of the PCB from the Module to dump the SPI Flash.
 
@@ -79,15 +78,20 @@ Reading flash... done.
 
 ### Getting Console Access to my Bike
 
+You can use a Pi Debug Probe, a Pi, for portable Access a Pi Pico 1/2 (WH), a cheap or expensive USB to UART Adapter
+I prefer the Pico Probe because i can easily upload Firmware with my mac. 
+[https://github.com/raspberrypi/debugprobe](https://github.com/raspberrypi/debugprobe/releases/tag/debugprobe-v2.2.3)
+
 JTAG 115200 Baudrate
+Black - GND
+Green - TX
+Orange - RX
+Yellow - NC (Not Connected)
 
-Black - GND - connect to GND on the dongle 
+### Important caveats.
 
-Green - TX - connect to RX on the dongle 
-
-Orange - RX - connect to TX on the dongle 
-
-Yellow - voltage - don‘t connect to the dongle
+This is all based on reverse Engineering. So there might be some Versions differences between Firmwares. 
+So make a backup or your Flash Dump, save it in a safe place like 1Password. If you compress the dump, the file gets very small.
 
 ## Fixing some Errors
 ### Err 23
@@ -198,11 +202,6 @@ READ AND DECODE LOGS
 1723060261 GSM_CMD_IDLE
 1723060280
 ```
-
-### Important caveats.
-
-This is all based on reverse Engineering. So there might be some Versions differences. 
-So make a backup, save it in a save place like 1Password. If you compress the dump, the file gets very small.
 
 ### Some Communication from the Bike to the VanMoof Backend via self-signed Certs.
 
@@ -718,21 +717,21 @@ Disable Advertise
 ```console
 'MT' (@) 2019 STM32F4, Stop
 top
-es
+>es
 Erasing shadow flash 256 Kb... Erase sector 7
 Erase sector 8
 OK
-us
+>us
 Send .bin Ymodem
 CCC
-vi
+>vi
 STM32 bootloader v1.09 (Feb 21 2020 14:50:53)
 Loaded Application: v1.01.15 (Jun  7 2023 07:21:48) size 195784 bytes
 Shadow Application: v1.01.0F (Jun  7 2023 07:21:48) size 195784 bytes
 Shifter Application: v0.ed.02 (Oct 23 2020 14:09:11) size 11944 bytes
 Motor Application: v0.00.16 ( 03 2021 00:48:35) size 61720 bytes
 No Battery Application
-st
+>st
 <Start application>
 
 Wake Reason: WAKE_SRC_BUTTON_1 WAKE_SRC_MEMS WAKE_KICKLOCK
