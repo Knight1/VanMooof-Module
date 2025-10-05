@@ -1,6 +1,6 @@
 # VanMooof-Module ES3
 
-This currently covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4 (if you happen to have one of the few.
+This currently covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4 (if you happen to have one of the few).
 Pull Requests are welcome!
 
 This Chip features 512Megabits (64 Megabytes) of Flash capacity.
@@ -12,7 +12,7 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [Battery Images](https://github.com/dtngx/VMBattery)
 
 If you need Firmware, bms Tools or general assistance contact me on Discord or Telegram  
-If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) Mode again) i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
+If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) Mode again) I recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
 ### Features
 - ble keys (read/write)
@@ -60,12 +60,12 @@ You need the backside of the PCB from the Module to dump the SPI Flash.
 Tools needed: Torx Screw set. I used my iFixit Kit.
 
 1. Unlock bike and remove Module from the Frame  
-    2. If you do not unlock the bike, the Alarm stays on and will annoy you. I used duct tape to cover the speaker if i forgot it.
+    2. If you do not unlock the bike, the Alarm stays on and will annoy you. I used duct tape to cover the speaker if I forgot it.
 2. Open Module and unscrew all internal screws of the PCB to remove the PCB. Make sure you unplug the Matrix LCD Cable carefully! You can replace the cable if you break it. 
 3. On the backside of the PCB is the Macronix 16 Pin SPI Flash Chip near the port for the back light. 
-4. Dump that Flash with an 16 Pin! SPI Flash Chip clamp and a Pi  
+4. Dump that Flash with a 16 Pin! SPI Flash Chip clamp and a Pi  
     1. I used an Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
-5. When you screw it back together, make sure to use 99% Alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the ac voltage to the Motor is high especially if the battery has low charge thus low voltage. If a screw gets lose while you ride you would create little sparks. 
+5. When you screw it back together, make sure to use 99% Alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the AC voltage to the Motor is high especially if the battery has low charge thus low voltage. If a screw gets loose while you ride you would create little sparks. 
 
 ```console
 # sudo flashrom -p linux_spi:dev=/dev/spidev0.0 -r rom.rom
@@ -81,7 +81,7 @@ Reading flash... done.
 ### Getting Console Access to my Bike
 
 You can use a Pi Debug Probe, a Pi, for portable Access a Pi Pico 1/2 (WH), a cheap or expensive USB to UART Adapter.  
-I prefer the Pico Probe because i can easily upload Firmware with my mac. 
+I prefer the Pico Probe because I can easily upload Firmware with my Mac. 
 [https://github.com/raspberrypi/debugprobe](https://github.com/raspberrypi/debugprobe/releases/tag/debugprobe-v2.2.3)
 
 JTAG 115200 Baudrate  
@@ -92,7 +92,7 @@ Yellow - NC (Not Connected)
 
 ### Important caveats.
 
-This is all based on reverse Engineering. So there might be some Version differences between Firmwares. 
+This is all based on reverse engineering. So there might be some version differences between firmwares. 
 So make a backup of your Flash Dump, save it in a safe place like 1Password. If you compress the dump, the file gets very small.
 
 ## Fixing some Errors
@@ -102,9 +102,9 @@ So make a backup of your Flash Dump, save it in a safe place like 1Password. If 
 I2C1 Error
 01/00:07:02  ERR dsp freeze
 ```
-you can not really login..
+you cannot really login..
 
-### Err 54 (no/bad Sim Card)
+### Err 54 (no/bad SIM Card)
 
 The Module is looking for a SIM Card with a specific ICCID (Integrated Circuit Card Identifier).
 
@@ -210,8 +210,8 @@ Hexcode  Cipher Suite Name (OpenSSL)       KeyExch.   Encryption  Bits     Ciphe
  x3c     AES128-SHA256                     RSA        AES         128      TLS_RSA_WITH_AES_128_CBC_SHA256
 ```
 
-The uuid is without dashes, 32chars, numbers and chars. No duplication checking.
-dist is in Kilometers with hectometer. So 5,5 kilometers become 55 here.
+The UUID is without dashes, 32 chars, numbers and chars. No duplication checking.
+dist is in kilometers with hectometer. So 5.5 kilometers become 55 here.
 responds with result true.  
 ```console
 curl -vk https://bikecomm.vanmoof.com/ping-response \
@@ -226,7 +226,7 @@ curl -vk https://bikecomm.vanmoof.com/bike-message
 -d '{"mac_address":"MAC","message_type":"","message_data":""}'
 ```
 
-/upload expects ublox Data. => InvalidUBloxDataException
+/upload expects UBlox Data. => InvalidUBloxDataException
 
 ### m2m.vanmoof.com (SMS the bike sends)
 ```console
@@ -304,7 +304,7 @@ WST_NONE
 
 #### Bootloader
 
-Press ESC on the UART (Debug) Port until the MCU (Microcontroller) reboots and holds itself in the Bootloader. It will display.
+Press ESC on the UART (Debug) Port until the MCU (Microcontroller) reboots and holds itself in the bootloader. It will display.
 
 ```console
 STM32 bootloader <1.09> Muco Technologies (c)2019
@@ -749,7 +749,7 @@ Disable Advertise
 ```
 
 ### GSM Modem (gsmdebug)
-See Chris Repo. U need to use AT Commands. The Modem is dirrectly attached to the UART Output.
+See Chris Repo. You need to use AT Commands. The Modem is directly attached to the UART Output.
 
 ### Update mainware Firmware by updating shadow
 ```console
@@ -802,8 +802,6 @@ Wake Reason: WAKE_SRC_BUTTON_1 WAKE_SRC_MEMS WAKE_KICKLOCK
 ES3 v1.01.15
 ```
 
-
-
 ### Update BMS Firmware to 1.17
 I use minicom on the Mac.  
 **Make sure that both the Battery and the Module are somewhat charged AND that there are NO Errors related to the Battery**.  
@@ -817,10 +815,9 @@ PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will no
     4. Type "vi" (version), Enter. Verify that the Version shown is v1.17.
 3. Type "st" (start), Enter. Mainware should start.
 4. Type "batware", Enter.
-5. After the Update use "battery" to verify that the BMS was sucessfully Updated. 
+5. After the Update use "battery" to verify that the BMS was successfully Updated. 
 
-
-### To save the distance i put the bike into shipping. That saved the distance into eeprom.
+### To save the distance I put the bike into shipping. That saved the distance into EEPROM.
 ```console
 distance 0
 Set 0.0 Km
