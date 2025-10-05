@@ -1,0 +1,38 @@
+# periph.io/x/conn/v3 v3.7.2
+## explicit; go 1.22.6
+periph.io/x/conn/v3
+periph.io/x/conn/v3/driver
+periph.io/x/conn/v3/driver/driverreg
+periph.io/x/conn/v3/gpio
+periph.io/x/conn/v3/gpio/gpioreg
+periph.io/x/conn/v3/gpio/gpiostream
+periph.io/x/conn/v3/i2c
+periph.io/x/conn/v3/i2c/i2creg
+periph.io/x/conn/v3/onewire
+periph.io/x/conn/v3/onewire/onewirereg
+periph.io/x/conn/v3/physic
+periph.io/x/conn/v3/pin
+periph.io/x/conn/v3/pin/pinreg
+periph.io/x/conn/v3/spi
+periph.io/x/conn/v3/spi/spireg
+# periph.io/x/host/v3 v3.8.5
+## explicit; go 1.22.6
+periph.io/x/host/v3
+periph.io/x/host/v3/allwinner
+periph.io/x/host/v3/am335x
+periph.io/x/host/v3/bcm283x
+periph.io/x/host/v3/beagle/black
+periph.io/x/host/v3/beagle/bone
+periph.io/x/host/v3/beagle/green
+periph.io/x/host/v3/chip
+periph.io/x/host/v3/cpu
+periph.io/x/host/v3/distro
+periph.io/x/host/v3/fs
+periph.io/x/host/v3/gpioioctl
+periph.io/x/host/v3/netlink
+periph.io/x/host/v3/odroidc1
+periph.io/x/host/v3/pine64
+periph.io/x/host/v3/pmem
+periph.io/x/host/v3/rpi
+periph.io/x/host/v3/sysfs
+periph.io/x/host/v3/videocore
