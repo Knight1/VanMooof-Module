@@ -78,7 +78,7 @@ Reading flash... done.
 
 ### Getting Console Access to my Bike
 
-You can use a Pi Debug Probe, a Pi, for portable Access a Pi Pico 1/2 (WH), a cheap or expensive USB to UART Adapter
+You can use a Pi Debug Probe, a Pi, for portable Access a Pi Pico 1/2 (WH), a cheap or expensive USB to UART Adapter.  
 I prefer the Pico Probe because i can easily upload Firmware with my mac. 
 [https://github.com/raspberrypi/debugprobe](https://github.com/raspberrypi/debugprobe/releases/tag/debugprobe-v2.2.3)
 
