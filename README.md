@@ -120,7 +120,7 @@ C = Checksum
 
 ### Firmware
 We are looking for
-```
+```console 
 50 41 43 4B BC 16 09 00 40 01 00 00 4F 41 44 20 (PACK¼	�@��OAD)
 ```
 
@@ -134,7 +134,7 @@ shifterware.bin
 batteryware.bin
 
 
-```
+```console
 0x0002000 ?
 0x005A000 BLE Secrets (60)
 0x005af80 M-ID/M-KEY (60)
@@ -204,22 +204,22 @@ READ AND DECODE LOGS
 ### Some Communication from the Bike to the VanMoof Backend via self-signed Certs.
 
 The Backend only supports 
-```aiignore
+```console
 Hexcode  Cipher Suite Name (OpenSSL)       KeyExch.   Encryption  Bits     Cipher Suite Name (IANA/RFC)
  x3c     AES128-SHA256                     RSA        AES         128      TLS_RSA_WITH_AES_128_CBC_SHA256
 ```
 
 The uuid is without dashes, 32chars, numbers and chars. No duplication checking.
 dist is in Kilometers with hectometer. So 5,5 kilometers become 55 here.
-responds with result true. 
-```
+responds with result true.  
+```console
 curl -vk https://bikecomm.vanmoof.com/ping-response \
 -H "Content-Type: application/json" \
 -d '{"guid":"UUID","statistics":{"batt":95,"mac":"MAC","swv":"1.6.8","dist":37154}}'
 ```
 
 Message Type(s) unknown
-```
+```console
 curl -vk https://bikecomm.vanmoof.com/bike-message 
 -H "Content-Type: application/json" 
 -d '{"mac_address":"MAC","message_type":"","message_data":""}'
@@ -228,7 +228,7 @@ curl -vk https://bikecomm.vanmoof.com/bike-message
 /upload expects ublox Data. => InvalidUBloxDataException
 
 ### m2m.vanmoof.com (SMS the bike sends)
-```
+```console
 ALARM_BMS_REMOVED
 SET_SHIPPING
 START_FROM_SHIPPING
@@ -309,7 +309,7 @@ Press ESC on the UART (Debug) Port until the MCU (Microcontroller) reboots and h
 STM32 bootloader <1.09> Muco Technologies (c)2019
 ```
 
-```
+```console
 For more information on a specific command, type HELP command-name
 help         This tekst
 ver          Software version
@@ -431,7 +431,7 @@ setoad            test
 setgear           save muco shifter
 ```
 
-```aiignore
+```console
 ver
 ES3.0 Main  1.08.02
 ES3 boot    1.09
@@ -442,7 +442,7 @@ GSMWare
 CMD_BLE_MAC F8:8A:5E:4F:9E:CB
 ```
 
-```aiignore
+```console
 show
  < I/O >
 Botton_Left  0
@@ -508,7 +508,7 @@ ride change: No
 bike state   20
 ```
 
-```aiignore
+```console
 battery
 BAT_ID  0x0
 FAULT   0x0
@@ -566,7 +566,7 @@ SCP   0
 
 Enter the BLE Chip shell with bledebug then execute reset to get this output:
 
-```aiignore
+```console
 Connect to UART8
 reset
 Mon Feb 17 20:00:34 2025: Platform reset
@@ -587,8 +587,7 @@ systick .................... : 30316279
 Type 'help' for a list of all available commands.
 ```
 
-```aiignore
-
+```console
 > help
 The following commands are available:
 
@@ -628,7 +627,7 @@ The following commands are available:
     help                              - show all monitor commands
 ```
 
-```
+```console
 > extflash-verify
 Flash type         : MX25L51245G
 Device size (Mbyte): 64
@@ -636,7 +635,7 @@ SW status register write protection: y
 Block write-protection enabled     : n
 ```
 
-```aiignore
+```console
 > pack-process
 Sat Jan  1 00:55:04 2000: invalid pack content
 Processing pakfs, expect a small startup delay because of mainware erasing its shadowflash, which blocks all serial I/O
@@ -646,29 +645,29 @@ Processing pakfs, expect a small startup delay because of mainware erasing its s
 ES3 v1.08.02
 ```
 
-```aiignore
+```console
 > ble-info
 number of connections: 0/3
 Device address: cb:9e:4f:5e:94:f8
 ```
 
-```aiignore
+```console
 > ble-erase-all-bonds
 ```
 
-```aiignore
+```console
 > pack-delete
 Deleting PACK archive...
 Erase pack progress <99%>
 Done
 ```
 
-```aiignore
+```console
 > pack-upload                                                                                                                                     
 CCCCCCYModem successfully received 595968 bytes for file "pack.bin"
 ```
 
-```
+```console
 > pack-list
 Scanning PACK archive..      
        217,884 bytes bleware.bin
@@ -678,13 +677,13 @@ Scanning PACK archive..
         83,940 bytes batteryware.bin
 ```
 
-```
+```console
 > log-flush
 Done erasing logs
 ```
 
 
-```aiignore
+```console
 > pack-process
 Processing pakfs, expect a small startup delay because of mainware erasing its shadowflash, which blocks all serial I/O
 
@@ -762,7 +761,7 @@ Wake Reason: WAKE_SRC_BUTTON_1 WAKE_SRC_MEMS WAKE_KICKLOCK
 ES3 v1.01.15
 ```
 
-```aiignore
+```console
 shipping
 Set shipping mode
 01/00:24:53 BIKE_SHIPPING
@@ -784,12 +783,12 @@ No MOTOR_SLEEP_MODE from motor 0x0404
 ```
 
 ### To save the distance i put the bike into shipping. That saved the distance into eeprom.
-```aiignore
+```console
 distance 0
 Set 0.0 Km
 ```
 
-```aiignore
+```console
 factory-shipping
 Set factory shipping mode
 BLE remove id 112 nr 5C
