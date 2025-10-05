@@ -1,12 +1,12 @@
-# VanMooof-Module S3
+# VanMooof-Module S3 / X3 / S4 / X4
 
-This currently covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4 if you happen to have one of the few.
+This currently covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4 (if you happen to have one of the few.
 
 This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 
-<https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go>
-<https://pkg.go.dev/github.com/sandacn/ymodem/ymodem>
-<https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz>
+[https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go](https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go)
+[https://pkg.go.dev/github.com/sandacn/ymodem/ymodem](https://pkg.go.dev/github.com/sandacn/ymodem/ymodem)
+[https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)
 
 ### Features
 
