@@ -78,8 +78,6 @@ curl -vk https://bikecomm.vanmoof.com/bike-message
 
 /upload expects ublox Data. => InvalidUBloxDataException
 
-
-
 ### m2m.vanmoof.com (SMS the bike sends)
 ```
 ALARM_BMS_REMOVED
@@ -239,13 +237,7 @@ pack-process�ÀFÀprocess pack files in external flash memory�source/monitor
 
 ### Shell login
 
-Look for a HEX Value with ex. HxD starting with ```76 45 56 6A 47 46``` and ending with ```00 00 00```
-If you search for it in a Hex Editor you will notice the end very clearly because the next line begins with "Welcome to ES3"
-
-the sha512sum of the Password is
-```
-7edd23b1c75e070db66475bb1869bee9dc64def2cb163dfea39ef8efcb534bf44db2da9e7307590222c516875fb4b07c7450556efd6520d986c5757ce3441bdd
-```
+Master Password: vEVjGF!paYsM2EBV8SoDT8*T0eB&#T6xevaoxCaO
 
 PBNjh0V46Eev8CcfS4LPJg
 
