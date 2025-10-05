@@ -51,106 +51,9 @@ If you need in-dept Information about the Firmware i recommend [chwdt/vanmoof-to
 
 You can apply 12Vdc via the DC Plug and it only charges the Module. 
 
-### Some Communication from the Bike to the VanMoof Backend via self-signed Certs.
+## How to get started?
 
-The Backend only supports 
-```aiignore
-Hexcode  Cipher Suite Name (OpenSSL)       KeyExch.   Encryption  Bits     Cipher Suite Name (IANA/RFC)
- x3c     AES128-SHA256                     RSA        AES         128      TLS_RSA_WITH_AES_128_CBC_SHA256
-```
-
-The uuid is without dashes, 32chars, numbers and chars. No duplication checking.
-dist is in Kilometers with hectometer. So 5,5 kilometers become 55 here.
-responds with result true. 
-```
-curl -vk https://bikecomm.vanmoof.com/ping-response \
--H "Content-Type: application/json" \
--d '{"guid":"UUID","statistics":{"batt":95,"mac":"MAC","swv":"1.6.8","dist":37154}}'
-```
-
-Message Type(s) unknown
-```
-curl -vk https://bikecomm.vanmoof.com/bike-message 
--H "Content-Type: application/json" 
--d '{"mac_address":"MAC","message_type":"","message_data":""}'
-```
-
-/upload expects ublox Data. => InvalidUBloxDataException
-
-### m2m.vanmoof.com (SMS the bike sends)
-```
-ALARM_BMS_REMOVED
-SET_SHIPPING
-START_FROM_SHIPPING
-PLAY_FIRE
-RIDING_MODE
-CPU_STOP_MODE
-CPU_STOPPED
-SHOW_LOCK
-AUTOWAKEUP
-CARDRIDGE_REMOVED
-LIPOCHARGE
-RESET
-OAD_FILE_TRF
-OAD_UPDATE
-DIAGNOSE
-DIAG_RDY
-OAD_FINISH
-OAD_FAILED
-OAD_RX_SOUND
-FACTORY_TEST
-PLAY_SHTDN
-PLAY_LOCK_SHTDN
-PLAY_LOCK_FROM_SLEEP
-PLAY_SHTDN_RDY
-ALARM_DELAY_ON
-TURN_ON
-LOW_SOC
-PIN_START
-PIN_STUCK
-PIN_1ST
-PIN_2ND
-PIN_3ND
-PIN_CHECK
-PIN_OK
-PIN_SHOW_OK
-PIN_NOK
-PIN_NOK_SHOW
-UNLOCK
-EXTRA_ALREADY_UNLOCKED
-UNLOCK_COUNT
-UNLOCK_COUNT_TIMEOUT
-LOCK_PLAY_UNLOCK
-LOCK_PLAY_START
-LOCK_DIM_OFF
-LOCK_CLEAR
-LOCK_SETUP
-LOCK_PIC
-LOCK_COUNT
-COUNT_OFF
-COUNT_CLEAR
-FIND_MY_PLAY
-BIKE_SHIPPING_ACCIDENTAL_WAKE
-BIKE_SHIPPING_LIPOCHARGE
-POWERON
-SMS_INIT
-SMS_READ
-SMS_WRITE
-CTX_ACT
-CTX_DEACT
-PING_SEND
-MESSAGE_SEND
-LOCATION_SEND
-POWEROFF
-IDLE
-WST_DISCHARGE_MODE
-WST_CHARGE_MODE
-WST_BYPASS_MODE
-WST_NONE
-```
-
-### How to get started?
-
+### Getting Firmware, Bike Keys, Logs from the SPI Flash
 You need the backside of the PCB from the Module to dump the SPI Flash.
 
 Tools needed: Torx Screw set. I used my iFixit Kit.
@@ -173,6 +76,18 @@ Using default 2000kHz clock. Use 'spispeed' parameter to override.
 Found Macronix flash chip "MX66L51235F/MX25L51245G" (65536 kB, SPI) on linux_spi.
 Reading flash... done.
 ```
+
+### Getting Console Access to my Bike
+
+JTAG 115200 Baudrate
+
+Black - GND - connect to GND on the dongle 
+
+Green - TX - connect to RX on the dongle 
+
+Orange - RX - connect to TX on the dongle 
+
+Yellow - voltage - don‘t connect to the dongle
 
 ## Fixing some Errors
 ### Err 23
@@ -289,6 +204,103 @@ READ AND DECODE LOGS
 This is all based on reverse Engineering. So there might be some Versions differences. 
 So make a backup, save it in a save place like 1Password. If you compress the dump, the file gets very small.
 
+### Some Communication from the Bike to the VanMoof Backend via self-signed Certs.
+
+The Backend only supports 
+```aiignore
+Hexcode  Cipher Suite Name (OpenSSL)       KeyExch.   Encryption  Bits     Cipher Suite Name (IANA/RFC)
+ x3c     AES128-SHA256                     RSA        AES         128      TLS_RSA_WITH_AES_128_CBC_SHA256
+```
+
+The uuid is without dashes, 32chars, numbers and chars. No duplication checking.
+dist is in Kilometers with hectometer. So 5,5 kilometers become 55 here.
+responds with result true. 
+```
+curl -vk https://bikecomm.vanmoof.com/ping-response \
+-H "Content-Type: application/json" \
+-d '{"guid":"UUID","statistics":{"batt":95,"mac":"MAC","swv":"1.6.8","dist":37154}}'
+```
+
+Message Type(s) unknown
+```
+curl -vk https://bikecomm.vanmoof.com/bike-message 
+-H "Content-Type: application/json" 
+-d '{"mac_address":"MAC","message_type":"","message_data":""}'
+```
+
+/upload expects ublox Data. => InvalidUBloxDataException
+
+### m2m.vanmoof.com (SMS the bike sends)
+```
+ALARM_BMS_REMOVED
+SET_SHIPPING
+START_FROM_SHIPPING
+PLAY_FIRE
+RIDING_MODE
+CPU_STOP_MODE
+CPU_STOPPED
+SHOW_LOCK
+AUTOWAKEUP
+CARDRIDGE_REMOVED
+LIPOCHARGE
+RESET
+OAD_FILE_TRF
+OAD_UPDATE
+DIAGNOSE
+DIAG_RDY
+OAD_FINISH
+OAD_FAILED
+OAD_RX_SOUND
+FACTORY_TEST
+PLAY_SHTDN
+PLAY_LOCK_SHTDN
+PLAY_LOCK_FROM_SLEEP
+PLAY_SHTDN_RDY
+ALARM_DELAY_ON
+TURN_ON
+LOW_SOC
+PIN_START
+PIN_STUCK
+PIN_1ST
+PIN_2ND
+PIN_3ND
+PIN_CHECK
+PIN_OK
+PIN_SHOW_OK
+PIN_NOK
+PIN_NOK_SHOW
+UNLOCK
+EXTRA_ALREADY_UNLOCKED
+UNLOCK_COUNT
+UNLOCK_COUNT_TIMEOUT
+LOCK_PLAY_UNLOCK
+LOCK_PLAY_START
+LOCK_DIM_OFF
+LOCK_CLEAR
+LOCK_SETUP
+LOCK_PIC
+LOCK_COUNT
+COUNT_OFF
+COUNT_CLEAR
+FIND_MY_PLAY
+BIKE_SHIPPING_ACCIDENTAL_WAKE
+BIKE_SHIPPING_LIPOCHARGE
+POWERON
+SMS_INIT
+SMS_READ
+SMS_WRITE
+CTX_ACT
+CTX_DEACT
+PING_SEND
+MESSAGE_SEND
+LOCATION_SEND
+POWEROFF
+IDLE
+WST_DISCHARGE_MODE
+WST_CHARGE_MODE
+WST_BYPASS_MODE
+WST_NONE
+```
 
 ### UART
 
