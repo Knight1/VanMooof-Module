@@ -192,10 +192,10 @@ READ AND DECODE LOGS
 1723060261 Shifterware 0.237 stored: 0.237
 1723060261 BLEWare     2.4.01
 1723060261 GSMWare     08.90
-1723060261 CMD_BLE_MAC 24:9F:89:86:A9:1F
+1723060261 CMD_BLE_MAC 24:9F:89:FF:FF:FF
 1723060261 PDOCP 0
 1723060261 PDSCP 1
-1723060261 iccid 89314404000979522399
+1723060261 iccid 89314404000913371337
 1723060261 Modem ready
 1723060261 GSM_CMD_IDLE
 1723060280
@@ -328,9 +328,14 @@ ub           Upload battery app (Y-modem)
 uc           Upload shifter app (Y-modem)
 st           Start application
 vi           Version information
+```
+
+```console
 ver
 STM32 bootloader <1.09> Muco Technologies (c)2019
+```
 
+```console
 vi
 STM32 bootloader v1.09 (Feb 21 2020 14:50:53)
 Loaded Application: v1.08.02 (May  9 2022 10:58:01) size 220144 bytes
@@ -338,14 +343,18 @@ Shadow Application: v1.08.02 (May  9 2022 10:58:01) size 220144 bytes
 Shifter Application: v0.ed.02 (Oct 23 2020 14:09:11) size 11944 bytes
 Motor Application: v0.00.16 ( 03 2021 00:48:35) size 61720 bytes
 No Battery Application
+```
 
+```console
 crc
 APP CRC ok
 SHADOW CRC error
 MotorPcb CRC ok
 No Battery application
 Shifter CRC ok
+```
 
+```console
 st
 <Start application>
 Wake Reason: WAKE_KICKLOCK
