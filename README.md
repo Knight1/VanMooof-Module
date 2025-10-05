@@ -174,107 +174,6 @@ Found Macronix flash chip "MX66L51235F/MX25L51245G" (65536 kB, SPI) on linux_spi
 Reading flash... done.
 ```
 
-### Bluetooth Low Energy (bledebug) Shell
-Enter the BLE Chip shell with `bledebug`
-then execute reset to get this output:
-```
-bledebug
-Connect to UART8
-reset
-Mon Feb 17 20:00:34 2025: Platform reset
-Thu Dec 31 23:00:00 2020: This image is not provisioned
-
-
-*** VANMOOF S3/X3 Monitor Program ***
-
-BLE MAC Address: "74:d2:85:00:00:00"
-
-Device name ................ : ES3-74D285000000
-Firmware version ........... : 2.04.01
-Compile date / time ........ : Mar 29 2021 / 14:17:30
-Find-My accessory UUID ..... : N/A
-Serialnumber ............... : N/A
-BIM firmware version ....... : 1.00.01
-BIM compile date / time .... : Jul 17 2020 / 14:53:15
-reset type ................. : system reset
-systick .................... : 705246
-FMNA status ................ : not provisioned, deactivated
-Time ....................... : Mon Feb 17 20:00:29 2025
-
-
-Type 'help' for a list of all available commands.
-
-```
-Help output:
-
-```
-> help
-The following commands are available:
-
-    firmware-update                   - update a new image of firmware to the external flash
-    extflash-verify                   - verify the current flashchip
-    log-count                         - get log-count statistic
-    log-dump <start-index> <n>        - print <n> blocks starting at address <start-index> 
-    log-flush                         - flush all log-entries
-    log-inject <n>                    - Create <n> fake-logs
-    audio-play <index>                - play audio bound to the specified index
-    audio-stop                        - stop playing the current audio file
-    audio-dump                        - dump all audio files in external memory
-    audio-upload <index>              - upload audio binary using Y-Modem at the address linked to the specified index
-    audio-volume-set-all <level>      - set audio level of all audio-clips (0-3)
-    pack-upload                       - upload a PACK file by Y-Modem
-    pack-list                         - list the contents of a PACK file
-    pack-delete                       - delete a PACK file
-    pack-process                      - process pack files in external flash memory
-    ble-info                          - dump current BLE connection info / statistics
-    ble-disconnect                    - force a disconnect of all connected devices
-    ble-erase-all-bonds               - erase all bonds
-    fmna-get-auth-uuid                - Get the FMNA authentication UUID
-    fmna-get-serialnumber             - Get the FMNA serialnumber
-    fmna-set-serialnumber             - Set the serialnumber (hexstring, 8 bytes / 16 hexdigits)
-    fmna-erase-external               - erases the external provisioned data (will be reset on reboot if internal exists)
-    ble-erase-fmna-bonds              - will erase all fmna bonds
-    fmna-blob-upload-int              - upload a FMNA factory blob
-    fmna-rework                       - Replace provisioning data using Y-Modem
-    fmna-enable-pairing               - enables pairing (if unpaired)
-    fmna-unpair                       - Force FMNA unpair (i.e. 5x reset)
-    shutdown                          - shutdown the system
-    rtos-statistics                   - dump memory stats every 500ms
-    rtos-nvm-compact                  - Compact the non-volatile storage
-    reset                             - perform software reset of the MCU
-    info/ver                          - show basic firmware info
-    exit                              - exit from shell
-    help                              - show all monitor commands
-```
-
-```
-> pack-list
-Scanning PACK archive...
- 4,294,967,295 bytes ����������������������������������������������������������
- 4,294,967,295 bytes ����������������������������������������������������������
- 4,294,967,295 bytes ����������������������������������������������������������
- 4,294,967,295 bytes ����������������������������������������������������������
- 4,294,967,295 bytes ����������������������������������������������������������
-```
-
-```
-> pack-process
-Processing pakfs, expect a small startup delay because of mainware erasing its shadowflash, which blocks all serial I/O
-Mon Feb 17 20:05:44 2025: Couldn't get new bleware image data
-
-> Mon Feb 17 20:05:44 2025: Couldn't get new bleware image data
-Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
-Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
-Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
-Mon Feb 17 20:05:45 2025: Couldn't get new bleware image data
-Wake Reason: WAKE_SRC_BLE
-```
-
-```
-> log-flush
-Done erasing logs
-```
-
 ## Fixing some Errors
 ### Err 23
 
@@ -395,7 +294,7 @@ So make a backup, save it in a save place like 1Password. If you compress the du
 
 #### Bootloader
 
-Press ESC on the UART Port until the MCU reboots and holds itself in the Bootloader. It will display.
+Press ESC on the UART (Debug) Port until the MCU (Microcontroller) reboots and holds itself in the Bootloader. It will display.
 
 ```console
 STM32 bootloader <1.09> Muco Technologies (c)2019
@@ -443,9 +342,6 @@ st
 Wake Reason: WAKE_KICKLOCK
 
 ES3 v1.08.02
-NAK
-NAK
-NAK
 ERR Led Display
 ERR Light sensor
 ERR ST3115 wake
@@ -454,24 +350,12 @@ RCC_FLAG_WWDGRST
 RCC_FLAG_PINRST
 01/00:07:01 GSM_CMD_IDLE
 01/00:07:01 Set power state to PWR_NORMAL (Current limit: 20.0 A, SOC: -1 %)
-NAK
-NAK
-NAK
-NAK
-NAK
-NAK
 01/00:07:01 BIKE_INIT
 01/00:07:01 Restore power level 4
 01/00:07:01 LiPo SoC 0% (first read)
 01/00:07:01 Wake from shipping
 I2C1 Error
 01/00:07:01 BIKE_LIPOCHARGE
-NAK
-NAK
-NAK
-NAK
-NAK
-NAK
 01/00:07:01  ERR dsp freeze
 I2C1 Error
 01/00:07:01  ERR dsp freeze
@@ -479,14 +363,11 @@ I2C1 Error
 01/00:07:01  ERR dsp freeze
 CMD_BLE_VERSION_INFO
 CMD_BLE_MAC
-
 ```
 
+#### Mainware (Debug Port) Console
 
-#### Mainware
-
-Master Password: vEVjGF!paYsM2EBV8SoDT8*T0eB&#T6xevaoxCaO
-
+Login Master Password: vEVjGF!paYsM2EBV8SoDT8*T0eB&#T6xevaoxCaO
 
 ```console
 Available commands:
@@ -619,7 +500,6 @@ bike state   20
 ```
 
 ```aiignore
-
 battery
 BAT_ID  0x0
 FAULT   0x0
@@ -673,11 +553,15 @@ MOTP  0
 SCP   0
 ```
 
-### BLE DEBUG
+### Bluetooth Low Energy (bledebug) Shell
+
+Enter the BLE Chip shell with bledebug then execute reset to get this output:
 
 ```aiignore
 Connect to UART8
-
+reset
+Mon Feb 17 20:00:34 2025: Platform reset
+Thu Dec 31 23:00:00 2020: This image is not provisioned
 
 *** VANMOOF S3/X3 Monitor Program ***
 
@@ -764,11 +648,6 @@ Device address: cb:9e:4f:5e:94:f8
 ```
 
 ```aiignore
-> pack-list
-
-```
-
-```aiignore
 > pack-delete
 Deleting PACK archive...
 Erase pack progress <99%>
@@ -789,6 +668,12 @@ Scanning PACK archive..
         11,944 bytes shifterware.bin
         83,940 bytes batteryware.bin
 ```
+
+```
+> log-flush
+Done erasing logs
+```
+
 
 ```aiignore
 > pack-process
