@@ -1,4 +1,4 @@
-# VanMooof-Module S3 / X3 / S4 / X4
+# VanMooof-Module ES3
 
 This currently covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4 (if you happen to have one of the few.
 Pull Requests are welcome!
@@ -9,7 +9,7 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [https://pkg.go.dev/github.com/sandacn/ymodem/ymodem](https://pkg.go.dev/github.com/sandacn/ymodem/ymodem)  
 [https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)  
 
-If you need Firmware, bms Tools or generall assistance contact me on Discord or Telegram  
+If you need Firmware, bms Tools or general assistance contact me on Discord or Telegram  
 If you need in-dept Information about the Firmware i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
 ### Features
