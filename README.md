@@ -1,6 +1,7 @@
 # VanMooof-Module S3 / X3 / S4 / X4
 
 This currently covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4 (if you happen to have one of the few.
+Pull Requests are welcome!
 
 This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 
@@ -8,8 +9,11 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [https://pkg.go.dev/github.com/sandacn/ymodem/ymodem](https://pkg.go.dev/github.com/sandacn/ymodem/ymodem)
 [https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)
 
-### Features
+If you need Firmware or bms Tools contact me on Discord or Telegram
 
+If you need in-dept Information about the Firmware i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
+
+### Features
 - ble keys (read/write)
   - bike comm
   - bike Sharing
@@ -22,10 +26,13 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 - fmna key
   - fmna-rework (if you happen to have access to Apples FMNA API)
 - all Firmwares
+    - mucoboot (STM32F413VGT6 Bootloader)
     - Mainware (STM32F413VGT6 LQFP100)
+    - bmsboot (STM32L072CZT6 Bootloader)
     - Batteryware (STM32L072CZT6 LQFP48)
     - Shifterware (MM32F031F6U6)
     - Motorware (F2806 / TMS320F28054F)
+    - bleboot (CC2642R1F Bootloader)
     - bleware (CC2642R1F)
 - Logs
 - Shell (UART) for 
