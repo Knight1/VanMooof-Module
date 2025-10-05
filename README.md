@@ -10,7 +10,7 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)  
 
 If you need Firmware, bms Tools or general assistance contact me on Discord or Telegram  
-If you need in-dept Information about the Firmware i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
+If you need in-dept Information about the Firmware (ex: Enable Offroad aka. :) Mode again) i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
 ### Features
 - ble keys (read/write)
