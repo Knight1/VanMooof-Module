@@ -82,11 +82,11 @@ You can use a Pi Debug Probe, a Pi, for portable Access a Pi Pico 1/2 (WH), a ch
 I prefer the Pico Probe because i can easily upload Firmware with my mac. 
 [https://github.com/raspberrypi/debugprobe](https://github.com/raspberrypi/debugprobe/releases/tag/debugprobe-v2.2.3)
 
-JTAG 115200 Baudrate
-Black - GND
-Green - TX
-Orange - RX
-Yellow - NC (Not Connected)
+JTAG 115200 Baudrat  
+Black - GND  
+Green - TX  
+Orange - RX  
+Yellow - NC (Not Connected)  
 
 ### Important caveats.
 
