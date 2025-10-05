@@ -174,122 +174,6 @@ Found Macronix flash chip "MX66L51235F/MX25L51245G" (65536 kB, SPI) on linux_spi
 Reading flash... done.
 ```
 
-### Bootloader
-
-Press ESC on the UART (Debug Port) Port until the MCU (Microcontroller) reboots and holds itself in the Bootloader. It will display.
-```console
-STM32 bootloader <1.09> Muco Technologies (c)2019
-```
-
-
-Example Bootloader Output:
-```
-'MT' (@) 2019 STM32F4, Stop
-top
-
-help
-For more information on a specific command, type HELP command-name
-help         This tekst
-ver          Software version
-reboot       reboot CPU
-stm32        STM32 internal bootlaoder
-crc          CRC32 check
-ea           Erase application
-es           Erase shadow app
-em           Erase motor app
-eb           Erase battery app
-ec           Erase shifter app
-ua           Upload app (Y-modem)
-us           Upload shadow app (Y-modem)
-um           Upload motor app (Y-modem)
-ub           Upload battery app (Y-modem)
-uc           Upload shifter app (Y-modem)
-st           Start application
-vi           Version information
-
-ver
-STM32 bootloader <1.09> Muco Technologies (c)2019
-
-crc
-APP CRC ok
-No shadow application
-MotorPcb CRC ok
-Battery CRC ok
-No Shifter application
-
-vi
-STM32 bootloader v1.09 (Feb 21 2020 14:50:53)
-Loaded Application: v1.06.08 (Apr  9 2021 11:22:41) size 215108 bytes
-No Shadow Application
-No Shifter Application
-Motor Application: v0.00.16 ( 03 2021 00:48:35) size 61720 bytes
-Battery Application: v1.11.01 (Apr 19 2021 18:17:22) size 84020 bytes
-
-ec
-Erasing shifter flash 128 Kb... Erase sector 4
-OK
-```
-
-### Mainware Shell login
-
-Master Password: vEVjGF!paYsM2EBV8SoDT8*T0eB&#T6xevaoxCaO
-
-PBNjh0V46Eev8CcfS4LPJg
-
-Commands available:
-```
-help
-Available commands:
-help              This tekst
-reboot            reboot CPU
-login             Login shell
-logout            Logout shell
-ver               Software version
-distance          Manual set dst
-gear              set gear
-region            Region 0..3
-blereset          hard reset BLE
-bledebug          redirect uart8
-show              Parameters
-motorupdate       Update F2806 CPU
-vollow            Audio volume
-volmid            Audio volume
-volhigh           Audio volume
-wheelsize         Wheel 24/28 inch
-speed             override speed
-loop              main loop time
-shipping          Shipping mode
-logprn            Print log
-logclr            Clear log 6
-logapp            1/ 0
-powerchange       1/ 0
-factory           Load factory defaults
-battery           Show battery
-batware           Battery update
-batreset          Battery reset
-shiftware         Battery update
-shifterstatus     Show shifter
-shiftdebug        Show Modbus
-shiftresetcounter   Reset shift counter
-motorstatus       
-gsminfo           Info from Ublox
-gsmstart          start GSM function
-gsmdebug          redirect uart2
-bmsdebug          Show Modbus
-sound             sample,volume,times
-adc               read adc
-bwritereg         Modbus Bat write register
-bwritedata        Modbus Bat write data
-breadreg          Modbus Bat read register
-swritereg         Modbus Shift write register
-swritedata        Modbus Shift write data
-sreadreg          Modbus Shift read register
-stc               read lipo monitor
-stcreset          
-setoad            test
-setgear           save muco shifter
-```
-
 ### Bluetooth Low Energy (bledebug) Shell
 Enter the BLE Chip shell with `bledebug`
 then execute reset to get this output:
@@ -511,6 +395,13 @@ So make a backup, save it in a save place like 1Password. If you compress the du
 
 #### Bootloader
 
+Press ESC on the UART Port until the MCU reboots and holds itself in the Bootloader. It will display.
+
+```console
+STM32 bootloader <1.09> Muco Technologies (c)2019
+```
+
+```
 For more information on a specific command, type HELP command-name
 help         This tekst
 ver          Software version
@@ -531,8 +422,7 @@ st           Start application
 vi           Version information
 ver
 STM32 bootloader <1.09> Muco Technologies (c)2019
-ver
-STM32 bootloader <1.09> Muco Technologies (c)2019
+
 vi
 STM32 bootloader v1.09 (Feb 21 2020 14:50:53)
 Loaded Application: v1.08.02 (May  9 2022 10:58:01) size 220144 bytes
@@ -540,16 +430,13 @@ Shadow Application: v1.08.02 (May  9 2022 10:58:01) size 220144 bytes
 Shifter Application: v0.ed.02 (Oct 23 2020 14:09:11) size 11944 bytes
 Motor Application: v0.00.16 ( 03 2021 00:48:35) size 61720 bytes
 No Battery Application
-stm
-'stm' is not recognized as an internal or external command.
+
 crc
 APP CRC ok
 SHADOW CRC error
 MotorPcb CRC ok
 No Battery application
 Shifter CRC ok
-
-
 
 st
 <Start application>
@@ -593,8 +480,12 @@ I2C1 Error
 CMD_BLE_VERSION_INFO
 CMD_BLE_MAC
 
+```
+
 
 #### Mainware
+
+Master Password: vEVjGF!paYsM2EBV8SoDT8*T0eB&#T6xevaoxCaO
 
 
 ```console
