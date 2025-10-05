@@ -90,12 +90,10 @@ Yellow - NC (Not Connected)
 
 ### Important caveats.
 
-This is all based on reverse Engineering. So there might be some Versions differences between Firmwares. 
-So make a backup or your Flash Dump, save it in a safe place like 1Password. If you compress the dump, the file gets very small.
+This is all based on reverse Engineering. So there might be some Version differences between Firmwares. 
+So make a backup of your Flash Dump, save it in a safe place like 1Password. If you compress the dump, the file gets very small.
 
 ## Fixing some Errors
-### Err 23
-
 ### Err missing DiSPlay
 
 ```console
