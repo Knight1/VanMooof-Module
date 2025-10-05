@@ -8,7 +8,7 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go](https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go)  
 [https://pkg.go.dev/github.com/sandacn/ymodem/ymodem](https://pkg.go.dev/github.com/sandacn/ymodem/ymodem)  
 [https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)  
-[Hardware Images](https://github.com/ciborg971/VanmoofX3RE/tree/master/OG)
+[Hardware Images](https://github.com/ciborg971/VanmoofX3RE/tree/master/OG)  
 [Battery Images](https://github.com/dtngx/VMBattery)
 
 If you need Firmware, bms Tools or general assistance contact me on Discord or Telegram  
