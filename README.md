@@ -8,9 +8,11 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go](https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go)  
 [https://pkg.go.dev/github.com/sandacn/ymodem/ymodem](https://pkg.go.dev/github.com/sandacn/ymodem/ymodem)  
 [https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)  
+[Hardware Images](https://github.com/ciborg971/VanmoofX3RE/tree/master/OG)
+[Battery Images](https://github.com/dtngx/VMBattery)
 
 If you need Firmware, bms Tools or general assistance contact me on Discord or Telegram  
-If you need in-dept Information about the Firmware (ex: Enable Offroad aka. :) Mode again) i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
+If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) Mode again) i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
 ### Features
 - ble keys (read/write)
@@ -198,7 +200,6 @@ READ AND DECODE LOGS
 1723060261 iccid 89314404000913371337
 1723060261 Modem ready
 1723060261 GSM_CMD_IDLE
-1723060280
 ```
 
 ### Some Communication from the Bike to the VanMoof Backend via self-signed Certs.
@@ -448,7 +449,7 @@ Motorware   BMSWare     0.00 RSOC 0 Cycles 0 HW 0.00
 Shifterware 0.0 stored: 0.237
 BLEWare     1.4.01
 GSMWare
-CMD_BLE_MAC F8:8A:5E:4F:9E:CB
+CMD_BLE_MAC F8:8A:5E:FF:FF:FF
 ```
 
 ```console
@@ -468,7 +469,7 @@ Fb coil det  0
 Simcard      1
 LiPo STAT    1
 LiPo Status  LIPO_UNKNOWN
-Serial       2043538395
+Serial       2043531337
 Error Flags: 0x00000040 00000000
 APP          DISCON
 Ibat         20.0A
@@ -571,6 +572,34 @@ MOTP  0
 SCP   0
 ```
 
+```console
+shipping
+Set shipping mode
+01/00:24:53 BIKE_SHIPPING
+01/00:24:53 SOUND_SO vol 26
+Lights P2c
+CMD_AUDIO_STOPPED
+01/00:25:02 BIKE_SET_SHIPPING
+01/00:25:02 BIKE_CPU_STOP_MODE
+01/00:25:02 BIKE_SPECIAL_GEAR_OPERATION
+01/00:25:07 Shipping mode sets gear:2
+01/00:25:07 BIKE_END_SPECIAL_OPERATION
+01/00:25:09 BIKE_CPU_STOP_MODE
+01/00:25:09 Wake counter 254 of 168, type 10
+01/00:25:09 Force Lights Off
+01/00:25:09 BMS off
+01/00:25:09 BIKE_CPU_STOPPED
+No MOTOR_SLEEP_MODE from motor 0x0404
+01/00:25:09 EnterSTOPMode 0 min Wake:Shipping
+```
+
+```console
+factory-shipping
+Set factory shipping mode
+BLE remove id 112 nr 5C
+01/00:27:36 EnterSTOPMode 0 min Wake:Shipping
+```
+
 ### Bluetooth Low Energy (bledebug) Shell
 
 Enter the BLE Chip shell with bledebug then execute reset to get this output:
@@ -585,7 +614,7 @@ Thu Dec 31 23:00:00 2020: This image is not provisioned
 
 BLE MAC Address: "f8:8a:5e:4f:9e:cb"
 
-Device name ................ : ES3-F88A5E4F9ECB
+Device name ................ : ES3-F88A5EFFFFFF
 Firmware version ........... : 1.04.01
 Compile date / time ........ : Mar 29 2021 / 14:20:30
 BIM firmware version ....... : 1.00.00
@@ -719,7 +748,10 @@ Disable Advertise
 01/02:15:50 LiPo state changed to LIPO_ERROR
 ```
 
-### Update mainware by updating shadow
+### GSM Modem (gsmdebug)
+See Chris Repo. U need to use AT Commands. The Modem is dirrectly attached to the UART Output.
+
+### Update mainware Firmware by updating shadow
 ```console
 'MT' (@) 2019 STM32F4, Stop
 top
@@ -770,36 +802,26 @@ Wake Reason: WAKE_SRC_BUTTON_1 WAKE_SRC_MEMS WAKE_KICKLOCK
 ES3 v1.01.15
 ```
 
-```console
-shipping
-Set shipping mode
-01/00:24:53 BIKE_SHIPPING
-01/00:24:53 SOUND_SO vol 26
-Lights P2c
-CMD_AUDIO_STOPPED
-01/00:25:02 BIKE_SET_SHIPPING
-01/00:25:02 BIKE_CPU_STOP_MODE
-01/00:25:02 BIKE_SPECIAL_GEAR_OPERATION
-01/00:25:07 Shipping mode sets gear:2
-01/00:25:07 BIKE_END_SPECIAL_OPERATION
-01/00:25:09 BIKE_CPU_STOP_MODE
-01/00:25:09 Wake counter 254 of 168, type 10
-01/00:25:09 Force Lights Off
-01/00:25:09 BMS off
-01/00:25:09 BIKE_CPU_STOPPED
-No MOTOR_SLEEP_MODE from motor 0x0404
-01/00:25:09 EnterSTOPMode 0 min Wake:Shipping
-```
+
+
+### Update BMS Firmware to 1.17
+I use minicom on the Mac.  
+**Make sure that both the Battery and the Module are somewhat charged AND that there are NO Errors related to the Battery**.  
+PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will not fix any BATtery error you have!
+
+1. Go into muco Bootloader via pressing ESC
+2. Type "vi" (version), Enter. If the version v1.17.1 is not installed we need to upload it first. 
+    1. Type "eb" (erase batteryware), Enter
+    2. Type "ub" (upload batteryware), Enter
+    3. CONTROL-A S (On Mac) in minicom shell, select batteryware_1.17.1.bin
+    4. Type "vi" (version), Enter. Verify that the Version shown is v1.17.
+3. Type "st" (start), Enter. Mainware should start.
+4. Type "batware", Enter.
+5. After the Update use "battery" to verify that the BMS was sucessfully Updated. 
+
 
 ### To save the distance i put the bike into shipping. That saved the distance into eeprom.
 ```console
 distance 0
 Set 0.0 Km
-```
-
-```console
-factory-shipping
-Set factory shipping mode
-BLE remove id 112 nr 5C
-01/00:27:36 EnterSTOPMode 0 min Wake:Shipping
 ```
