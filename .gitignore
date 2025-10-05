@@ -104,3 +104,6 @@ go.work.sum
 
 # Binary File
 VanMooof-Module
+
+#.idea
+.idea/
