@@ -612,7 +612,7 @@ Thu Dec 31 23:00:00 2020: This image is not provisioned
 
 *** VANMOOF S3/X3 Monitor Program ***
 
-BLE MAC Address: "f8:8a:5e:4f:9e:cb"
+BLE MAC Address: "f8:8a:5e:ff:ff:ff"
 
 Device name ................ : ES3-F88A5EFFFFFF
 Firmware version ........... : 1.04.01
@@ -686,7 +686,7 @@ ES3 v1.08.02
 ```console
 > ble-info
 number of connections: 0/3
-Device address: cb:9e:4f:5e:94:f8
+Device address: cb:9e:4f:ff:ff:ff
 ```
 
 ```console
@@ -751,7 +751,18 @@ Disable Advertise
 ### GSM Modem (gsmdebug)
 See Chris Repo. You need to use AT Commands. The Modem is directly attached to the UART Output.
 
+### Reading the Console Values
+
+Interesting for me is LiPOSOC and BMSSOC
+
+```
+TIME;        LiPOSOC; BMSSOC; BATTEMP; BATVOLTAGE; BATCURRENT; MOTORCURRENT; MOTORTMP; DRIVERTMP; SPEED; ODO;    BOOST; LUX; BATDSG
+01/00:11:04; 0.0;     -1;     -247.-6; 0.00;       0.00;       0.0;          0;        0;         0.0;   4119.5; 0;     0;   0
+```
+
 ### Update mainware Firmware by updating shadow
+Make sure that it is either an original Firmware or if modified the CRC32 and Magic Values are correct.
+
 ```console
 'MT' (@) 2019 STM32F4, Stop
 top
