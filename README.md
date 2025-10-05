@@ -5,12 +5,11 @@ Pull Requests are welcome!
 
 This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 
-[https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go](https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go)
-[https://pkg.go.dev/github.com/sandacn/ymodem/ymodem](https://pkg.go.dev/github.com/sandacn/ymodem/ymodem)
-[https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)
+[https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go](https://github.com/Omegaice/go-xmodem/blob/master/ymodem/ymodem.go)  
+[https://pkg.go.dev/github.com/sandacn/ymodem/ymodem](https://pkg.go.dev/github.com/sandacn/ymodem/ymodem)  
+[https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz](https://unix.stackexchange.com/questions/273178/file-transfer-using-ymodem-sz)  
 
-If you need Firmware or bms Tools contact me on Discord or Telegram
-
+If you need Firmware or bms Tools contact me on Discord or Telegram  
 If you need in-dept Information about the Firmware i recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
 ### Features
@@ -156,13 +155,13 @@ You need the backside of the PCB from the Module to dump the SPI Flash.
 
 Tools needed: Torx Screw set. I used my iFixit Kit.
 
-1. unlock bike and remove Module from the Frame
-   2. if you do not unlock the bike, the Alarm stays on and will annoy you. I used duct tape to cover the speaker if i forgot it.
-2. open Module and unscrew all internal screws of the PCB to remove the PCB. Make sure you unplug the Matrix LCD Cable carefully! You can replace the cable if you break it. 
+1. Unlock bike and remove Module from the Frame  
+    2. If you do not unlock the bike, the Alarm stays on and will annoy you. I used duct tape to cover the speaker if i forgot it.
+2. Open Module and unscrew all internal screws of the PCB to remove the PCB. Make sure you unplug the Matrix LCD Cable carefully! You can replace the cable if you break it. 
 3. On the backside of the PCB is the Macronix 16 Pin SPI Flash Chip near the port for the back light. 
-4. Dump that Flash with an 16 Pin! SPI Flash Chip clamp and a Pi
-   4.1 I used an Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
-5. If you screw it back to getter make sure to use Screw glue like Loctite. The (in)rush current from/to the battery and the ac voltage to the Motor is high especially if the battery has low charge thus low voltage. If a screw gets lose while you ride you create little sparks. 
+4. Dump that Flash with an 16 Pin! SPI Flash Chip clamp and a Pi  
+    1. I used an Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
+5. When you screw it back together, make sure to use 99% Alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the ac voltage to the Motor is high especially if the battery has low charge thus low voltage. If a screw gets lose while you ride you would create little sparks. 
 
 ```console
 # sudo flashrom -p linux_spi:dev=/dev/spidev0.0 -r rom.rom
@@ -177,7 +176,7 @@ Reading flash... done.
 
 ### Bootloader
 
-Press ESC on the UART Port until the MCU reboots and holds itself in the Bootloader. It will display.
+Press ESC on the UART (Debug Port) Port until the MCU (Microcontroller) reboots and holds itself in the Bootloader. It will display.
 ```console
 STM32 bootloader <1.09> Muco Technologies (c)2019
 ```
@@ -231,11 +230,7 @@ Erasing shifter flash 128 Kb... Erase sector 4
 OK
 ```
 
-
-pack-process�ÀFÀprocess pack files in external flash memory�source/monitor/cmd_packfs.c�Processing pakfs
-
-
-### Shell login
+### Mainware Shell login
 
 Master Password: vEVjGF!paYsM2EBV8SoDT8*T0eB&#T6xevaoxCaO
 
@@ -294,8 +289,9 @@ stcreset
 setoad            test
 setgear           save muco shifter
 ```
-### bledebug Shell
-enter the BLE Chip shell with `bledebug`
+
+### Bluetooth Low Energy (bledebug) Shell
+Enter the BLE Chip shell with `bledebug`
 then execute reset to get this output:
 ```
 bledebug
@@ -365,7 +361,6 @@ The following commands are available:
     info/ver                          - show basic firmware info
     exit                              - exit from shell
     help                              - show all monitor commands
-
 ```
 
 ```
@@ -407,7 +402,7 @@ I2C1 Error
 ```
 you can not really login..
 
-### Err Sim Card
+### Err 54 (no/bad Sim Card)
 
 The Module is looking for a SIM Card with a specific ICCID (Integrated Circuit Card Identifier).
 
