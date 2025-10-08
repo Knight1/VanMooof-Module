@@ -11,7 +11,7 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [Hardware Images](https://github.com/ciborg971/VanmoofX3RE/tree/master/OG)  
 [Battery Images](https://github.com/dtngx/VMBattery)
 
-If you need Firmware, bms Tools or general assistance contact me on Discord or Telegram  
+If you need Firmware, BMS Tools or general assistance contact me on Discord or Telegram  
 If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) Mode again) I recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
 ### Features
@@ -26,7 +26,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
   - /bike-message
 - fmna key
   - fmna-rework (if you happen to have access to Apple's FMNA API)
-- all Firmwares
+- all Firmware
     - mucoboot (STM32F413VGT6 Bootloader)
     - Mainware (STM32F413VGT6 LQFP100)
     - bmsboot (STM32L072CZT6 Bootloader)
@@ -48,6 +48,10 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - dab
 - Martin
 - Kai
+
+### What about the Cartridge?
+
+The correct Name VanMoof internally and in the Fixie App used is Module.
 
 ### Dead Module?
 
@@ -235,8 +239,8 @@ Hexcode  Cipher Suite Name (OpenSSL)       KeyExch.   Encryption  Bits     Ciphe
 ```
 
 The UUID is without dashes, 32 chars, numbers and chars. No duplication checking.
-dist is in kilometers with hectometer. So 5.5 kilometers become 55 here.
-responds with result true.  
+dist is in kilometers with hectometers. So 5.5 kilometers become 55 here.
+Responds with result true.  
 ```console
 curl -vk https://bikecomm.vanmoof.com/ping-response \
 -H "Content-Type: application/json" \
@@ -858,7 +862,7 @@ ES3 v1.01.15
 I use minicom on the Mac. The easiest way is to go into the Folder with the Firmware and then start minicom.  
 **Make sure that both the Battery and the Module are somewhat charged AND that there are NO Errors related to the Battery**.  
 PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will not fix any BATtery error you have!  
-All Errors are set into EEPROM which is not updated / wiped when Updating.  
+All Errors are saved into EEPROM (which also saves the Serialnumber, Cycles, Calibration) and so it is not updated / wiped by the normal Update routine.  
 
 1. Go into muco Bootloader via pressing ESC
 2. Type "vi" (version), Enter. If the version v1.17.1 is not installed we need to upload it first. 
