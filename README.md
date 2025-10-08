@@ -51,7 +51,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 ### Dead Module?
 
-You can apply 12Vdc via a DC Plug (the normal charging Port) and it will only charge the Module Battery even if the main Battery is connected.
+You can apply 12Vdc via a DC Plug on the normal charging Port and it will only charge the Module Battery even if the main Battery is connected (dead or alive).
 
 ### Module is going into shipping mode outside bike?
 
@@ -76,6 +76,7 @@ Since charging is physically basically only the product of equalizing the voltag
 
 ## How to get started?
 ### Getting Firmware, Bike Keys, Logs from the SPI Flash
+
 You need the backside of the PCB from the module to dump the SPI Flash.
 
 Tools needed: Torx Screw set. I used my iFixit Kit.
@@ -118,6 +119,7 @@ So make a backup of your Flash dump, save it in a safe place like 1Password. If 
 
 ## Fixing some Errors
 ### Err missing Display
+
 "DiSPlay"
 ```console
 I2C1 Error
@@ -142,6 +144,7 @@ C = Checksum
 ```
 
 ### Firmware
+
 We are looking for
 ```console 
 50 41 43 4B BC 16 09 00 40 01 00 00 4F 41 44 20 (PACK¼	�@��OAD)
@@ -250,6 +253,7 @@ curl -vk https://bikecomm.vanmoof.com/bike-message
 /upload expects UBlox Data. => InvalidUBloxDataException
 
 ### m2m.vanmoof.com (SMS the bike sends)
+
 ```console
 ALARM_BMS_REMOVED
 SET_SHIPPING
@@ -322,7 +326,6 @@ WST_NONE
 ```
 
 ### UART
-
 #### Bootloader
 
 Press ESC on the UART (Debug) Port until the MCU (Microcontroller) reboots and holds itself in the bootloader. It will display.
@@ -770,9 +773,11 @@ Disable Advertise
 ```
 
 ### GSM Modem (gsmdebug)
+
 See Chris Repo. You need to use AT Commands. The Modem is directly attached to the UART Output.
 
 ### Understanding the Console Values
+
 Interesting is LiPOSOC and BMSSOC
 
 ```
@@ -781,6 +786,7 @@ TIME;        LiPOSOC; BMSSOC; BATTEMP; BATVOLTAGE; BATCURRENT; MOTORCURRENT; MOT
 ```
 
 ### Update mainware Firmware
+
 I use minicom on the Mac. The easiest way is to go into the Folder with the Firmware and then start minicom.  
 **Make sure that the Module is somewhat charged OR Attach the Charger!**.  
 Make sure that it is either an original Firmware or if modified the CRC32 and Magic Values are correct.
@@ -848,6 +854,7 @@ ES3 v1.01.15
 ```
 
 ### Update BMS Firmware to 1.17
+
 I use minicom on the Mac. The easiest way is to go into the Folder with the Firmware and then start minicom.  
 **Make sure that both the Battery and the Module are somewhat charged AND that there are NO Errors related to the Battery**.  
 PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will not fix any BATtery error you have!
@@ -863,7 +870,9 @@ PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will no
 5. After the Update use "battery" to verify that the BMS was successfully Updated. 
 
 ### To save the distance I put the bike into shipping. That saved the distance into EEPROM.
-**This will NOT Update the Distance in the Backoffice**
+
+**This will NOT Update the Distance in the Backoffice** but it will display it in the App so be carefull when you buy second Hand!  
+This is also possible for the BMS cycles!  
 ```console
 > distance 0
 Set 0.0 Km
