@@ -25,7 +25,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
     - 'guid':'%s','statistics':{'batt':%d,'mac':'%s','swv':'%s','dist':%d}
   - /bike-message
 - fmna key
-  - fmna-rework (if you happen to have access to Apples FMNA API)
+  - fmna-rework (if you happen to have access to Apple's FMNA API)
 - all Firmwares
     - mucoboot (STM32F413VGT6 Bootloader)
     - Mainware (STM32F413VGT6 LQFP100)
@@ -53,40 +53,40 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 You can apply 12Vdc via a DC Plug (the normal charging Port) and it will only charge the Module Battery even if the main Battery is connected.
 
-### Module is going into shipping mode outside Bike?
+### Module is going into shipping mode outside bike?
 
-Connect the 42Vdc Charger from the Toolbox you got with the Bike. 12Vdc also wakes to Module on the normal charging Plug.
+Connect the 42Vdc Charger from the Toolbox you got with the bike. 12Vdc also wakes the Module on the normal charging plug.
 
 ### Longevity
 #### Battery
 
 First verify that your BMS is actually running V1.17.1!  
 
-Limit the Charge your Bike gets.  
+Limit the charge your bike gets.  
 
-Since Charging is physically basically only the product of equilizing the Voltage. If you limit the Voltage on the Charger to the minimum, the Bike only charges to 85-90% without any external Plug. Some (including me) monitored the Wattage used by the Charger to stop the charge process. This is even better since it will still charge the Battery in the Module. Only downside is that you always get Error 21 since the Bike detects this Hack as an error. When you disconnect the Charger the Error is gone.
+Since charging is physically basically only the product of equalizing the voltage. If you limit the voltage on the charger to the minimum, the bike only charges to 85-90% without any external plug. Some (including me) monitored the wattage used by the charger to stop the charge process. This is even better since it will still charge the battery in the module. Only downside is that you always get Error 21 since the bike detects this hack as an error. When you disconnect the charger the error is gone.
 
-- Connect the Bike to the Charger like you normaly do. 
-- Disconnect the Charger Input, then the Bike.
-- Wait for the next Day to completely discharge the Charger from any Voltage.
-- Remove the rubber feet and remove the Screews. You need a special Screwbit for this. The iFixit Kit does include it. 
-- When you open the Charger, there is a cut-out at the top where the LED is.
-- There you will find a potentiometer. Use a normal screwdriver and twist the poti all the way to the right.
+- Connect the bike to the charger like you normally do. 
+- Disconnect the charger input, then the bike.
+- Wait for the next day to completely discharge the charger from any voltage.
+- Remove the rubber feet and remove the screws. You need a special screw bit for this. The iFixit Kit does include it. 
+- When you open the charger, there is a cut-out at the top where the LED is.
+- There you will find a potentiometer. Use a normal screwdriver and twist the potentiometer all the way to the right.
 - Close everything back up and screw it together. Make sure the attached cable is sitting correctly in the plastic housing. 
 
 ## How to get started?
 ### Getting Firmware, Bike Keys, Logs from the SPI Flash
-You need the backside of the PCB from the Module to dump the SPI Flash.
+You need the backside of the PCB from the module to dump the SPI Flash.
 
 Tools needed: Torx Screw set. I used my iFixit Kit.
 
-1. Unlock bike and remove Module from the Frame  
-    2. If you do not unlock the bike, the Alarm stays on and will annoy you. I used duct tape to cover the speaker if I forgot it.
-2. Open Module and unscrew all internal screws of the PCB to remove the PCB. Make sure you unplug the Matrix LCD Cable carefully! You can replace the cable if you break it. 
+1. Unlock bike and remove module from the frame  
+    2. If you do not unlock the bike, the alarm stays on and will annoy you. I used duct tape to cover the speaker if I forgot it.
+2. Open module and unscrew all internal screws of the PCB to remove the PCB. Make sure you unplug the Matrix LCD cable carefully! You can replace the cable if you break it. 
 3. On the backside of the PCB is the Macronix 16 Pin SPI Flash Chip near the port for the back light. 
 4. Dump that Flash with a 16 Pin! SPI Flash Chip clamp and a Pi  
-    1. I used an Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
-5. When you screw it back together, make sure to use 99% Alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the AC voltage to the Motor is high especially if the battery has low charge thus low voltage. If a screw gets loose while you ride you would create little sparks. 
+    1. I used a Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
+5. When you screw it back together, make sure to use 99% alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the AC voltage to the motor is high especially if the battery has low charge thus low voltage. If a screw gets loose while you ride you would create little sparks. 
 
 ```console
 # sudo flashrom -p linux_spi:dev=/dev/spidev0.0 -r rom.rom
@@ -99,10 +99,10 @@ Found Macronix flash chip "MX66L51235F/MX25L51245G" (65536 kB, SPI) on linux_spi
 Reading flash... done.
 ```
 
-### Getting Console Access to my Bike
+### Getting Console Access to my bike
 
-You can use a Pi Debug Probe, a Pi, for portable Access a Pi Pico 1/2 (WH), a cheap or expensive USB to UART Adapter.  
-I prefer the Pico Probe because I can easily upload Firmware with my Mac. 
+You can use a Pi Debug Probe, a Pi, for portable access a Pi Pico 1/2 (WH), a cheap or expensive USB to UART Adapter.  
+I prefer the Pico Probe because I can easily upload firmware with my Mac. 
 [https://github.com/raspberrypi/debugprobe](https://github.com/raspberrypi/debugprobe/releases/tag/debugprobe-v2.2.3)
 
 JTAG 115200 Baudrate  
@@ -111,10 +111,10 @@ Green - TX
 Orange - RX  
 Yellow - NC (Not Connected)  
 
-### Important caveats.
+### Important caveats
 
 This is all based on reverse engineering. So there might be some version differences between firmwares. 
-So make a backup of your Flash Dump, save it in a safe place like 1Password. If you compress the dump, the file gets very small.
+So make a backup of your Flash dump, save it in a safe place like 1Password. If you compress the dump, the file gets very small.
 
 ## Fixing some Errors
 ### Err missing DiSPlay
@@ -127,7 +127,7 @@ you cannot really login..
 
 ### Err 54 (no/bad SIM Card)
 
-The Module is looking for a SIM Card with a specific ICCID (Integrated Circuit Card Identifier).
+The module is looking for a SIM Card with a specific ICCID (Integrated Circuit Card Identifier).
 
 The Prefix of that is 
 ```console
@@ -774,15 +774,18 @@ See Chris Repo. You need to use AT Commands. The Modem is directly attached to t
 
 ### Reading the Console Values
 
-Interesting for me is LiPOSOC and BMSSOC
+Interesting is LiPOSOC and BMSSOC
 
 ```
 TIME;        LiPOSOC; BMSSOC; BATTEMP; BATVOLTAGE; BATCURRENT; MOTORCURRENT; MOTORTMP; DRIVERTMP; SPEED; ODO;    BOOST; LUX; BATDSG
 01/00:11:04; 0.0;     -1;     -247.-6; 0.00;       0.00;       0.0;          0;        0;         0.0;   4119.5; 0;     0;   0
 ```
 
-### Update mainware Firmware by updating shadow
+### Update mainware Firmware
 Make sure that it is either an original Firmware or if modified the CRC32 and Magic Values are correct.
+
+To update or downgrade the Mainware (this is the Firmware Version you see in the App) you update the shadow.  
+DO NOT update the Mainware directly.  
 
 ```console
 'MT' (@) 2019 STM32F4, Stop
