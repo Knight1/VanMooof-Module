@@ -772,8 +772,7 @@ Disable Advertise
 ### GSM Modem (gsmdebug)
 See Chris Repo. You need to use AT Commands. The Modem is directly attached to the UART Output.
 
-### Reading the Console Values
-
+### Understanding the Console Values
 Interesting is LiPOSOC and BMSSOC
 
 ```
@@ -782,10 +781,21 @@ TIME;        LiPOSOC; BMSSOC; BATTEMP; BATVOLTAGE; BATCURRENT; MOTORCURRENT; MOT
 ```
 
 ### Update mainware Firmware
+I use minicom on the Mac. The easiest way is to go into the Folder with the Firmware and then start minicom.  
+**Make sure that the Module is somewhat charged OR Attach the Charger!**.  
 Make sure that it is either an original Firmware or if modified the CRC32 and Magic Values are correct.
 
-To update or downgrade the Mainware (this is the Firmware Version you see in the App) you update the shadow.  
-DO NOT update the Mainware directly.  
+To update or downgrade the Mainware (this is the Firmware Version you see in the App) you update the shadow Application.  
+DO NOT update the Mainware (Loaded Application) directly.  
+
+1. Go into muco Bootloader via pressing ESC until it reboots.
+2. Type "es" (erase shadow), Enter
+3. Type "us" (upload shadow), Enter
+4. CONTROL-A S (On Mac) in minicom shell, select mainware_XXX.bin
+5. Type "vi" (version), Enter. Verify that the Version shown is what you expect.
+6. Type "st" (start), Enter. Mainware should start.
+7. Press ESC until you land in the Bootloader again. It will automatically copy the shadow into the mainware Part.
+8. It will reboot automatically. Verify that the Version after ES3 v.X.XX.XX is what you expected!
 
 ```console
 'MT' (@) 2019 STM32F4, Stop
@@ -838,7 +848,7 @@ ES3 v1.01.15
 ```
 
 ### Update BMS Firmware to 1.17
-I use minicom on the Mac.  
+I use minicom on the Mac. The easiest way is to go into the Folder with the Firmware and then start minicom.  
 **Make sure that both the Battery and the Module are somewhat charged AND that there are NO Errors related to the Battery**.  
 PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will not fix any BATtery error you have!
 
