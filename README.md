@@ -117,8 +117,8 @@ This is all based on reverse engineering. So there might be some version differe
 So make a backup of your Flash dump, save it in a safe place like 1Password. If you compress the dump, the file gets very small.
 
 ## Fixing some Errors
-### Err missing DiSPlay
-
+### Err missing Display
+"DiSPlay"
 ```console
 I2C1 Error
 01/00:07:02  ERR dsp freeze
