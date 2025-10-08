@@ -863,7 +863,8 @@ PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will no
 5. After the Update use "battery" to verify that the BMS was successfully Updated. 
 
 ### To save the distance I put the bike into shipping. That saved the distance into EEPROM.
+**This will NOT Update the Distance in the Backoffice**
 ```console
-distance 0
+> distance 0
 Set 0.0 Km
 ```
