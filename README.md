@@ -853,11 +853,12 @@ Wake Reason: WAKE_SRC_BUTTON_1 WAKE_SRC_MEMS WAKE_KICKLOCK
 ES3 v1.01.15
 ```
 
-### Update BMS Firmware to 1.17
+### Update Dynapack BMS Firmware to 1.17 (latest Version)
 
 I use minicom on the Mac. The easiest way is to go into the Folder with the Firmware and then start minicom.  
 **Make sure that both the Battery and the Module are somewhat charged AND that there are NO Errors related to the Battery**.  
-PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will not fix any BATtery error you have!
+PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will not fix any BATtery error you have!  
+All Errors are set into EEPROM which is not updated / wiped when Updating.  
 
 1. Go into muco Bootloader via pressing ESC
 2. Type "vi" (version), Enter. If the version v1.17.1 is not installed we need to upload it first. 
@@ -871,7 +872,7 @@ PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will no
 
 ### To save the distance I put the bike into shipping. That saved the distance into EEPROM.
 
-**This will NOT Update the Distance in the Backoffice** but it will display it in the App so be carefull when you buy second Hand!  
+**This will NOT Update the Distance in the Backoffice** but it will display it in the App so be careful when you buy second Hand!  
 This is also possible for the BMS cycles!  
 ```console
 > distance 0
