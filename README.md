@@ -1,6 +1,6 @@
 # VanMooof-Module ES3
 
-This currently covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4 (if you happen to have one of the few).
+This currently mainly covers the MX25L51245GMI-08G-TR SPI Flash Chip on the SX3 and SX4 (if you happen to have one of the few).  
 Pull Requests are welcome!
 
 This Chip features 512Megabits (64 Megabytes) of Flash capacity.
@@ -51,7 +51,28 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 ### Dead Module?
 
-You can apply 12Vdc via the DC Plug and it only charges the Module. 
+You can apply 12Vdc via a DC Plug (the normal charging Port) and it will only charge the Module Battery even if the main Battery is connected.
+
+### Module is going into shipping mode outside Bike?
+
+Connect the 42Vdc Charger from the Toolbox you got with the Bike. 12Vdc also wakes to Module on the normal charging Plug.
+
+### Longevity
+#### Battery
+
+First verify that your BMS is actually running V1.17.1!  
+
+Limit the Charge your Bike gets.  
+
+Since Charging is physically basically only the product of equilizing the Voltage. If you limit the Voltage on the Charger to the minimum, the Bike only charges to 85-90% without any external Plug. Some (including me) monitored the Wattage used by the Charger to stop the charge process. This is even better since it will still charge the Battery in the Module. Only downside is that you always get Error 21 since the Bike detects this Hack as an error. When you disconnect the Charger the Error is gone.
+
+- Connect the Bike to the Charger like you normaly do. 
+- Disconnect the Charger Input, then the Bike.
+- Wait for the next Day to completely discharge the Charger from any Voltage.
+- Remove the rubber feet and remove the Screews. You need a special Screwbit for this. The iFixit Kit does include it. 
+- When you open the Charger, there is a cut-out at the top where the LED is.
+- There you will find a potentiometer. Use a normal screwdriver and twist the poti all the way to the right.
+- Close everything back up and screw it together. Make sure the attached cable is sitting correctly in the plastic housing. 
 
 ## How to get started?
 ### Getting Firmware, Bike Keys, Logs from the SPI Flash
