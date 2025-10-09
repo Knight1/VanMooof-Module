@@ -136,7 +136,11 @@ time 07:21:48
 **S.0.00.15**
 d36394fd1ff33a18baf4efac6fd754189c392aa217a6dc155f3316af213b65c16da76b345f64e1e613d04719496c6224846c5aad18d39822312a0db34e8b7e1f
 ```
-Missing
+version 00000fa1
+CRC 0x3c191a41
+length 0x0000ef14
+date apr 09 2020
+time 12:21:27
 ```
 
 **S.0.00.22** 
@@ -171,9 +175,39 @@ efcef2f649aca663b6343daf1efda7852bdc59497c1bf3551a0061648ea72686111e4d74bedc92d0
 ### BLEware
 **1.04.01** 
 118084995f7423cf8b1c5589d49b20f203c06a4116213b4264a4c30d25060fee2fe057e1906e8a3ec9ab5323a02b2f72ee454fbc2c9cc7e6ca550ab71abcfe52
+```
+version 01040100
+CRC 0xb79c4373
+length 0x0002c67c
+entry 0x00000090
+hdr len 0x0000002c
+seg type 0x03
+seg len 0x00000055
+signature ver 0x01
+signature timestamp 0x6061e24c
+signature signer 47 92 52 61 d4 20 70 44
+signature d4 53 31 00 ...
+seg type 0x01
+seg len 0x0002c5fb
+```
 
 **2.04.01** 
 467f425f8ff329204876159697a71e04dec2b9fc7336892d233f68d7ce8ab8a4eb9b3dea506d5f885008a602301eb9a2ecbba66327379eb860115edd37a3057c
+```
+version 01040200
+CRC 0x884a9283
+length 0x0003531c
+entry 0x00000090
+hdr len 0x0000002c
+seg type 0x03
+seg len 0x00000055
+signature ver 0x01
+signature timestamp 0x6061e199
+signature signer 47 92 52 61 d4 20 70 44
+signature 8f 92 87 3d ...
+seg type 0x01
+seg len 0x0003529b
+```
 
 ### BMSBoot
 **unknown** 

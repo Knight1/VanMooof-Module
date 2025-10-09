@@ -14,6 +14,8 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 If you need Firmware, BMS Tools or general assistance contact me on Discord or Telegram  
 If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) Mode again) I recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
+[FIRMWARE.md](Firmware Information)
+
 ### Features
 - ble keys (read/write)
   - bike comm
