@@ -51,6 +51,33 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - Martin
 - Kai
 
+### Features from the Golang Tool
+- Reads the SPI Flash Dump and shows Authentication Key
+- Extracts the pack from the dump into a seperate File
+- Extracts the pack into the Firmware Files.
+- Untestet: write a new ble authentication Key into the flash
+- Not Implemented: 
+- uploads Firmware / Pack File via y-modem
+- Read Logs
+- Decrypt / Encrypt Pack File
+- Read / Upload Sound Files
+
+```console
+./VanMooof-Module -f SPI-Flash.rom -show
+Loading File: SPI-Flash.rom
+BLE Authentication Key: XXXX
+Logs: 00000000000000000000000000000000
+Found PACK at offset: 0x00080000
+PACK Header - Offset: 0x00088A1C, Length: 0x00000140
+Extracted PACK to: SPI-Flash.rom.pack (559976 bytes)
+Extracting 5 firmware files:
+  bleware.bin (181884 bytes)
+  mainware.bin (220144 bytes)
+  motorware.bin (61720 bytes)
+  shifterware.bin (11944 bytes)
+  batteryware.bin (83940 bytes)
+```
+
 ### What about the Cartridge?
 
 The correct Name VanMoof internally and in the Fixie App used is Module.
