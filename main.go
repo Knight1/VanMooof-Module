@@ -26,6 +26,11 @@ func main() {
 		readLogs(*file)
 	}
 
+	// Extract firmware if module file is provided
+	if *moduleFileName != "" {
+		checkForFirmware()
+	}
+
 	if *changeUnlockKey != "" {
 		writeSecrets("unlock", *changeUnlockKey)
 	}
