@@ -107,3 +107,5 @@ VanMooof-Module
 
 #.idea
 .idea/
+
+*.bin
