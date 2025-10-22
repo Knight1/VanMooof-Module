@@ -1,12 +1,15 @@
-package main
+package vanmoof
 
 import (
 	"encoding/hex"
+	"flag"
 	"fmt"
 )
 
+var sudo = flag.Bool("iKnowWhatIAmDoingISwear", false, "Use sudo")
+
 // VERY DANGEROUS!
-func writeSecrets(secret string, value string) {
+func WriteSecrets(secret string, value string) {
 	// Check if the secret is unlock
 	if secret != "unlock" {
 		fmt.Println("unknown write Operation")

@@ -1,4 +1,4 @@
-package main
+package vanmoof
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func loadFile() (file *os.File) {
+func LoadFile(moduleFileName *string) (file *os.File) {
 	// File path
 	filePath := moduleFileName
 

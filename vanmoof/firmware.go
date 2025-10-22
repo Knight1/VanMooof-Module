@@ -1,4 +1,4 @@
-package main
+package vanmoof
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func checkForFirmware() {
+func CheckForFirmware(moduleFileName *string) {
 	if *moduleFileName == "" {
 		return
 	}

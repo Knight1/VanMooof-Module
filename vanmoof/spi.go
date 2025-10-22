@@ -1,12 +1,16 @@
-package main
+package vanmoof
 
 import (
+	"flag"
 	"fmt"
+	"time"
+
 	"periph.io/x/conn/v3/spi"
 	"periph.io/x/conn/v3/spi/spireg"
 	"periph.io/x/host/v3"
-	"time"
 )
+
+var debugLogging = flag.Bool("d", false, "Enable debug logging")
 
 // sendCommand sends a single SPI command with optional data.
 func sendCommand(conn spi.Conn, cmd byte, data []byte) error {
