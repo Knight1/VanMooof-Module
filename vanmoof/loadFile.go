@@ -11,7 +11,7 @@ func LoadFile(moduleFileName *string) (file *os.File) {
 	filePath := moduleFileName
 
 	if *filePath == "" {
-		fmt.Println("File path required")
+		fmt.Println("File path required. Use -f FILE")
 		os.Exit(1)
 	}
 
