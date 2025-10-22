@@ -12,9 +12,10 @@ This Chip features 512Megabits (64 Megabytes) of Flash capacity.
 [Battery Images](https://github.com/dtngx/VMBattery)
 
 If you need Firmware, BMS Tools or general assistance contact me on Discord or Telegram  
-If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) Mode again) I recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
+If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) Mode) I recommend [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools)
 
-[Firmware Information](FIRMWARE.md)
+[Firmware Information](FIRMWARE.md)  
+[BLE UUIDs](BLEUUID.md)  
 
 ### Features
 - ble keys (read/write)
