@@ -57,7 +57,7 @@ The correct Name VanMoof internally and in the Fixie App used is Module.
 
 ### Dead Module?
 
-You can apply 12Vdc via a DC Plug on the normal charging Port and it will only charge the Module Battery even if the main Battery is connected (dead or alive).
+You can apply 12Vdc via a DC Plug on the normal charging Port, and it will only charge the Module Battery even if the main Battery is connected (dead or alive).
 
 ### Module is going into shipping mode outside bike?
 
@@ -90,7 +90,7 @@ Tools needed: Torx Screw set. I used my iFixit Kit.
 1. Unlock bike and remove module from the frame  
     2. If you do not unlock the bike, the alarm stays on and will annoy you. I used duct tape to cover the speaker if I forgot it.
 2. Open module and unscrew all internal screws of the PCB to remove the PCB. Make sure you unplug the Matrix LCD cable carefully! You can replace the cable if you break it. 
-3. On the backside of the PCB is the Macronix 16 Pin SPI Flash Chip near the port for the back light. 
+3. On the backside of the PCB is the Macronix 16 Pin SPI Flash Chip near the port for the backlight. 
 4. Dump that Flash with a 16 Pin! SPI Flash Chip clamp and a Pi  
     1. I used a Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
 5. When you screw it back together, make sure to use 99% alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the AC voltage to the motor is high especially if the battery has low charge thus low voltage. If a screw gets loose while you ride you would create little sparks. 
@@ -156,15 +156,12 @@ We are looking for
 50 41 43 4B BC 16 09 00 40 01 00 00 4F 41 44 20 (PACK¼	�@��OAD)
 ```
 
-rom.rom
-
 The OAD PACK is like, strings were in 108A5C
-bleware.bin (It differs for the FMI Versions. Old Bikes do support FMI, it is just not in the Firmware. Just test it out.)
-mainware.bin
-motorware.bin
-shifterware.bin
+bleware.bin (It differs for the FMI Versions. Old Bikes do support FMI, it is just not in the Firmware. Just test it out.)  
+mainware.bin  
+motorware.bin  
+shifterware.bin  
 batteryware.bin
-
 
 ```console
 0x0002000 ?
