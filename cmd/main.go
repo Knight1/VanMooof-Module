@@ -11,6 +11,7 @@ var (
 	ModuleFileName  = flag.String("f", "", "Module file name")
 	changeUnlockKey = flag.String("u", "", "Change unlock key")
 	showBLESecrets  = flag.Bool("show", false, "Show BLE secrets")
+	showLogs        = flag.Bool("logs", false, "Show logs only")
 	extractPack     = flag.Bool("pack", false, "Extract PACK file only (without extracting individual firmware files)")
 	uploadPack      = flag.String("upload", "", "Upload PACK file via Y-Modem (specify PACK file path)")
 	serialPort      = flag.String("port", "", "Serial port for Y-Modem upload (auto-detect if empty)")
@@ -28,6 +29,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  %s -list-ports                    # List available serial ports\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -upload pack.bin               # Upload PACK file (115200 baud)\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -show              # Analyze SPI flash dump\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -logs              # Show logs only\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -pack              # Extract PACK from dump\n", os.Args[0])
 	}
 
@@ -79,7 +81,7 @@ func main() {
 		file = vanmoof.LoadFile(ModuleFileName)
 	} else {
 		// Check if any file-dependent operations are requested
-		if *showBLESecrets || *changeUnlockKey != "" {
+		if *showBLESecrets || *showLogs || *changeUnlockKey != "" {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}
@@ -88,6 +90,11 @@ func main() {
 			flag.Usage()
 			os.Exit(1)
 		}
+		return
+	}
+
+	if *showLogs {
+		vanmoof.ReadLogs(file)
 		return
 	}
 

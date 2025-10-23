@@ -54,12 +54,12 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 ### Features from the Golang Tool
 - Reads the SPI Flash Dump and shows Authentication Key
-- Extracts the pack from the dump into a seperate File
-- Extracts the pack into the Firmware Files.
-- Untestet: write a new ble authentication Key into the flash
-- Not Implemented: 
-- uploads Firmware / Pack File via y-modem
+- Extracts the pack from the dump into a separate File
+- Extracts the pack into the Firmware Files. 
 - Read Logs
+- Untestet: write a new ble authentication Key into the flash
+- uploads Firmware / Pack File via y-modem
+- Not Implemented:
 - Decrypt / Encrypt Pack File
 - Read / Upload Sound Files
 
@@ -67,7 +67,10 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 ./VanMooof-Module -f SPI-Flash.rom -show
 Loading File: SPI-Flash.rom
 BLE Authentication Key: XXXX
-Logs: 00000000000000000000000000000000
+M-ID/M-KEY: XXX
+MAC Address: XXXXX
+Reading 143360 bytes from offset 0x3fdd000 (file size: 0x4000000)
+Found 0 log entries:
 Found PACK at offset: 0x00080000
 PACK Header - Offset: 0x00088A1C, Length: 0x00000140
 Extracted PACK to: SPI-Flash.rom.pack (559976 bytes)
