@@ -9,6 +9,7 @@ var (
 	ModuleFileName  = flag.String("f", "", "Module file name")
 	changeUnlockKey = flag.String("u", "", "Change unlock key")
 	showBLESecrets  = flag.Bool("show", false, "Show BLE secrets")
+	extractPack     = flag.Bool("pack", false, "Extract PACK file only (without extracting individual firmware files)")
 	//file            os.File
 )
 
@@ -25,9 +26,9 @@ func main() {
 		vanmoof.ReadLogs(file)
 	}
 
-	// Extract firmware if module file is provided
+	// Always check for firmware to show PACK contents
 	if *ModuleFileName != "" {
-		vanmoof.CheckForFirmware(ModuleFileName)
+		vanmoof.CheckForFirmware(ModuleFileName, *extractPack)
 	}
 
 	if *changeUnlockKey != "" {
