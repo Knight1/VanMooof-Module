@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func showPACK(packData []byte) {
@@ -48,6 +49,13 @@ func showPACK(packData []byte) {
 		// Extract filename (remove null bytes)
 		filename := string(bytes.TrimRight(entry.Filename[:], "\x00"))
 		if filename == "" {
+			continue
+		}
+
+		// Sanitize filename to prevent path traversal
+		filename = filepath.Base(filename)
+		if strings.Contains(filename, "..") || strings.ContainsAny(filename, "/\\") {
+			fmt.Printf("Skipping %s: invalid filename\n", filename)
 			continue
 		}
 
@@ -187,6 +195,13 @@ func extractPACK(packData []byte, _ int) {
 			continue
 		}
 
+		// Sanitize filename to prevent path traversal
+		filename = filepath.Base(filename)
+		if strings.Contains(filename, "..") || strings.ContainsAny(filename, "/\\") {
+			fmt.Printf("Skipping %s: invalid filename\n", filename)
+			continue
+		}
+
 		// Validate data bounds
 		dataStart := int(entry.Offset)
 		dataEnd := dataStart + int(entry.Length)
@@ -202,6 +217,7 @@ func extractPACK(packData []byte, _ int) {
 		err := os.WriteFile(filename, fileData, 0644)
 		if err != nil {
 			fmt.Printf("Error writing %s: %v\n", filename, err)
+			continue
 		}
 	}
 }
