@@ -17,6 +17,14 @@ func DecryptPack(packFile, keyHex string) error {
 		return fmt.Errorf("failed to read pack file: %v", err)
 	}
 
+	// Perform entropy analysis on encrypted file
+	AnalyzeFileEntropy(packFile, data)
+
+	// Validate manufacturing key entropy
+	if err := CheckKeyEntropy(keyHex); err != nil {
+		return fmt.Errorf("key validation failed: %v", err)
+	}
+
 	// Decode the hex key
 	key, err := hex.DecodeString(keyHex)
 	if err != nil {
@@ -51,6 +59,10 @@ func DecryptPack(packFile, keyHex string) error {
 	// Calculate CRC32 of decrypted data
 	crc := crc32.ChecksumIEEE(decrypted)
 	fmt.Printf("Decrypted data CRC32: 0x%08X\n", crc)
+
+	// Analyze decrypted data entropy
+	decryptedResult := CalculateEntropy(decrypted)
+	PrintEntropyAnalysis(decryptedResult, packFile+" (decrypted)")
 
 	// Generate output filename
 	ext := filepath.Ext(packFile)

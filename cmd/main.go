@@ -22,6 +22,8 @@ var (
 	listPorts       = flag.Bool("list-ports", false, "List available serial ports")
 	decryptPack     = flag.String("decrypt", "", "Decrypt PACK file with AES ECB (specify key in hex)")
 	encryptPack     = flag.String("encrypt", "", "Encrypt PACK file with AES ECB (specify key in hex)")
+	checkEntropy    = flag.Bool("entropy", false, "Analyze file entropy and ECB patterns without decryption")
+	checkKey        = flag.String("check-key", "", "Validate manufacturing key entropy (specify key in hex)")
 	verifyDump      = flag.Bool("verify", false, "Verify SPI dump data coverage")
 	showExtra       = flag.Bool("extra", false, "Show unaccounted data regions (use with -verify)")
 	dumpFlash       = flag.String("dump", "", "Dump SPI flash to file (optional format: MAC,FRAME or MAC or empty for auto-detect)")
@@ -47,6 +49,8 @@ func main() {
 		log.Printf("  %s -f dump.rom -verify -extra     # Show unaccounted regions\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
+		log.Printf("  %s -f pack.bin -entropy           # Analyze file entropy without decryption\n", os.Args[0])
+		log.Printf("  %s -check-key KEY                 # Validate manufacturing key entropy\n", os.Args[0])
 		log.Printf("  %s -dump MAC,FRAME                # Dump SPI flash (e.g. F88A5E123456,2043531337)\n", os.Args[0])
 		log.Printf("  %s -dump -sudo                    # Dump SPI flash (auto-detect MAC from dump)\n", os.Args[0])
 		log.Printf("  %s -flash-info -sudo              # Read SPI flash chip info and serial number\n", os.Args[0])
@@ -180,13 +184,43 @@ func main() {
 		return
 	}
 
+	// Check manufacturing key entropy (no file required)
+	if *checkKey != "" {
+		err := vanmoof.CheckKeyEntropy(*checkKey)
+		if err != nil {
+			fmt.Printf("Key validation failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("✅ Key validation passed")
+		return
+	}
+
+	// Analyze file entropy (requires file)
+	if *checkEntropy {
+		if *ModuleFileName == "" {
+			fmt.Println("File path required. Use -f FILE")
+			os.Exit(1)
+		}
+		if _, err := os.Stat(*ModuleFileName); os.IsNotExist(err) {
+			fmt.Printf("File does not exist: %s\n", *ModuleFileName)
+			os.Exit(1)
+		}
+		data, err := os.ReadFile(*ModuleFileName)
+		if err != nil {
+			fmt.Printf("Failed to read file: %v\n", err)
+			os.Exit(1)
+		}
+		vanmoof.AnalyzeFileEntropy(*ModuleFileName, data)
+		return
+	}
+
 	// File operations require a module file
 	var file *os.File
 	if *ModuleFileName != "" {
 		file = vanmoof.LoadFile(ModuleFileName)
 	} else {
 		// Check if any file-dependent operations are requested
-		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds || *verifyDump {
+		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds || *verifyDump || *checkEntropy {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}

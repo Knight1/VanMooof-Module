@@ -59,6 +59,8 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - Read Logs
 - Decrypt / Encrypt Pack File
 - Export VM_SOUND Files from SPI Dump
+- Entropy Analysis & ECB Pattern Detection
+- Manufacturing Key Validation
 - Untestet: write a new ble authentication Key into the flash
 - uploads Firmware / Pack File via y-modem
 - Not Implemented:
@@ -136,6 +138,73 @@ Directory contains 2 entries:
 Encrypting Update1.9.1 - batteryware 1.23.1 x mainware 1.9.1_decrypted.pak with AES-128 ECB...
 File size: 283472 bytes
 Encrypted PACK saved to: Update1.9.1 - batteryware 1.23.1 x mainware 1.9.1_decrypted.pak (283472 bytes)
+```
+
+#### Analyze File Entropy and ECB Patterns (without decryption)
+```console
+./cmd -f encrypted.pak -entropy
+🔍 Entropy Analysis for encrypted.pak:
+Shannon entropy: 7.972098 bits/byte (max 8.0)
+✅ HIGH ENTROPY: 7.97 bits/byte - likely encrypted data
+
+📊 ECB Block Analysis (16-byte blocks):
+Total blocks: 17717
+Unique blocks: 15971
+Repeated blocks: 2071 (11.69%)
+⚠️  HIGH REPETITION WARNING: 11.69% > 10%
+   This suggests ECB mode encryption or unencrypted data
+
+🔄 Top repeated blocks:
+  1) count=984  hex=2a87ec3f2d7504954583b7b6fc28545f
+  2) count= 59  hex=a4bb6c0eb57beaad5255dc8ca7a8d6e1
+  ...
+
+📁 File Analysis:
+File size: 283472 bytes
+File header: "\xb9\xc1kK"
+❓ Unknown: Mixed or partially encrypted data
+```
+
+#### Validate Manufacturing Key Entropy
+```console
+./cmd -check-key "1234567890ABCDEF1234567890ABCDEF"
+🔑 Manufacturing Key Entropy Check:
+Key: 1234567890ABCDEF1234567890ABCDEF
+Shannon entropy: 3.000000 bits/byte
+⚠️  LOW KEY ENTROPY: 3.00 bits/byte - key may be weak
+✅ Key validation passed
+```
+
+#### Weak Key Detection
+```console
+./cmd -check-key "00000000000000000000000000000000"
+🔑 Manufacturing Key Entropy Check:
+Key: 00000000000000000000000000000000
+Shannon entropy: 0.000000 bits/byte
+Key validation failed: WEAK KEY: entropy 0.00 < 3.0 bits/byte - key appears to have patterns
+```
+
+#### Enhanced Decryption with Entropy Analysis
+```console
+./cmd -f encrypted.pak -decrypt "4D414E5546414354555249474B455900"
+🔍 Entropy Analysis for encrypted.pak:
+Shannon entropy: 7.972098 bits/byte (max 8.0)
+✅ HIGH ENTROPY: 7.97 bits/byte - likely encrypted data
+
+🔑 Manufacturing Key Entropy Check:
+Key: 4D414E5546414354555249474B455900
+Shannon entropy: 3.750000 bits/byte
+⚠️  LOW KEY ENTROPY: 3.75 bits/byte - key may be weak
+
+Decrypting encrypted.pak with AES-128 ECB...
+File size: 283472 bytes
+Decrypted data CRC32: 0x04936859
+
+🔍 Entropy Analysis for encrypted.pak (decrypted):
+Shannon entropy: 7.971980 bits/byte (max 8.0)
+✅ HIGH ENTROPY: 7.97 bits/byte - likely encrypted data
+
+Decrypted PACK saved to: encrypted_decrypted.pak (283472 bytes)
 ```
 
 #### Dump SPI Flash directly from Hardware
