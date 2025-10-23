@@ -85,15 +85,14 @@ fabric.properties
 *.dll
 *.so
 *.dylib
+VanMooof-Module
+cmd/cmd
 
 # Test binary, built with `go test -c`
 *.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-
-# Dependency directories (remove the comment below to include it)
-# vendor/
 
 # Go workspace file
 go.work
@@ -102,15 +101,10 @@ go.work.sum
 # env file
 .env
 
-# Binary File
-VanMooof-Module
-
-cmd/cmd
-
 #.idea
 .idea/
 
+# Vanmoof Binarys, SPI Dumps and Pack Files
 *.bin
 *.rom
 *.pak
-*.exe
