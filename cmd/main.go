@@ -47,15 +47,19 @@ func main() {
 		return
 	}
 
-	// Upload PACK file via Y-Modem (no file required)
+	// Upload PACK file via Y-Modem
 	if *uploadPack != "" {
+		if _, err := os.Stat(*uploadPack); os.IsNotExist(err) {
+			fmt.Printf("Pack file not provided or does not exist: %s\n", *uploadPack)
+			os.Exit(1)
+		}
+
 		port := *serialPort
 		if port == "" {
 			port = vanmoof.GetDefaultSerialPort()
 			fmt.Printf("Using default serial port: %s\n", port)
 		}
 
-		// Validate serial port format
 		if err := vanmoof.ValidateSerialPort(port); err != nil {
 			fmt.Printf("Invalid serial port: %v\n", err)
 			os.Exit(1)
