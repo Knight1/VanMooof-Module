@@ -4,6 +4,7 @@ import (
 	"VanMooof-Module/vanmoof"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -24,19 +25,19 @@ var (
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "VanMoof Module Tool - PACK Upload and SPI Flash Analysis\n\n")
-		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "Options:\n")
+		log.Printf("VanMoof Module Tool - PACK Upload and SPI Flash Analysis\n\n")
+		log.Printf("Usage: %s [options]\n\n", os.Args[0])
+		log.Printf("Options:\n")
 		flag.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "\nExamples:\n")
-		fmt.Fprintf(os.Stderr, "  %s -list-ports                    # List available serial ports\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -upload pack.bin               # Upload PACK file (115200 baud)\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -show              # Analyze SPI flash dump\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -logs              # Show logs only\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -pack              # Extract PACK from dump\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -sounds            # Export VM_SOUND files\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
+		log.Printf("\nExamples:\n")
+		log.Printf("  %s -list-ports                    # List available serial ports\n", os.Args[0])
+		log.Printf("  %s -upload pack.bin               # Upload PACK file (115200 baud)\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -show              # Analyze SPI flash dump\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -logs              # Show logs only\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -pack              # Extract PACK from dump\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -sounds            # Export VM_SOUND files\n", os.Args[0])
+		log.Printf("  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
+		log.Printf("  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
 	}
 
 	flag.Parse()
