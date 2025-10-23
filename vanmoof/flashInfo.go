@@ -7,10 +7,9 @@ import (
 
 const (
 	// SPI Flash commands
-	cmdReadID   = 0x9F // Read JEDEC ID
-	cmdReadSFDP = 0x5A // Read Serial Flash Discoverable Parameters
-	cmdReadUID  = 0x4B // Read Unique ID (if supported)
-	cmdReadSN   = 0xC0 // Read Serial Number (Macronix specific)
+	cmdReadID  = 0x9F // Read JEDEC ID
+	cmdReadUID = 0x4B // Read Unique ID (if supported)
+	cmdReadSN  = 0xC0 // Read Serial Number (Macronix specific)
 )
 
 // FlashInfo contains SPI flash chip information
