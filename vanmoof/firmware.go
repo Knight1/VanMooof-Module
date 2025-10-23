@@ -73,7 +73,12 @@ func CheckForFirmware(moduleFileName *string, extractPack bool) {
 		fmt.Printf("Error opening file: %v\n", err)
 		return
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			fmt.Printf("Error closing file: %v\n", err)
+		}
+	}(file)
 
 	// Read entire file into memory
 	data, err := io.ReadAll(file)

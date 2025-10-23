@@ -202,7 +202,10 @@ func listWindowsPorts() ([]string, error) {
 	for i := 1; i <= 20; i++ {
 		portName := fmt.Sprintf("COM%d", i)
 		if port, err := openSerial(portName, 115200); err == nil {
-			port.Close()
+			err := port.Close()
+			if err != nil {
+				return nil, err
+			}
 			ports = append(ports, portName)
 		}
 	}
@@ -229,7 +232,7 @@ func ValidateSerialPort(port string) error {
 	switch runtime.GOOS {
 	case "windows":
 		if !strings.HasPrefix(strings.ToUpper(port), "COM") {
-			return fmt.Errorf("Windows serial ports must start with COM (e.g., COM3)")
+			return fmt.Errorf("windows serial ports must start with COM (e.g., COM3)")
 		}
 	case "darwin":
 		if !strings.HasPrefix(port, "/dev/tty.") {
@@ -237,7 +240,7 @@ func ValidateSerialPort(port string) error {
 		}
 	case "linux":
 		if !strings.HasPrefix(port, "/dev/") {
-			return fmt.Errorf("Linux serial ports must start with /dev/ (e.g., /dev/ttyUSB0)")
+			return fmt.Errorf("linux serial ports must start with /dev/ (e.g., /dev/ttyUSB0)")
 		}
 	}
 	return nil
