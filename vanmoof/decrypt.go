@@ -81,6 +81,69 @@ func DecryptPack(packFile, keyHex string) error {
 	return nil
 }
 
+// EncryptPack encrypts a VanMoof PACK file using AES ECB
+func EncryptPack(packFile, keyHex string) error {
+	// Read the pack file
+	data, err := os.ReadFile(packFile)
+	if err != nil {
+		return fmt.Errorf("failed to read pack file: %v", err)
+	}
+
+	// Validate PACK magic
+	if len(data) < 4 || string(data[0:4]) != "PACK" {
+		return fmt.Errorf("file is not a valid PACK file (missing PACK magic)")
+	}
+
+	// Decode the hex key
+	key, err := hex.DecodeString(keyHex)
+	if err != nil {
+		return fmt.Errorf("invalid hex key: %v", err)
+	}
+
+	// Validate key length (AES-128 only - 16 bytes = 32 hex chars)
+	if len(key) != 16 {
+		return fmt.Errorf("invalid key length: %d bytes (expected 16 bytes / 32 hex characters)", len(key))
+	}
+
+	fmt.Printf("Encrypting %s with AES-128 ECB...\n", packFile)
+	fmt.Printf("File size: %d bytes\n", len(data))
+
+	// Pad data to multiple of AES block size if needed
+	padding := aes.BlockSize - (len(data) % aes.BlockSize)
+	if padding != aes.BlockSize {
+		padData := make([]byte, padding)
+		data = append(data, padData...)
+		fmt.Printf("Added %d bytes padding\n", padding)
+	}
+
+	// Create AES cipher
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return fmt.Errorf("failed to create AES cipher: %v", err)
+	}
+
+	// Encrypt using ECB mode
+	encrypted := make([]byte, len(data))
+	for i := 0; i < len(data); i += aes.BlockSize {
+		block.Encrypt(encrypted[i:i+aes.BlockSize], data[i:i+aes.BlockSize])
+	}
+
+	// Generate output filename
+	ext := filepath.Ext(packFile)
+	base := packFile[:len(packFile)-len(ext)]
+	outputFile := base + ".pak"
+
+	// Write encrypted data
+	err = os.WriteFile(outputFile, encrypted, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write encrypted file: %v", err)
+	}
+
+	fmt.Printf("Encrypted PACK saved to: %s (%d bytes)\n", outputFile, len(encrypted))
+
+	return nil
+}
+
 // analyzePack analyzes the structure of a decrypted PACK file
 func analyzePack(data []byte) {
 	if len(data) < 12 {

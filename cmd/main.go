@@ -17,6 +17,7 @@ var (
 	serialPort      = flag.String("port", "", "Serial port for Y-Modem upload (auto-detect if empty)")
 	listPorts       = flag.Bool("list-ports", false, "List available serial ports")
 	decryptPack     = flag.String("decrypt", "", "Decrypt PACK file with AES ECB (specify key in hex)")
+	encryptPack     = flag.String("encrypt", "", "Encrypt PACK file with AES ECB (specify key in hex)")
 	//file            os.File
 )
 
@@ -33,6 +34,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -logs              # Show logs only\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -pack              # Extract PACK from dump\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
 	}
 
 	flag.Parse()
@@ -90,6 +92,24 @@ func main() {
 		err := vanmoof.DecryptPack(*ModuleFileName, *decryptPack)
 		if err != nil {
 			fmt.Printf("Decryption failed: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	// Encrypt PACK file
+	if *encryptPack != "" {
+		if *ModuleFileName == "" {
+			fmt.Println("Pack file path required. Use -f PACKFILE")
+			os.Exit(1)
+		}
+		if _, err := os.Stat(*ModuleFileName); os.IsNotExist(err) {
+			fmt.Printf("Pack file does not exist: %s\n", *ModuleFileName)
+			os.Exit(1)
+		}
+		err := vanmoof.EncryptPack(*ModuleFileName, *encryptPack)
+		if err != nil {
+			fmt.Printf("Encryption failed: %v\n", err)
 			os.Exit(1)
 		}
 		return

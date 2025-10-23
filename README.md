@@ -57,10 +57,10 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - Extracts the pack from the dump into a separate File
 - Extracts the pack into the Firmware Files. 
 - Read Logs
+ß Decrypt / Encrypt Pack File
 - Untestet: write a new ble authentication Key into the flash
 - uploads Firmware / Pack File via y-modem
 - Not Implemented:
-- Decrypt / Encrypt Pack File
 - Read / Upload Sound Files
 
 #### Show Dump Content
@@ -94,8 +94,6 @@ Log 1:
 1723229090 ;21.2;69;27.0;39.04;-0.18;0.0;28;32;0.0;4864.3;0;220;1
 1723229119 LiPo state changed to LIPO_DISCHARGING
 1723229120 ADC Vbat 22457
-1723229120 Error Flags: 20
-1723229120 Error Flags: 54
 1723229120 Set power state to PWR_NORMAL (Current limit: 20.0 A, SOC: -1 %)
 1723229120 Set power state to PWR_NORMAL (Current limit: 30.0 A, SOC: 69 %)
 1723229120 USER Reset
@@ -117,6 +115,14 @@ PACK Header:
 Directory contains 2 entries:
   batteryware.bin (offset: 0x0000000C, length: 87568 bytes)
   mainware.bin (offset: 0x0001561C, length: 195756 bytes)
+```
+
+#### Encrypt pack File to upload it to the Module via BLE
+```console
+./cmd -f "Update1.9.1 - batteryware 1.23.1 x mainware 1.9.1_decrypted.pak" -encrypt "MANUFACTURING KEY"
+Encrypting Update1.9.1 - batteryware 1.23.1 x mainware 1.9.1_decrypted.pak with AES-128 ECB...
+File size: 283472 bytes
+Encrypted PACK saved to: Update1.9.1 - batteryware 1.23.1 x mainware 1.9.1_decrypted.pak (283472 bytes)
 ```
 
 ### What about the Cartridge?
