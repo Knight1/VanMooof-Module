@@ -15,7 +15,7 @@ import (
 
 const (
 	packMagic   = "PACK"
-	spiDumpSize = 64 * 1024 * 1024 // 64MB SPI flash size
+	maxPackSize = 2 * 1024 * 1024 // 2MB max PACK size
 )
 
 // SerialPort interface for cross-platform serial communication
@@ -38,8 +38,8 @@ func ValidatePACK(filename string) error {
 		return fmt.Errorf("failed to get file info: %v", err)
 	}
 
-	if stat.Size() >= spiDumpSize {
-		return fmt.Errorf("file too large (%d bytes), appears to be SPI dump not PACK file", stat.Size())
+	if stat.Size() > maxPackSize {
+		return fmt.Errorf("file too large (%d bytes), PACK files must be ≤2MB", stat.Size())
 	}
 
 	// Read and validate PACK header
