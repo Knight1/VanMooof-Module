@@ -35,6 +35,11 @@ func ReadFlashInfo(sudo bool) (*FlashInfo, error) {
 		return nil, fmt.Errorf("failed to connect to SPI: %v", err)
 	}
 
+	// Check status registers for proper read conditions
+	if err := validateStatusRegisters(conn); err != nil {
+		return nil, fmt.Errorf("status register validation failed: %v", err)
+	}
+
 	info := &FlashInfo{}
 
 	// Read JEDEC ID (Manufacturer + Device ID)

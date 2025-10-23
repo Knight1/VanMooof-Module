@@ -53,6 +53,11 @@ func DumpFlash(macAddress, frameNumber string, sudo bool) error {
 		return err
 	}
 
+	// Check status registers for proper read conditions
+	if err := validateStatusRegisters(conn); err != nil {
+		return err
+	}
+
 	// Pre-validate BLE authentication key before full dump and save it
 	originalBLEKey, err := validateBLEKey(conn)
 	if err != nil {
@@ -404,6 +409,48 @@ func handleInvalidBLEKey() error {
 	}
 
 	return fmt.Errorf("dump cancelled by user - fix SPI connection and try again")
+}
+
+// validateStatusRegisters checks RDSR and RDSCUR for proper read conditions
+func validateStatusRegisters(conn spi.Conn) error {
+	fmt.Printf("🔍 Checking status registers...\n")
+
+	// Read Status Register (RDSR - 0x05)
+	rdsr, err := readStatusRegister(conn)
+	if err != nil {
+		return fmt.Errorf("failed to read RDSR: %v", err)
+	}
+
+	// Read Security Register (RDSCUR - 0x2B)
+	rdscur, err := readSecurityRegister(conn)
+	if err != nil {
+		return fmt.Errorf("failed to read RDSCUR: %v", err)
+	}
+
+	// Check WIP (Write-In-Progress) bit (bit 0 of RDSR)
+	if rdsr&0x01 != 0 {
+		return fmt.Errorf("chip is busy (WIP=1), wait for operations to complete")
+	}
+
+	// Check Block Protection bits (BP2, BP1, BP0 - bits 4,3,2 of RDSR)
+	bpBits := (rdsr >> 2) & 0x07
+	if bpBits != 0 {
+		fmt.Printf("⚠️  Block protection enabled (BP=%d), some regions may be protected\n", bpBits)
+	}
+
+	// Check Status Register Protect (SRP - bit 7 of RDSR)
+	if rdsr&0x80 != 0 {
+		fmt.Printf("⚠️  Status register write protection enabled (SRP=1)\n")
+	}
+
+	// Check Security Register checksum bits (bits 6,5 of RDSCUR)
+	securityBits := (rdscur >> 5) & 0x03
+	if securityBits != 0 {
+		fmt.Printf("⚠️  Security register checksum bits set (%d), may indicate locked regions\n", securityBits)
+	}
+
+	fmt.Printf("✅ Status registers validated (RDSR=0x%02X, RDSCUR=0x%02X)\n", rdsr, rdscur)
+	return nil
 }
 
 // validateChipCompatibility checks if chip is VanMoof S3 compatible

@@ -24,14 +24,13 @@ func sendCommand(conn spi.Conn, cmd byte, data []byte) error {
 // waitForWriteComplete polls the status register until the write is done.
 func waitForWriteComplete(conn spi.Conn) error {
 	for {
-		// Read Status Register command: 0x05
-		status := make([]byte, 1)
-		if err := conn.Tx([]byte{0x05}, status); err != nil {
-			return fmt.Errorf("failed to read status register: %v", err)
+		status, err := readStatusRegister(conn)
+		if err != nil {
+			return err
 		}
 
 		// Check the Write-In-Progress (WIP) bit (bit 0 of status register).
-		if status[0]&0x01 == 0 {
+		if status&0x01 == 0 {
 			return nil // Write complete
 		}
 
@@ -115,15 +114,31 @@ func writeDisable(conn spi.Conn) error {
 	return nil
 }
 
+// readStatusRegister reads the main status register (RDSR - 0x05)
+func readStatusRegister(conn spi.Conn) (byte, error) {
+	status := make([]byte, 1)
+	if err := conn.Tx([]byte{0x05}, status); err != nil {
+		return 0, fmt.Errorf("failed to read status register: %v", err)
+	}
+	return status[0], nil
+}
+
+// readSecurityRegister reads the security register (RDSCUR - 0x2B)
+func readSecurityRegister(conn spi.Conn) (byte, error) {
+	status := make([]byte, 1)
+	if err := conn.Tx([]byte{0x2B}, status); err != nil {
+		return 0, fmt.Errorf("failed to read security register: %v", err)
+	}
+	return status[0], nil
+}
+
 // verifyWriteEnable checks if the Write Enable Latch (WEL) bit is set.
 func verifyWriteEnable(conn spi.Conn) (bool, error) {
-	status := make([]byte, 1)
-
-	// Send the Read Status Register command (0x05).
-	if err := conn.Tx([]byte{0x05}, status); err != nil {
-		return false, fmt.Errorf("failed to read status register: %v", err)
+	status, err := readStatusRegister(conn)
+	if err != nil {
+		return false, err
 	}
 
 	// Check if the WEL bit (bit 1) is set.
-	return (status[0] & 0x02) != 0, nil
+	return (status & 0x02) != 0, nil
 }
