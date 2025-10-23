@@ -138,6 +138,106 @@ File size: 283472 bytes
 Encrypted PACK saved to: Update1.9.1 - batteryware 1.23.1 x mainware 1.9.1_decrypted.pak (283472 bytes)
 ```
 
+#### Dump SPI Flash directly from Hardware
+```console
+sudo ./cmd -dump
+🔍 Validating chip compatibility...
+✅ Chip validated: MX25L51245G (VanMoof S3 compatible)
+🔑 Validating BLE authentication key...
+✅ BLE authentication key validated
+Dumping 64MB SPI flash to VMES3-1704067200-UNKNOWN_20240101_120000.bin...
+Progress: 25.0% (4096/16384 chunks)
+Progress: 50.0% (8192/16384 chunks)
+Progress: 75.0% (12288/16384 chunks)
+Progress: 100.0% (16384/16384 chunks)
+
+Dump completed in 4m32s
+File: VMES3-1704067200-UNKNOWN_20240101_120000.bin (64MB)
+CRC32: 0x12345678
+SHA256: a1b2c3d4e5f6...
+✓ Verification passed - file integrity confirmed
+✓ Extracted MAC address: F88A5E123456
+✓ Renamed file to: VMES3-1704067200-F88A5E123456.bin
+
+🔍 Starting comprehensive dump verification...
+📁 Calculating SHA512 from disk file...
+📁 Disk SHA512: a1b2c3d4e5f6...
+💾 Re-dumping from SPI chip into memory...
+🔍 Verification progress: 50.0% (8192/16384 chunks)
+🔍 Verification progress: 100.0% (16384/16384 chunks)
+💾 Memory SHA512: a1b2c3d4e5f6...
+✅ VERIFICATION PASSED: Disk and SPI memory SHA512 match!
+```
+
+#### Read SPI Flash Chip Information
+```console
+sudo ./cmd -flash-info
+SPI Flash Information:
+  Manufacturer: Macronix (0xC2)
+  Device: MX25L51245G
+  Capacity: 64MB (512Mbit)
+  Serial Number: 1234567890ABCDEF
+  Unique ID: FEDCBA0987654321
+```
+
+#### Invalid BLE Key Detection
+```console
+sudo ./cmd -dump
+🔍 Validating chip compatibility...
+✅ Chip validated: MX25L51245G (VanMoof S3 compatible)
+🔑 Validating BLE authentication key...
+⚠️  WARNING: Invalid BLE authentication key detected!
+Key: 0000000000000000
+
+❌ INVALID BLE AUTHENTICATION KEY DETECTED
+
+🔧 TROUBLESHOOTING TIPS:
+1. Check SPI connections (CLK, MOSI, MISO, CS, GND)
+2. Verify 3.3V power supply (not 5V!)
+3. Ensure SPI clock speed is not too high (try 1MHz)
+4. Check for loose connections or poor contact
+5. Module might be in shipping mode - wake it first
+6. Try different SPI mode (Mode0/Mode1)
+
+⚠️  Continuing with invalid key may result in corrupted dump!
+
+Do you want to continue anyway? (y/N): N
+dump cancelled by user - fix SPI connection and try again
+```
+
+#### Unsupported Chip Detection
+```console
+sudo ./cmd -dump
+🔍 Validating chip compatibility...
+❌ UNSUPPORTED CHIP DETECTED
+Manufacturer: 0xEF, Device: 0x4017
+
+⚠️  WARNING: This tool is designed for VanMoof S3 modules only!
+Expected: Macronix MX25L51245G (0xC2, 0x201A)
+Found: Non-VanMoof Chip (0xEF, 0x4017)
+
+🚫 DUMP ABORTED - Wrong chip type detected
+unsupported chip - VanMoof S3 requires MX25L51245G
+```
+
+#### Manual Dump Verification
+
+⚠️  **WARNING**: Keep the module powered down during verification! Powering up the module will write new logs to the flash, causing verification to fail.
+
+```console
+sudo ./cmd -f VMES3-1704067200-F88A5E123456.bin -verify
+🔍 Starting comprehensive dump verification...
+📁 Calculating SHA512 from disk file...
+📁 Disk SHA512: a1b2c3d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789a
+💾 Re-dumping from SPI chip into memory...
+🔍 Verification progress: 25.0% (4096/16384 chunks)
+🔍 Verification progress: 50.0% (8192/16384 chunks)
+🔍 Verification progress: 75.0% (12288/16384 chunks)
+🔍 Verification progress: 100.0% (16384/16384 chunks)
+💾 Memory SHA512: a1b2c3d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789a
+✅ VERIFICATION PASSED: Disk and SPI memory SHA512 match!
+```
+
 ### What about the Cartridge?
 
 The correct Name VanMoof internally and in the Fixie App used is Module.

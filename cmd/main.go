@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
+	"time"
 )
 
 var (
@@ -20,6 +22,11 @@ var (
 	listPorts       = flag.Bool("list-ports", false, "List available serial ports")
 	decryptPack     = flag.String("decrypt", "", "Decrypt PACK file with AES ECB (specify key in hex)")
 	encryptPack     = flag.String("encrypt", "", "Encrypt PACK file with AES ECB (specify key in hex)")
+	verifyDump      = flag.Bool("verify", false, "Verify SPI dump data coverage")
+	showExtra       = flag.Bool("extra", false, "Show unaccounted data regions (use with -verify)")
+	dumpFlash       = flag.String("dump", "", "Dump SPI flash to file (optional format: MAC,FRAME or MAC or empty for auto-detect)")
+	flashInfo       = flag.Bool("flash-info", false, "Read SPI flash chip information and serial number")
+	sudoFlag        = flag.Bool("sudo", false, "Enable SPI hardware access (required for dump and flash-info)")
 	//file            os.File
 )
 
@@ -36,8 +43,13 @@ func main() {
 		log.Printf("  %s -f dump.rom -logs              # Show logs only\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -pack              # Extract PACK from dump\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -sounds            # Export VM_SOUND files\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -verify            # Verify data coverage\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -verify -extra     # Show unaccounted regions\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
+		log.Printf("  %s -dump MAC,FRAME                # Dump SPI flash (e.g. F88A5E123456,2043531337)\n", os.Args[0])
+		log.Printf("  %s -dump -sudo                    # Dump SPI flash (auto-detect MAC from dump)\n", os.Args[0])
+		log.Printf("  %s -flash-info -sudo              # Read SPI flash chip info and serial number\n", os.Args[0])
 	}
 
 	flag.Parse()
@@ -53,6 +65,56 @@ func main() {
 				fmt.Printf("  %s\n", port)
 			}
 		}
+		return
+	}
+
+	// Dump SPI flash (no file required) - check if dump flag was used
+	dumpFlagUsed := false
+	for _, arg := range os.Args[1:] {
+		if strings.HasPrefix(arg, "-dump") {
+			dumpFlagUsed = true
+			break
+		}
+	}
+	if dumpFlagUsed {
+		var macAddress, frameNumber string
+
+		if *dumpFlash == "" {
+			// Use current date/time as fallback
+			now := time.Now()
+			macAddress = fmt.Sprintf("UNKNOWN_%s", now.Format("20060102_150405"))
+			frameNumber = fmt.Sprintf("%d", now.Unix())
+		} else {
+			parts := strings.Split(*dumpFlash, ",")
+			if len(parts) == 1 {
+				// Only MAC provided, use timestamp for frame
+				macAddress = strings.TrimSpace(parts[0])
+				frameNumber = fmt.Sprintf("%d", time.Now().Unix())
+			} else if len(parts) == 2 {
+				macAddress = strings.TrimSpace(parts[0])
+				frameNumber = strings.TrimSpace(parts[1])
+			} else {
+				fmt.Println("Invalid dump format. Use: MAC,FRAME or MAC or leave empty")
+				os.Exit(1)
+			}
+		}
+
+		err := vanmoof.DumpFlash(macAddress, frameNumber, *sudoFlag)
+		if err != nil {
+			fmt.Printf("Flash dump failed: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	// Read SPI flash information (no file required)
+	if *flashInfo {
+		info, err := vanmoof.ReadFlashInfo(*sudoFlag)
+		if err != nil {
+			fmt.Printf("Failed to read flash info: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Print(info.String())
 		return
 	}
 
@@ -124,7 +186,7 @@ func main() {
 		file = vanmoof.LoadFile(ModuleFileName)
 	} else {
 		// Check if any file-dependent operations are requested
-		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds {
+		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds || *verifyDump {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}
@@ -145,6 +207,15 @@ func main() {
 		err := vanmoof.ExportVMSounds(*ModuleFileName)
 		if err != nil {
 			fmt.Printf("Error exporting sounds: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	if *verifyDump {
+		err := vanmoof.VerifyDump(*ModuleFileName, *showExtra)
+		if err != nil {
+			fmt.Printf("Error verifying dump: %v\n", err)
 			os.Exit(1)
 		}
 		return
