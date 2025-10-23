@@ -1,4 +1,4 @@
-//go:build darwin || linux
+//go:build darwin
 
 package vanmoof
 
@@ -11,12 +11,12 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// UnixSerialPort represents a Unix serial port (macOS/Linux)
-type UnixSerialPort struct {
+// DarwinSerialPort represents a macOS serial port
+type DarwinSerialPort struct {
 	file *os.File
 }
 
-// openSerial opens a serial port on Unix-like systems
+// openSerial opens a serial port on macOS
 func openSerial(port string, baudRate uint32) (SerialPort, error) {
 	file, err := os.OpenFile(port, os.O_RDWR, 0)
 	if err != nil {
@@ -57,15 +57,8 @@ func openSerial(port string, baudRate uint32) (SerialPort, error) {
 	// Disable output processing
 	termios.Oflag &^= unix.OPOST
 
-	// Set baud rate
-	speed := getBaudRate(baudRate)
-	if speed == 0 {
-		file.Close()
-		return nil, fmt.Errorf("unsupported baud rate: %d", baudRate)
-	}
-
-	termios.Cflag &^= unix.CBAUD
-	termios.Cflag |= speed
+	// Set baud rate to 115200 (always used)
+	termios.Cflag |= unix.B115200
 
 	// Set timeouts
 	termios.Cc[unix.VMIN] = 0   // Minimum characters to read
@@ -77,62 +70,38 @@ func openSerial(port string, baudRate uint32) (SerialPort, error) {
 		return nil, fmt.Errorf("failed to set termios: %v", err)
 	}
 
-	return &UnixSerialPort{file: file}, nil
+	return &DarwinSerialPort{file: file}, nil
 }
 
 // Read implements io.Reader
-func (sp *UnixSerialPort) Read(p []byte) (n int, err error) {
+func (sp *DarwinSerialPort) Read(p []byte) (n int, err error) {
 	return sp.file.Read(p)
 }
 
 // Write implements io.Writer
-func (sp *UnixSerialPort) Write(p []byte) (n int, err error) {
+func (sp *DarwinSerialPort) Write(p []byte) (n int, err error) {
 	return sp.file.Write(p)
 }
 
 // Close closes the serial port
-func (sp *UnixSerialPort) Close() error {
+func (sp *DarwinSerialPort) Close() error {
 	return sp.file.Close()
 }
 
-// getTermios gets termios structure
+// getTermios gets termios structure (macOS)
 func getTermios(fd int, termios *unix.Termios) error {
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(fd), unix.TCGETS, uintptr(unsafe.Pointer(termios)))
+	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(fd), unix.TIOCGETA, uintptr(unsafe.Pointer(termios)))
 	if errno != 0 {
 		return errno
 	}
 	return nil
 }
 
-// setTermios sets termios structure
+// setTermios sets termios structure (macOS)
 func setTermios(fd int, termios *unix.Termios) error {
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(fd), unix.TCSETS, uintptr(unsafe.Pointer(termios)))
+	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(fd), unix.TIOCSETA, uintptr(unsafe.Pointer(termios)))
 	if errno != 0 {
 		return errno
 	}
 	return nil
-}
-
-// getBaudRate converts baud rate to system constant
-func getBaudRate(baudRate uint32) uint32 {
-	switch baudRate {
-	case 9600:
-		return unix.B9600
-	case 19200:
-		return unix.B19200
-	case 38400:
-		return unix.B38400
-	case 57600:
-		return unix.B57600
-	case 115200:
-		return unix.B115200
-	case 230400:
-		return unix.B230400
-	case 460800:
-		return unix.B460800
-	case 921600:
-		return unix.B921600
-	default:
-		return 0
-	}
 }
