@@ -57,10 +57,10 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - Extracts the pack from the dump into a separate File
 - Extracts the pack into the Firmware Files. 
 - Read Logs
-ß Decrypt / Encrypt Pack File
+- Decrypt / Encrypt Pack File
+- Export VM_SOUND Files from SPI Dump
 - Untestet: write a new ble authentication Key into the flash
 - uploads Firmware / Pack File via y-modem
-- Export VM_SOUND Files from SPI Dump
 - Not Implemented:
 - Upload Sound Files
 
