@@ -71,6 +71,6 @@ func ReadLogs(file *os.File) {
 	// Print log entries
 	fmt.Printf("Found %d log entries:\n", len(logEntries))
 	for i, entry := range logEntries {
-		fmt.Printf("Log %d: %s\n", i+1, entry)
+		fmt.Printf("Log %d: %s\n\n", i+1, entry)
 	}
 }
