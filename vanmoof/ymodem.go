@@ -30,7 +30,11 @@ func ValidatePACK(filename string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open file: %v", err)
 	}
-	defer file.Close()
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			fmt.Printf("Warning: failed to close file: %v\n", closeErr)
+		}
+	}()
 
 	// Check file size - SPI dumps are typically 64MB
 	stat, err := file.Stat()
@@ -116,7 +120,11 @@ func UploadPACK(packFile, serialPort string, baudRate uint32) error {
 	if err != nil {
 		return fmt.Errorf("failed to open serial port: %v", err)
 	}
-	defer port.Close()
+	defer func() {
+		if closeErr := port.Close(); closeErr != nil {
+			fmt.Printf("Warning: failed to close serial port: %v\n", closeErr)
+		}
+	}()
 
 	fmt.Printf("Uploading %s (%d bytes) to %s at 115200 baud...\n",
 		filepath.Base(packFile), len(packData), serialPort)
@@ -176,9 +184,11 @@ func listUnixPorts() ([]string, error) {
 
 	for _, pattern := range patterns {
 		matches, err := filepath.Glob(pattern)
-		if err == nil {
-			ports = append(ports, matches...)
+		if err != nil {
+			fmt.Printf("Warning: failed to glob pattern %s: %v\n", pattern, err)
+			continue
 		}
+		ports = append(ports, matches...)
 	}
 
 	return ports, nil

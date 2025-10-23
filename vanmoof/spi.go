@@ -51,7 +51,11 @@ func spiConnect() (conn spi.Conn, err error) {
 		fmt.Printf("Failed to open SPI port: %v\n", err)
 		return nil, err
 	}
-	defer p.Close()
+	defer func() {
+		if closeErr := p.Close(); closeErr != nil {
+			fmt.Printf("Failed to close SPI port: %v\n", closeErr)
+		}
+	}()
 
 	conn, err = p.Connect(10000000, spi.Mode0, 8)
 	if err != nil {

@@ -40,7 +40,9 @@ func openSerial(port string, baudRate uint32) (SerialPort, error) {
 	dcb.DCBlength = uint32(unsafe.Sizeof(dcb))
 	err = windows.GetCommState(handle, &dcb)
 	if err != nil {
-		windows.CloseHandle(handle)
+		if closeErr := windows.CloseHandle(handle); closeErr != nil {
+			return nil, fmt.Errorf("failed to get comm state: %v (close error: %v)", err, closeErr)
+		}
 		return nil, fmt.Errorf("failed to get comm state: %v", err)
 	}
 
@@ -51,7 +53,9 @@ func openSerial(port string, baudRate uint32) (SerialPort, error) {
 
 	err = windows.SetCommState(handle, &dcb)
 	if err != nil {
-		windows.CloseHandle(handle)
+		if closeErr := windows.CloseHandle(handle); closeErr != nil {
+			return nil, fmt.Errorf("failed to set comm state: %v (close error: %v)", err, closeErr)
+		}
 		return nil, fmt.Errorf("failed to set comm state: %v", err)
 	}
 
@@ -65,7 +69,9 @@ func openSerial(port string, baudRate uint32) (SerialPort, error) {
 	}
 	err = windows.SetCommTimeouts(handle, &timeouts)
 	if err != nil {
-		windows.CloseHandle(handle)
+		if closeErr := windows.CloseHandle(handle); closeErr != nil {
+			return nil, fmt.Errorf("failed to set timeouts: %v (close error: %v)", err, closeErr)
+		}
 		return nil, fmt.Errorf("failed to set timeouts: %v", err)
 	}
 
