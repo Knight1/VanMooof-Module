@@ -9,7 +9,61 @@ import (
 	"path/filepath"
 )
 
-func CheckForFirmware(moduleFileName *string) {
+func showPACK(packData []byte) {
+	if len(packData) < 12 {
+		return
+	}
+
+	header := PackHeader{}
+	copy(header.Magic[:], packData[0:4])
+	header.Offset = binary.LittleEndian.Uint32(packData[4:8])
+	header.Length = binary.LittleEndian.Uint32(packData[8:12])
+
+	dirOffset := int(header.Offset)
+	dirLength := int(header.Length)
+
+	if dirOffset+dirLength > len(packData) {
+		fmt.Printf("Directory beyond PACK data bounds\n")
+		return
+	}
+
+	// Read directory entries
+	entrySize := 64
+	entryCount := dirLength / entrySize
+
+	fmt.Printf("Extracting %d firmware files:\n", entryCount)
+
+	for i := 0; i < entryCount; i++ {
+		entryOffset := dirOffset + (i * entrySize)
+		if entryOffset+entrySize > len(packData) {
+			break
+		}
+
+		// Read entry
+		entry := PackEntry{}
+		copy(entry.Filename[:], packData[entryOffset:entryOffset+56])
+		entry.Offset = binary.LittleEndian.Uint32(packData[entryOffset+56 : entryOffset+60])
+		entry.Length = binary.LittleEndian.Uint32(packData[entryOffset+60 : entryOffset+64])
+
+		// Extract filename (remove null bytes)
+		filename := string(bytes.TrimRight(entry.Filename[:], "\x00"))
+		if filename == "" {
+			continue
+		}
+
+		// Validate data bounds
+		dataStart := int(entry.Offset)
+		dataEnd := dataStart + int(entry.Length)
+		if dataEnd > dirOffset {
+			fmt.Printf("Skipping %s: data overruns directory\n", filename)
+			continue
+		}
+
+		fmt.Printf("  %s (%d bytes)\n", filename, entry.Length)
+	}
+}
+
+func CheckForFirmware(moduleFileName *string, extractPack bool) {
 	if *moduleFileName == "" {
 		return
 	}
@@ -63,20 +117,24 @@ func CheckForFirmware(moduleFileName *string) {
 		totalPackSize = len(data) - offset
 	}
 
-	// Extract PACK file with correct length
 	packData := data[offset : offset+totalPackSize]
-	packFileName := filepath.Base(*moduleFileName) + ".pack"
 
-	err = os.WriteFile(packFileName, packData, 0644)
-	if err != nil {
-		fmt.Printf("Error writing PACK file: %v\n", err)
-		return
+	if extractPack {
+		// Extract PACK file
+		packFileName := filepath.Base(*moduleFileName) + ".pack"
+		err = os.WriteFile(packFileName, packData, 0644)
+		if err != nil {
+			fmt.Printf("Error writing PACK file: %v\n", err)
+			return
+		}
+		fmt.Printf("Extracted PACK to: %s (%d bytes)\n", packFileName, len(packData))
+
+		// Extract individual firmware files from PACK
+		extractPACK(packData, offset)
+	} else {
+		// Just show PACK contents without extracting
+		showPACK(packData)
 	}
-
-	fmt.Printf("Extracted PACK to: %s (%d bytes)\n", packFileName, len(packData))
-
-	// Extract individual firmware files from PACK
-	extractPACK(packData, offset)
 }
 
 func extractPACK(packData []byte, baseOffset int) {
