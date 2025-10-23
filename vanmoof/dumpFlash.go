@@ -401,7 +401,7 @@ func handleInvalidBLEKey() error {
 
 	fmt.Printf("\nDo you want to continue anyway? (y/N): ")
 	var response string
-	fmt.Scanln(&response)
+	_, _ = fmt.Scanln(&response)
 
 	if strings.ToLower(response) == "y" || strings.ToLower(response) == "yes" {
 		fmt.Printf("⚠️  Proceeding with potentially corrupted data...\n")
