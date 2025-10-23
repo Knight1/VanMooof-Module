@@ -105,8 +105,12 @@ go.work.sum
 # Binary File
 VanMooof-Module
 
+cmd/cmd
+
 #.idea
 .idea/
 
 *.bin
 *.rom
+*.pak
+*.exe
