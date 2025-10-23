@@ -82,6 +82,10 @@ func CheckForFirmware(moduleFileName *string, extractPack bool) {
 		return
 	}
 
+	// Check for VM_SOUND files and show count
+	sounds := FindVMSounds(data)
+	fmt.Printf("Found %d VM_SOUND files in dump\n", len(sounds))
+
 	// Check PACK at fixed offset 0x80000
 	offset := 0x80000
 	if len(data) < offset+4 {

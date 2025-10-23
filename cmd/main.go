@@ -13,6 +13,7 @@ var (
 	showBLESecrets  = flag.Bool("show", false, "Show BLE secrets")
 	showLogs        = flag.Bool("logs", false, "Show logs only")
 	extractPack     = flag.Bool("pack", false, "Extract PACK file only (without extracting individual firmware files)")
+	exportSounds    = flag.Bool("sounds", false, "Export VM_SOUND files from SPI dump")
 	uploadPack      = flag.String("upload", "", "Upload PACK file via Y-Modem (specify PACK file path)")
 	serialPort      = flag.String("port", "", "Serial port for Y-Modem upload (auto-detect if empty)")
 	listPorts       = flag.Bool("list-ports", false, "List available serial ports")
@@ -33,6 +34,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -show              # Analyze SPI flash dump\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -logs              # Show logs only\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -pack              # Extract PACK from dump\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -sounds            # Export VM_SOUND files\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
 	}
@@ -121,7 +123,7 @@ func main() {
 		file = vanmoof.LoadFile(ModuleFileName)
 	} else {
 		// Check if any file-dependent operations are requested
-		if *showBLESecrets || *showLogs || *changeUnlockKey != "" {
+		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}
@@ -138,13 +140,24 @@ func main() {
 		return
 	}
 
-	if *showBLESecrets {
-		vanmoof.ReadSecrets(file)
-		vanmoof.ReadLogs(file)
+	if *exportSounds {
+		err := vanmoof.ExportVMSounds(*ModuleFileName)
+		if err != nil {
+			fmt.Printf("Error exporting sounds: %v\n", err)
+			os.Exit(1)
+		}
+		return
 	}
 
-	// Always check for firmware to show PACK contents
-	vanmoof.CheckForFirmware(ModuleFileName, *extractPack)
+	if *showBLESecrets {
+		vanmoof.ReadSecrets(file)
+		vanmoof.ReadLogsCount(file)
+		// Always check for firmware to show PACK contents when using -show
+		vanmoof.CheckForFirmware(ModuleFileName, *extractPack)
+	} else {
+		// Only check for firmware if not showing secrets (to avoid duplicate output)
+		vanmoof.CheckForFirmware(ModuleFileName, *extractPack)
+	}
 
 	if *changeUnlockKey != "" {
 		vanmoof.WriteSecrets("unlock", *changeUnlockKey)
