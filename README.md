@@ -60,8 +60,9 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 ß Decrypt / Encrypt Pack File
 - Untestet: write a new ble authentication Key into the flash
 - uploads Firmware / Pack File via y-modem
+- Export VM_SOUND Files from SPI Dump
 - Not Implemented:
-- Read / Upload Sound Files
+- Upload Sound Files
 
 #### Show Dump Content
 ```console
@@ -72,6 +73,7 @@ M-ID/M-KEY: XXX
 MAC Address: XXXXX
 Reading 143360 bytes from offset 0x3fdd000 (file size: 0x4000000)
 Found 0 log entries:
+Found 23 VM_SOUND files in dump
 Found PACK at offset: 0x00080000
 PACK Header - Offset: 0x00088A1C, Length: 0x00000140
 Extracted PACK to: SPI-Flash.rom.pack (559976 bytes)
@@ -81,6 +83,17 @@ Extracting 5 firmware files:
   motorware.bin (61720 bytes)
   shifterware.bin (11944 bytes)
   batteryware.bin (83940 bytes)
+```
+
+#### Export VM_SOUND Files from Dump
+```console
+./cmd -f SPI-Flash.rom -sounds
+Loading File: SPI-Flash.rom
+Found 23 VM_SOUND files, exporting...
+  SPI-Flash_sound_01.bin (4096 bytes)
+  SPI-Flash_sound_02.bin (8192 bytes)
+  SPI-Flash_sound_03.bin (2048 bytes)
+  ...
 ```
 
 #### Show Logs from Dump
