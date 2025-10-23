@@ -63,8 +63,9 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - Decrypt / Encrypt Pack File
 - Read / Upload Sound Files
 
+#### Show Dump Content
 ```console
-./VanMooof-Module -f SPI-Flash.rom -show
+./cmd -f SPI-Flash.rom -show
 Loading File: SPI-Flash.rom
 BLE Authentication Key: XXXX
 M-ID/M-KEY: XXX
@@ -80,6 +81,42 @@ Extracting 5 firmware files:
   motorware.bin (61720 bytes)
   shifterware.bin (11944 bytes)
   batteryware.bin (83940 bytes)
+```
+
+#### Show Logs from Dump
+```console
+./cmd -f ../rom.rom -logs
+Loading File: ../rom.rom
+Reading 143360 bytes from offset 0x3fdd000 (file size: 0x4000000)
+Found 2 log entries:
+Log 1: 
+0;39.03;-0.21;0.0;28;32;0.0;4864.3;0;228;1
+1723229090 ;21.2;69;27.0;39.04;-0.18;0.0;28;32;0.0;4864.3;0;220;1
+1723229119 LiPo state changed to LIPO_DISCHARGING
+1723229120 ADC Vbat 22457
+1723229120 Error Flags: 20
+1723229120 Error Flags: 54
+1723229120 Set power state to PWR_NORMAL (Current limit: 20.0 A, SOC: -1 %)
+1723229120 Set power state to PWR_NORMAL (Current limit: 30.0 A, SOC: 69 %)
+1723229120 USER Reset
+1723229120 BIKE_RESET
+```
+
+#### Decrypt pack File from API
+```console
+./cmd -f ../Update1.9.1\ -\ batteryware\ 1.23.1\ x\ mainware\ 1.9.1.pak -decrypt "MANUFACTURING KEY"
+Decrypting ../Update1.9.1 - batteryware 1.23.1 x mainware 1.9.1.pak with AES-128 ECB...
+File size: 283472 bytes
+Decrypted data CRC32: 0x11787DFB
+Decrypted PACK saved to: ../Update1.9.1 - batteryware 1.23.1 x mainware 1.9.1_decrypted.pak (283472 bytes)
+✓ Decryption successful - valid PACK magic found
+PACK Header:
+  Magic: PACK
+  Directory Offset: 0x000452C8 (283336)
+  Directory Length: 0x00000080 (128)
+Directory contains 2 entries:
+  batteryware.bin (offset: 0x0000000C, length: 87568 bytes)
+  mainware.bin (offset: 0x0001561C, length: 195756 bytes)
 ```
 
 ### What about the Cartridge?

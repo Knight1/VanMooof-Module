@@ -16,6 +16,7 @@ var (
 	uploadPack      = flag.String("upload", "", "Upload PACK file via Y-Modem (specify PACK file path)")
 	serialPort      = flag.String("port", "", "Serial port for Y-Modem upload (auto-detect if empty)")
 	listPorts       = flag.Bool("list-ports", false, "List available serial ports")
+	decryptPack     = flag.String("decrypt", "", "Decrypt PACK file with AES ECB (specify key in hex)")
 	//file            os.File
 )
 
@@ -31,6 +32,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -show              # Analyze SPI flash dump\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -logs              # Show logs only\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  %s -f dump.rom -pack              # Extract PACK from dump\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
 	}
 
 	flag.Parse()
@@ -70,6 +72,24 @@ func main() {
 		err := vanmoof.UploadPACK(*uploadPack, port, 115200)
 		if err != nil {
 			fmt.Printf("Upload failed: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	// Decrypt PACK file
+	if *decryptPack != "" {
+		if *ModuleFileName == "" {
+			fmt.Println("Pack file path required. Use -f PACKFILE")
+			os.Exit(1)
+		}
+		if _, err := os.Stat(*ModuleFileName); os.IsNotExist(err) {
+			fmt.Printf("Pack file does not exist: %s\n", *ModuleFileName)
+			os.Exit(1)
+		}
+		err := vanmoof.DecryptPack(*ModuleFileName, *decryptPack)
+		if err != nil {
+			fmt.Printf("Decryption failed: %v\n", err)
 			os.Exit(1)
 		}
 		return
