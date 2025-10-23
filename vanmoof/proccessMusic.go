@@ -49,7 +49,7 @@ func ExportVMSounds(moduleFileName string) error {
 	if err != nil {
 		return fmt.Errorf("error opening file: %v", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	data, err := os.ReadFile(moduleFileName)
 	if err != nil {

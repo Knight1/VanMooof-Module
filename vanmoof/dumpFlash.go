@@ -11,23 +11,17 @@ const (
 	chunkSize   = 256              // 256 bytes per read operation
 )
 
-func dumpFlash() {
-	// MAC
-	// FRAME
-
-	macAddress := ""
-	frameNumber := ""
-
+// DumpFlash reads the entire SPI flash chip and saves it to a file
+func DumpFlash(macAddress, frameNumber string) error {
 	conn, err := spiConnect()
 	if err != nil {
-		fmt.Println("")
+		return fmt.Errorf("failed to connect to SPI: %v", err)
 	}
 
 	// Open output file
 	file, err := os.Create("VMES3-" + frameNumber + "-" + macAddress + ".bin")
 	if err != nil {
-		fmt.Printf("Failed to create output file: %v", err)
-		return
+		return fmt.Errorf("failed to create output file: %v", err)
 	}
 	defer file.Close()
 
@@ -48,16 +42,16 @@ func dumpFlash() {
 
 		// Execute SPI read
 		if err := conn.Tx(readBuffer, data); err != nil {
-			fmt.Printf("SPI transaction failed at offset 0x%X: %v", offset, err)
-			return
+			return fmt.Errorf("SPI transaction failed at offset 0x%X: %v", offset, err)
 		}
 
 		// Write the data to the file
 		if _, err := file.Write(data); err != nil {
-			fmt.Printf("Failed to write data to file at offset 0x%X: %v", offset, err)
-			return
+			return fmt.Errorf("failed to write data to file at offset 0x%X: %v", offset, err)
 		}
 
 		fmt.Printf("Read and saved chunk at offset 0x%X\n", offset)
 	}
+
+	return nil
 }

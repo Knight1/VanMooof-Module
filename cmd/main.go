@@ -164,10 +164,7 @@ func main() {
 	}
 
 	if file != nil {
-		err := file.Close()
-		if err != nil {
-			return
-		}
+		_ = file.Close()
 	}
 
 }

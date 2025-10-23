@@ -126,8 +126,7 @@ func CheckForFirmware(moduleFileName *string, extractPack bool) {
 	if extractPack {
 		// Extract PACK file
 		packFileName := filepath.Base(*moduleFileName) + ".pack"
-		err = os.WriteFile(packFileName, packData, 0644)
-		if err != nil {
+		if err := os.WriteFile(packFileName, packData, 0644); err != nil {
 			fmt.Printf("Error writing PACK file: %v\n", err)
 			return
 		}
@@ -141,7 +140,7 @@ func CheckForFirmware(moduleFileName *string, extractPack bool) {
 	}
 }
 
-func extractPACK(packData []byte, baseOffset int) {
+func extractPACK(packData []byte, _ int) {
 	if len(packData) < 12 {
 		return
 	}
