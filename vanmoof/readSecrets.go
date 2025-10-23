@@ -16,13 +16,14 @@ type Secret struct {
 func ReadSecrets(file *os.File) {
 	secrets := []Secret{
 		{"BLE Authentication Key", 0x005A000, 16},
+		{"Manufacturing Key", 0x005AFC0, 16},
 		{"M-ID/M-KEY", 0x005af80, 60},
 		// Add more secrets here as needed
 	}
 
 	for _, secret := range secrets {
 		buf := readFromFile(file, secret.Offset, secret.Length)
-		if secret.Name == "BLE Authentication Key" {
+		if secret.Name == "BLE Authentication Key" || secret.Name == "Manufacturing Key" {
 			fmt.Printf("%s: %s\n", secret.Name, strings.ToUpper(hex.EncodeToString(buf)))
 		} else {
 			fmt.Printf("%s: %s\n", secret.Name, hex.EncodeToString(buf))
