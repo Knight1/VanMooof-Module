@@ -61,11 +61,14 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - Decrypt / Encrypt Pack File
 - Export VM_SOUND Files from SPI Dump
 - Entropy Analysis & ECB Pattern Detection
-- Manufacturing Key Validation
-- Untestet: write a new ble authentication Key into the flash
 - uploads Firmware / Pack File via y-modem
-- Not Implemented:
-- Upload Sound Files
+- Key Extraction & Checksums
+    - Manufacturing Key extraction & Validation
+    - Automatic extraction of BLE authentication keys after SPI dump
+    - MAC address validation with MOOF signature
+    - SHA512 checksum generation for dump integrity
+- Untestet: write a new ble authentication Key into the flash
+- Not Implemented: Upload Sound Files
 
 For detailed usage examples, see [EXAMPLES.md](EXAMPLES.md).
 
@@ -114,6 +117,25 @@ Tools needed: Torx Screw set. I used my iFixit Kit.
 5. When you screw it back together, make sure to use 99% alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the AC voltage to the motor is high especially if the battery has low charge thus low voltage. If a screw gets loose while you ride you would create little sparks. 
 
 Use flashrom to dump the SPI flash chip. See [EXAMPLES.md](EXAMPLES.md) for detailed command examples.
+
+### Key Extraction
+
+After dumping the SPI flash, the tool automatically extracts authentication keys and generates checksums:
+
+```bash
+# Dump SPI flash (keys automatically extracted)
+./VanMooof-Module -dump F88A5E4F9ECB,2043531337 -sudo
+# Creates: VMES3-2043531337-F88A5E4F9ECB.bin
+#         VMES3-2043531337-F88A5E4F9ECB.keys  
+#         VMES3-2043531337-F88A5E4F9ECB.sha512
+
+# Extract keys from existing dump
+./VanMooof-Module -f SPI-Flash_20241024-143052.rom -extract-keys
+# Creates: SPI-Flash_20241024-143052.keys
+#         SPI-Flash_20241024-143052.sha512
+```
+
+Files use consistent **YYYYMMDD-HHMMSS** naming format for timestamps.
 
 ### Getting Console Access to my bike
 
