@@ -253,9 +253,8 @@ func verifyDumpIntegrity(conn spi.Conn, filename string) error {
 	if string(diskSHA512) == string(memorySHA512) {
 		fmt.Printf("✅ VERIFICATION PASSED: Disk and SPI memory SHA512 match!\n")
 		return nil
-	} else {
-		return fmt.Errorf("❌ VERIFICATION FAILED: SHA512 mismatch between disk and SPI memory")
 	}
+	return fmt.Errorf("❌ VERIFICATION FAILED: SHA512 mismatch between disk and SPI memory")
 }
 
 // calculateFileSHA512 calculates SHA512 hash of a file on disk

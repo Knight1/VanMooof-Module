@@ -241,9 +241,20 @@ func main() {
 	var file *os.File
 	if *ModuleFileName != "" {
 		file = vanmoof.LoadFile(ModuleFileName)
+		if file == nil {
+			fmt.Printf("Failed to load file: %s\n", *ModuleFileName)
+			os.Exit(1)
+		}
+		defer func() {
+			if file != nil {
+				_ = file.Close()
+			}
+		}()
 	} else {
 		// Check if any file-dependent operations are requested
-		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds || *exportWAV || *analyzeWAV || *verifyDump || *checkEntropy || *extractKeys {
+		if *showBLESecrets || *showLogs || *changeUnlockKey != "" ||
+			*exportSounds || *exportWAV || *analyzeWAV ||
+			*verifyDump || *checkEntropy || *extractKeys {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}
@@ -256,6 +267,10 @@ func main() {
 	}
 
 	if *showLogs {
+		if file == nil {
+			fmt.Println("File path required. Use -f FILE")
+			os.Exit(1)
+		}
 		vanmoof.ReadLogs(file)
 		return
 	}
@@ -297,6 +312,10 @@ func main() {
 	}
 
 	if *showBLESecrets {
+		if file == nil {
+			fmt.Println("File path required. Use -f FILE")
+			os.Exit(1)
+		}
 		vanmoof.ReadSecrets(file)
 		vanmoof.ReadLogsCount(file)
 		// Always check for firmware to show PACK contents when using -show
@@ -309,9 +328,4 @@ func main() {
 	if *changeUnlockKey != "" {
 		vanmoof.WriteSecrets("unlock", *changeUnlockKey)
 	}
-
-	if file != nil {
-		_ = file.Close()
-	}
-
 }

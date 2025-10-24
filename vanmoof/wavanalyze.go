@@ -23,7 +23,10 @@ func AnalyzeWAV(filename string) (*WAVInfo, error) {
 	}
 	defer file.Close()
 
-	stat, _ := file.Stat()
+	stat, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
 
 	// Skip RIFF header (12 bytes)
 	file.Seek(12, 0)
