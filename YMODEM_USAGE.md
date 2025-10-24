@@ -15,31 +15,30 @@ This tool now supports uploading PACK files to VanMoof modules via Y-Modem proto
 
 ### List Available Serial Ports
 ```bash
-./VanMooof-Module -list-ports
+./cmd -list-ports
 ```
 
 ### Upload PACK File
 ```bash
 # Upload with auto-detected default port (always 115200 baud)
-./VanMooof-Module -upload "pack.bin"
+./cmd -upload "pack.bin"
 
 # Windows - Upload with custom port
-./VanMooof-Module -upload "pack.bin" -port COM5
+./cmd.exe -upload "pack.bin" -port COM5
 
 # macOS - Upload with USB serial adapter
-./VanMooof-Module -upload "pack.bin" -port /dev/tty.usbserial-0001
+./cmd -upload "pack.bin" -port /dev/tty.usbserial-0001
 
 # Linux - Upload with USB serial adapter
-./VanMooof-Module -upload "pack.bin" -port /dev/ttyUSB0
+./cmd -upload "pack.bin" -port /dev/ttyUSB0
 
-# Upload the provided PACK file
-./VanMooof-Module -upload "packFile - mainware 1.09.03 - batteryware 1.17 - bleware 2.4.01 - motorware S.0.00.22 - shifterware 0.237.bin"
+# Upload PACK file
+./cmd -upload "packFile - mainware 1.09.03 - batteryware 1.17 - bleware 2.4.01 - motorware S.0.00.22 - shifterware 0.237.bin"
 ```
 
 ## Hardware Setup
 1. Connect USB UART adapter to VanMoof module debug port
 2. Use JTAG pinout: Black=GND, Green=TX, Orange=RX, Yellow=NC
-3. Set baud rate to 115200 (default for VanMoof modules)
 
 ## Platform-Specific Serial Ports
 - **Windows**: COM1, COM2, COM3, etc.
@@ -53,13 +52,13 @@ This tool now supports uploading PACK files to VanMoof modules via Y-Modem proto
 
 ## PACK File Requirements
 - Must start with "PACK" magic bytes
-- File size must be less than 64MB
+- File size must be less than 2MB
 - Must contain valid directory structure
 - Directory entries must have valid filenames
 
 ## Error Handling
 The tool will reject:
-- Files larger than 2MB (exceeds PACK limit)
+- Files larger than 2MB (exceeds Chip limits)
 - Files without PACK magic header
 - Files with invalid directory structure
 - Files with corrupted headers
