@@ -16,6 +16,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 [Firmware Information](FIRMWARE.md)  
 [BLE UUIDs](BLEUUID.md)  
+[Sound Analysis](SOUND.md)  
 [Usage Examples](EXAMPLES.md)  
 
 ### Features
@@ -59,7 +60,8 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - Extracts the pack into the Firmware Files. 
 - Read Logs
 - Decrypt / Encrypt Pack File
-- Export VM_SOUND Files from SPI Dump
+- Export, convert to wav and analyze VM_SOUND "Bell Sound" Files from SPI Dump
+- Detect failed VM_SOUND uploads (corrupted files are typically 14434 bytes)
 - Entropy Analysis & ECB Pattern Detection
 - uploads Firmware / Pack File via y-modem
 - Key Extraction & Checksums
@@ -79,6 +81,12 @@ The correct Name VanMoof internally and in the Fixie App used is Module.
 ### Dead Module?
 
 You can apply 12Vdc via a DC Plug on the normal charging Port, and it will only charge the Module Battery even if the main Battery is connected (dead or alive).
+
+### Failed VM_SOUND Updates
+
+Failed firmware updates can corrupt VM_SOUND entries. These corrupted files:
+- Are typically exactly **14434 bytes** in size
+- Contain firmware binary instead of audio data (e.g. ASCII, "source/tasks/audiotask.c")
 
 ### Module is going into shipping mode outside bike?
 

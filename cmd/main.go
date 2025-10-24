@@ -17,6 +17,8 @@ var (
 	showLogs        = flag.Bool("logs", false, "Show logs only")
 	extractPack     = flag.Bool("pack", false, "Extract PACK file only (without extracting individual firmware files)")
 	exportSounds    = flag.Bool("sounds", false, "Export VM_SOUND files from SPI dump")
+	exportWAV       = flag.Bool("wav", false, "Export VM_SOUND files as WAV from SPI dump")
+	analyzeWAV      = flag.Bool("analyze-wav", false, "Analyze WAV properties of VM_SOUND files")
 	uploadPack      = flag.String("upload", "", "Upload PACK file via Y-Modem (specify PACK file path)")
 	serialPort      = flag.String("port", "", "Serial port for Y-Modem upload (auto-detect if empty)")
 	listPorts       = flag.Bool("list-ports", false, "List available serial ports")
@@ -45,6 +47,8 @@ func main() {
 		log.Printf("  %s -f dump.rom -logs              # Show logs only\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -pack              # Extract PACK from dump\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -sounds            # Export VM_SOUND files\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -wav               # Export VM_SOUND as WAV files\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -analyze-wav       # Analyze WAV properties\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -verify            # Verify data coverage\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -verify -extra     # Show unaccounted regions\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -extract-keys      # Extract keys and SHA512\n", os.Args[0])
@@ -239,7 +243,7 @@ func main() {
 		file = vanmoof.LoadFile(ModuleFileName)
 	} else {
 		// Check if any file-dependent operations are requested
-		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds || *verifyDump || *checkEntropy || *extractKeys {
+		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds || *exportWAV || *analyzeWAV || *verifyDump || *checkEntropy || *extractKeys {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}
@@ -260,6 +264,24 @@ func main() {
 		err := vanmoof.ExportVMSounds(*ModuleFileName)
 		if err != nil {
 			fmt.Printf("Error exporting sounds: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	if *exportWAV {
+		err := vanmoof.ExportVMSoundsAsWAV(*ModuleFileName, 0, 0)
+		if err != nil {
+			fmt.Printf("Error exporting WAV files: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	if *analyzeWAV {
+		err := vanmoof.AnalyzeVMSoundWAVs(*ModuleFileName)
+		if err != nil {
+			fmt.Printf("Error analyzing WAV files: %v\n", err)
 			os.Exit(1)
 		}
 		return

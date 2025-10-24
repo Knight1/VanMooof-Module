@@ -36,6 +36,46 @@ Found 23 VM_SOUND files, exporting...
   ...
 ```
 
+### Extract WAV Files from VM_SOUND
+```console
+./cmd -f SPI-Flash.rom -wav
+Loading File: SPI-Flash.rom
+Found 11 VM_SOUND files, extracting WAV data...
+  SPI-Flash_sound_01.wav (14434 bytes)
+  SPI-Flash_sound_02.wav (14434 bytes)
+  SPI-Flash_sound_03.wav (1576214 bytes)
+  SPI-Flash_sound_04.wav (739004 bytes)
+  SPI-Flash_sound_05.wav (217772 bytes)
+  ...
+```
+
+### Analyze WAV Properties
+```console
+./cmd -f SPI-Flash.rom -analyze-wav
+Loading File: SPI-Flash.rom
+Analyzing 11 VM_SOUND files...
+
+Sound 01: Error - corrupted upload detected - contains failed update data
+Sound 02: Error - corrupted upload detected - contains failed update data
+Sound 03: 44100 Hz, 16-bit, 1 ch, 17.87s, 1576214 bytes
+Sound 04: 44100 Hz, 16-bit, 1 ch, 8.38s, 739004 bytes
+Sound 05: 44100 Hz, 16-bit, 1 ch, 2.47s, 217772 bytes
+Sound 06: 44100 Hz, 16-bit, 1 ch, 19.15s, 1688662 bytes
+...
+```
+
+### Corrupted VM_SOUND Detection
+```console
+./cmd -f SPI-Flash.rom -wav
+Loading File: SPI-Flash.rom
+Found 15 VM_SOUND files, extracting WAV data...
+  SPI-Flash_sound_01.wav (14434 bytes)
+Error extracting WAV from sound 2: corrupted upload detected - contains failed update data
+Error extracting WAV from sound 3: corrupted upload detected - contains failed update data
+  SPI-Flash_sound_04.wav (739004 bytes)
+...
+```
+
 ### Show Logs from Dump
 ```console
 ./cmd -f ../rom.rom -logs

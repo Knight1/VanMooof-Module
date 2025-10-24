@@ -104,9 +104,10 @@ go.work.sum
 #.idea
 .idea/
 
-# Vanmoof Binarys, SPI Dumps, Pack Files, SHA Files and Keys
+# Vanmoof Binarys, SPI Dumps, Pack Files, SHA Files, Keys and wav
 *.bin
 *.rom
 *.pak
 *.sha
 *.keys
+*.wav
