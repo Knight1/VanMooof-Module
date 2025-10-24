@@ -73,21 +73,25 @@ ble:X.4.1
 #### 1.7.3 12. Oktober 2021
 1.7.2 + improvements
 #### 1.7.6 1. November 2021
-ble:X.4.1,motor:.22,shifter:0.237,bms:1.20.1
+ble:X.4.1,motor:.22,shifter:0.237,bms:1.20.1  
 - improved interaction for Back Up unlock code
 - optimised power management at lower battery levels
 - fix for possible boost issues after power level change
 - fix for Error 16
 - various small bug fixes.
 #### 1.8.1 22. Februar 2022
-ble:X.4.1,motor:.22,shifter:0.237,bms:1.20.1
+ble:X.4.1,motor:.22,shifter:0.237,bms:1.20.1  
 - Removal of testing module settings
 - Gear settings not reset after a firmware update
 - Deep sleep after 14 days of inactivity
 - Allows motor support in case of error 57
 
 #### 1.8.2 ✅ 16 June 2022
+
+
 #### 1.9.1 11. Juni 2023
+mainware:1.9.1,bms:1.23.1
+
 (Part 1)
 - You can now unlock your bike with the Boost button, as well as the Bell button.
 - When your bike is standing still, it will automatically shut down after 7 minutes. This is longer than before.
