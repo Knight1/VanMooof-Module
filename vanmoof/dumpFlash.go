@@ -207,7 +207,8 @@ func extractMACAndRename(filename, originalMAC, frameNumber string) error {
 
 	// Convert MAC bytes to string (reverse order for BLE)
 	macAddress := fmt.Sprintf("%02X%02X%02X%02X%02X%02X",
-		macBytes[5], macBytes[4], macBytes[3], macBytes[2], macBytes[1], macBytes[0])
+		macBytes[5], macBytes[4], macBytes[3],
+		macBytes[2], macBytes[1], macBytes[0])
 
 	// Check if MAC is valid (not all zeros or all FFs)
 	if macAddress == "000000000000" || macAddress == "FFFFFFFFFFFF" {
