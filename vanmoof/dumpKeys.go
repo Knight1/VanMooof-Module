@@ -114,7 +114,7 @@ func generateSHA512File(dumpFilename, baseName string) error {
 
 	sha512sum := hex.EncodeToString(hash.Sum(nil))
 
-	checksumFilename := baseName + ".sha512"
+	checksumFilename := baseName + ".sha"
 	checksumFile, err := os.Create(checksumFilename)
 	if err != nil {
 		return fmt.Errorf("failed to create checksum file: %v", err)

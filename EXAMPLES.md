@@ -263,7 +263,7 @@ unsupported chip - VanMoof S3 requires MX25L51245G
 # Output files (YYYYMMDD-HHMMSS format):
 # VMES3-2043531337-XXXX.bin     - SPI flash dump
 # VMES3-2043531337-XXXX.keys    - Extracted authentication keys
-# VMES3-2043531337-XXXX.sha512  - SHA512 checksum for integrity
+# VMES3-2043531337-XXXX.sha  - SHA512 checksum for integrity
 ```
 
 ### Manual Key Extraction from Existing Dump
@@ -273,7 +273,7 @@ unsupported chip - VanMoof S3 requires MX25L51245G
 
 # Output files:
 # SPI-Flash_20241024-143052.keys    - Authentication keys
-# SPI-Flash_20241024-143052.sha512  - SHA512 checksum
+# SPI-Flash_20241024-143052.sha  - SHA512 checksum
 ```
 
 ### Key File Format
@@ -298,7 +298,7 @@ MAC_ADDRESS=XXXXXXX
 All files use **YYYYMMDD-HHMMSS** format:
 - `SPI-Flash_20241024-143052.rom` - Original dump
 - `SPI-Flash_20241024-143052.keys` - Extracted keys
-- `SPI-Flash_20241024-143052.sha512` - Checksum
+- `SPI-Flash_20241024-143052.sha` - Checksum
 - `VMES3-2043531337-XXXX.bin` - Tool dump format
 
 ## Hardware Dump with flashrom
