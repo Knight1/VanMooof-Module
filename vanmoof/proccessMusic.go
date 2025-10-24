@@ -9,6 +9,7 @@ import (
 
 var vmSoundMagic = []byte{0x56, 0x4D, 0x5F, 0x53, 0x4F, 0x55, 0x4E, 0x44} // "VM_SOUND"
 var vmSoundEnd = []byte{0xFF, 0xFF, 0xFF, 0xFF, 0xFF}                     // End marker
+var vmSoundEndAlt = []byte{0x00, 0x00, 0x00, 0x00, 0x00}                  // Alternative end marker
 
 func FindVMSounds(data []byte) []VMSound {
 	var sounds []VMSound
@@ -22,15 +23,22 @@ func FindVMSounds(data []byte) []VMSound {
 		}
 
 		startOffset := offset + index
-		// Find end marker after start
+		// Find end marker after start (try both patterns)
 		endIndex := bytes.Index(data[startOffset+len(vmSoundMagic):], vmSoundEnd)
-		if endIndex == -1 {
+		endIndexAlt := bytes.Index(data[startOffset+len(vmSoundMagic):], vmSoundEndAlt)
+
+		// Use whichever end marker is found first (or closest)
+		if endIndex == -1 && endIndexAlt == -1 {
 			// No end marker found, skip this one
 			offset = startOffset + len(vmSoundMagic)
 			continue
 		}
 
-		endOffset := startOffset + len(vmSoundMagic) + endIndex + len(vmSoundEnd)
+		if endIndex == -1 || (endIndexAlt != -1 && endIndexAlt < endIndex) {
+			endIndex = endIndexAlt
+		}
+
+		endOffset := startOffset + len(vmSoundMagic) + endIndex + 5
 		length := endOffset - startOffset
 
 		sounds = append(sounds, VMSound{
