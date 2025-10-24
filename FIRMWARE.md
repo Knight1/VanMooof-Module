@@ -17,13 +17,13 @@
 #### 1.2.2
 - Fixes discoverability issue for affected Android phones
 
-#### 1.2.4
+#### 1.2.4 (Earliest found 08.09.2020)
 - Improved light sensor settings
 - A tuned amplifier for better speaker performance
 - A more efficient software update process
 - Several other small bug fixes
 
-#### 1.2.7
+#### 1.2.7 (Earliest found 28.08.2020)
 - Improved light sensor settings
 
 #### 1.4.5
