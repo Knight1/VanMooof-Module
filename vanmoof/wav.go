@@ -27,7 +27,7 @@ func ExtractWAVFromVMSound(vmSoundData []byte) ([]byte, error) {
 }
 
 // ExportVMSoundsAsWAV exports VM_SOUND files as WAV files
-func ExportVMSoundsAsWAV(moduleFileName string, sampleRate uint32, bitsPerSample uint16) error {
+func ExportVMSoundsAsWAV(moduleFileName string) error {
 	data, err := os.ReadFile(moduleFileName)
 	if err != nil {
 		return fmt.Errorf("error reading file: %v", err)

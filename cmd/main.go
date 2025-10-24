@@ -285,7 +285,7 @@ func main() {
 	}
 
 	if *exportWAV {
-		err := vanmoof.ExportVMSoundsAsWAV(*ModuleFileName, 0, 0)
+		err := vanmoof.ExportVMSoundsAsWAV(*ModuleFileName)
 		if err != nil {
 			fmt.Printf("Error exporting WAV files: %v\n", err)
 			os.Exit(1)
