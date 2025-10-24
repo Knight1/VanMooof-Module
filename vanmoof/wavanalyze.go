@@ -24,7 +24,12 @@ func AnalyzeWAV(filename string) (*WAVInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			fmt.Println("Error closing file:", err)
+		}
+	}(file)
 
 	stat, err := file.Stat()
 	if err != nil {
