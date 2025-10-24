@@ -253,6 +253,54 @@ Found: Non-VanMoof Chip (0xEF, 0x4017)
 unsupported chip - VanMoof S3 requires MX25L51245G
 ```
 
+## Key Extraction Examples
+
+### Automatic Key Extraction During Dump
+```bash
+# Dump SPI flash with automatic key extraction
+./VanMooof-Module -dump XXXX,XXXX -sudo
+
+# Output files (YYYYMMDD-HHMMSS format):
+# VMES3-2043531337-XXXX.bin     - SPI flash dump
+# VMES3-2043531337-XXXX.keys    - Extracted authentication keys
+# VMES3-2043531337-XXXX.sha512  - SHA512 checksum for integrity
+```
+
+### Manual Key Extraction from Existing Dump
+```bash
+# Extract keys from existing dump file
+./VanMooof-Module -f SPI-Flash_20241024-143052.rom -extract-keys
+
+# Output files:
+# SPI-Flash_20241024-143052.keys    - Authentication keys
+# SPI-Flash_20241024-143052.sha512  - SHA512 checksum
+```
+
+### Key File Format
+```
+# VanMoof Module Keys - Extracted from SPI Flash Dump
+# Generated: 20241024-143052
+
+BLE_AUTH_KEY=32Chars
+MFG_KEY=32Chars
+M_ID_KEY=XXXX
+MAC_ADDRESS=XXXXXXX
+```
+
+### Extract Keys After Manual Dump
+```bash
+# After flashrom dump, extract keys
+./VanMooof-Module -f SPI-Flash_20241024-143052.rom -extract-keys
+```
+
+## File Naming Convention
+
+All files use **YYYYMMDD-HHMMSS** format:
+- `SPI-Flash_20241024-143052.rom` - Original dump
+- `SPI-Flash_20241024-143052.keys` - Extracted keys
+- `SPI-Flash_20241024-143052.sha512` - Checksum
+- `VMES3-2043531337-XXXX.bin` - Tool dump format
+
 ## Hardware Dump with flashrom
 ```console
 # sudo flashrom -p linux_spi:dev=/dev/spidev0.0 -r rom.rom
@@ -264,3 +312,19 @@ Using default 2000kHz clock. Use 'spispeed' parameter to override.
 Found Macronix flash chip "MX66L51235F/MX25L51245G" (65536 kB, SPI) on linux_spi.
 Reading flash... done.
 ```
+
+## Flashrom SPI Dump Examples
+
+### Raspberry Pi SPI Dump
+```bash
+# Enable SPI interface
+sudo raspi-config
+# Navigate to: Interfacing Options > SPI > Enable
+
+# Dump MX25L51245G chip (VanMoof S3)
+sudo flashrom -p linux_spi:dev=/dev/spidev0.0,spispeed=1000 -r SPI-Flash_20241024-143052.rom
+
+# Verify dump
+sudo flashrom -p linux_spi:dev=/dev/spidev0.0,spispeed=1000 -v SPI-Flash_20241024-143052.rom
+```
+

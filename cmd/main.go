@@ -29,7 +29,7 @@ var (
 	dumpFlash       = flag.String("dump", "", "Dump SPI flash to file (optional format: MAC,FRAME or MAC or empty for auto-detect)")
 	flashInfo       = flag.Bool("flash-info", false, "Read SPI flash chip information and serial number")
 	sudoFlag        = flag.Bool("sudo", false, "Enable SPI hardware access (required for dump and flash-info)")
-	//file            os.File
+	extractKeys     = flag.Bool("extract-keys", false, "Extract keys and generate SHA512 checksum from existing dump file")
 )
 
 func main() {
@@ -47,6 +47,7 @@ func main() {
 		log.Printf("  %s -f dump.rom -sounds            # Export VM_SOUND files\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -verify            # Verify data coverage\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -verify -extra     # Show unaccounted regions\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -extract-keys      # Extract keys and SHA512\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -entropy           # Analyze file entropy without decryption\n", os.Args[0])
@@ -86,7 +87,7 @@ func main() {
 		if *dumpFlash == "" {
 			// Use current date/time as fallback
 			now := time.Now()
-			macAddress = fmt.Sprintf("UNKNOWN_%s", now.Format("20060102_150405"))
+			macAddress = fmt.Sprintf("UNKNOWN_%s", now.Format("20060102-150405"))
 			frameNumber = fmt.Sprintf("%d", now.Unix())
 		} else {
 			parts := strings.Split(*dumpFlash, ",")
@@ -214,13 +215,31 @@ func main() {
 		return
 	}
 
+	// Extract keys and checksums from existing dump file
+	if *extractKeys {
+		if *ModuleFileName == "" {
+			fmt.Println("Dump file path required. Use -f DUMPFILE")
+			os.Exit(1)
+		}
+		if _, err := os.Stat(*ModuleFileName); os.IsNotExist(err) {
+			fmt.Printf("Dump file does not exist: %s\n", *ModuleFileName)
+			os.Exit(1)
+		}
+		err := vanmoof.DumpKeysAndChecksums(*ModuleFileName)
+		if err != nil {
+			fmt.Printf("Key extraction failed: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
 	// File operations require a module file
 	var file *os.File
 	if *ModuleFileName != "" {
 		file = vanmoof.LoadFile(ModuleFileName)
 	} else {
 		// Check if any file-dependent operations are requested
-		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds || *verifyDump || *checkEntropy {
+		if *showBLESecrets || *showLogs || *changeUnlockKey != "" || *exportSounds || *verifyDump || *checkEntropy || *extractKeys {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}

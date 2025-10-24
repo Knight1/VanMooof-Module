@@ -73,7 +73,7 @@ func spiConnect() (conn spi.Conn, err error) {
 // writeEnable sends the Write Enable command (0x06) to the SPI flash.
 func writeEnable(conn spi.Conn) error {
 	if err := sendCommand(conn, 0x06, nil); err != nil {
-		return fmt.Errorf("Failed to send Write Enable command: %v", err)
+		return fmt.Errorf("failed to send Write Enable command: %v", err)
 	}
 
 	if *debugLogging {
@@ -95,7 +95,7 @@ func writeEnable(conn spi.Conn) error {
 // writeDisable sends the Write Disable command (0x04) to the SPI flash.
 func writeDisable(conn spi.Conn) error {
 	if err := sendCommand(conn, 0x04, nil); err != nil {
-		return fmt.Errorf("Failed to send Write Disable command: %v", err)
+		return fmt.Errorf("failed to send Write Disable command: %v", err)
 	}
 
 	if *debugLogging {

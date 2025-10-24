@@ -124,7 +124,17 @@ func DumpFlash(macAddress, frameNumber string, sudo bool) error {
 	}
 
 	// Comprehensive verification: compare disk vs memory SHA512
-	return verifyDumpIntegrity(conn, filename)
+	if err := verifyDumpIntegrity(conn, filename); err != nil {
+		return err
+	}
+
+	// Extract keys and generate checksums after successful dump
+	if err := DumpKeysAndChecksums(filename); err != nil {
+		fmt.Printf("Warning: Failed to extract keys and checksums: %v\n", err)
+		// Don't fail the entire dump for this
+	}
+
+	return nil
 }
 
 // verifyDump performs integrity check on the dumped file
