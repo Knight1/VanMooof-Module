@@ -17,7 +17,11 @@ func DumpKeysAndChecksums(dumpFilename string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open dump file: %v", err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Printf("Warning: failed to close file: %v\n", err)
+		}
+	}()
 
 	baseName := strings.TrimSuffix(dumpFilename, filepath.Ext(dumpFilename))
 
@@ -42,31 +46,49 @@ func extractKeysToFile(file *os.File, baseName string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create keys file: %v", err)
 	}
-	defer keysFile.Close()
+	defer func() {
+		if err := keysFile.Close(); err != nil {
+			fmt.Printf("Warning: failed to close keys file: %v\n", err)
+		}
+	}()
 
-	fmt.Fprintf(keysFile, "# VanMoof Module Keys - Extracted from SPI Flash Dump\n")
-	fmt.Fprintf(keysFile, "# Generated: %s\n\n", getCurrentTimestamp())
+	if _, err := fmt.Fprintf(keysFile, "# VanMoof Module Keys - Extracted from SPI Flash Dump\n"); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(keysFile, "# Generated: %s\n\n", getCurrentTimestamp()); err != nil {
+		return err
+	}
 
 	// BLE Authentication Key (16 bytes at 0x005A000)
 	bleKey := readFromFile(file, 0x005A000, 16)
-	fmt.Fprintf(keysFile, "BLE_AUTH_KEY=%s\n", strings.ToUpper(hex.EncodeToString(bleKey)))
+	if _, err := fmt.Fprintf(keysFile, "BLE_AUTH_KEY=%s\n", strings.ToUpper(hex.EncodeToString(bleKey))); err != nil {
+		return err
+	}
 
 	// Manufacturing Key (16 bytes at 0x005AFC0)
 	mfgKey := readFromFile(file, 0x005AFC0, 16)
-	fmt.Fprintf(keysFile, "MFG_KEY=%s\n", strings.ToUpper(hex.EncodeToString(mfgKey)))
+	if _, err := fmt.Fprintf(keysFile, "MFG_KEY=%s\n", strings.ToUpper(hex.EncodeToString(mfgKey))); err != nil {
+		return err
+	}
 
 	// M-ID/M-KEY (60 bytes at 0x005af80)
 	midKey := readFromFile(file, 0x005af80, 60)
-	fmt.Fprintf(keysFile, "M_ID_KEY=%s\n", hex.EncodeToString(midKey))
+	if _, err := fmt.Fprintf(keysFile, "M_ID_KEY=%s\n", hex.EncodeToString(midKey)); err != nil {
+		return err
+	}
 
 	// MAC Address with MOOF validation
 	macBuf := readFromFile(file, 0x0005AFE0, 16)
 	macStr := string(macBuf)
 	if strings.HasSuffix(macStr, "MOOF") {
 		mac := macStr[:12]
-		fmt.Fprintf(keysFile, "MAC_ADDRESS=%s\n", mac)
+		if _, err := fmt.Fprintf(keysFile, "MAC_ADDRESS=%s\n", mac); err != nil {
+			return err
+		}
 	} else {
-		fmt.Fprintf(keysFile, "MAC_ADDRESS=INVALID_NO_MOOF_SIGNATURE\n")
+		if _, err := fmt.Fprintf(keysFile, "MAC_ADDRESS=INVALID_NO_MOOF_SIGNATURE\n"); err != nil {
+			return err
+		}
 	}
 
 	fmt.Printf("🔑 Keys extracted to: %s\n", keysFilename)
@@ -79,7 +101,11 @@ func generateSHA512File(dumpFilename, baseName string) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Printf("Warning: failed to close file: %v\n", err)
+		}
+	}()
 
 	hash := sha512.New()
 	if _, err := io.Copy(hash, file); err != nil {
@@ -93,9 +119,15 @@ func generateSHA512File(dumpFilename, baseName string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create checksum file: %v", err)
 	}
-	defer checksumFile.Close()
+	defer func() {
+		if err := checksumFile.Close(); err != nil {
+			fmt.Printf("Warning: failed to close checksum file: %v\n", err)
+		}
+	}()
 
-	fmt.Fprintf(checksumFile, "%s  %s\n", sha512sum, filepath.Base(dumpFilename))
+	if _, err := fmt.Fprintf(checksumFile, "%s  %s\n", sha512sum, filepath.Base(dumpFilename)); err != nil {
+		return err
+	}
 
 	fmt.Printf("🔐 SHA512 checksum saved to: %s\n", checksumFilename)
 	fmt.Printf("🔐 SHA512: %s\n", sha512sum)
