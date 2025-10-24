@@ -17,6 +17,9 @@ type WAVInfo struct {
 
 func AnalyzeWAV(filename string) (*WAVInfo, error) {
 	cleanPath := filepath.Clean(filename)
+	if !filepath.IsAbs(cleanPath) {
+		return nil, fmt.Errorf("path must be absolute")
+	}
 	file, err := os.Open(cleanPath)
 	if err != nil {
 		return nil, err
@@ -29,7 +32,9 @@ func AnalyzeWAV(filename string) (*WAVInfo, error) {
 	}
 
 	// Skip RIFF header (12 bytes)
-	file.Seek(12, 0)
+	if _, err := file.Seek(12, 0); err != nil {
+		return nil, err
+	}
 
 	var info WAVInfo
 	info.FileSize = stat.Size()
@@ -48,14 +53,26 @@ func AnalyzeWAV(filename string) (*WAVInfo, error) {
 
 		if string(chunkID[:]) == "fmt " {
 			var audioFormat uint16
-			binary.Read(file, binary.LittleEndian, &audioFormat)
-			binary.Read(file, binary.LittleEndian, &info.Channels)
-			binary.Read(file, binary.LittleEndian, &info.SampleRate)
-			file.Seek(6, 1) // Skip ByteRate and BlockAlign
-			binary.Read(file, binary.LittleEndian, &info.BitsPerSample)
+			if err := binary.Read(file, binary.LittleEndian, &audioFormat); err != nil {
+				return nil, err
+			}
+			if err := binary.Read(file, binary.LittleEndian, &info.Channels); err != nil {
+				return nil, err
+			}
+			if err := binary.Read(file, binary.LittleEndian, &info.SampleRate); err != nil {
+				return nil, err
+			}
+			if _, err := file.Seek(6, 1); err != nil {
+				return nil, err
+			}
+			if err := binary.Read(file, binary.LittleEndian, &info.BitsPerSample); err != nil {
+				return nil, err
+			}
 			break
 		} else {
-			file.Seek(int64(chunkSize), 1)
+			if _, err := file.Seek(int64(chunkSize), 1); err != nil {
+				return nil, err
+			}
 		}
 	}
 
@@ -70,7 +87,11 @@ func AnalyzeWAV(filename string) (*WAVInfo, error) {
 }
 
 func AnalyzeVMSoundWAVs(moduleFileName string) error {
-	data, err := os.ReadFile(moduleFileName)
+	cleanPath := filepath.Clean(moduleFileName)
+	if !filepath.IsAbs(cleanPath) {
+		return fmt.Errorf("path must be absolute")
+	}
+	data, err := os.ReadFile(cleanPath)
 	if err != nil {
 		return fmt.Errorf("error reading file: %v", err)
 	}
@@ -91,20 +112,25 @@ func AnalyzeVMSoundWAVs(moduleFileName string) error {
 
 		wavData, err := ExtractWAVFromVMSound(soundData)
 		if err != nil {
-			fmt.Printf("Sound %02d: Error - %s\n", i+1, err.Error())
+			fmt.Printf("Sound %02d: Error - failed to extract WAV\n", i+1)
 			continue
 		}
 
 		// Write temp file for analysis
 		tempDir := os.TempDir()
 		tempFile := filepath.Join(tempDir, fmt.Sprintf("temp_%02d.wav", i+1))
-		os.WriteFile(tempFile, wavData, 0644)
+		if err := os.WriteFile(tempFile, wavData, 0644); err != nil {
+			fmt.Printf("Sound %02d: Failed to write temp file\n", i+1)
+			continue
+		}
 
 		info, err := AnalyzeWAV(tempFile)
-		os.Remove(tempFile)
+		if removeErr := os.Remove(tempFile); removeErr != nil {
+			fmt.Printf("Warning: Failed to remove temp file\n")
+		}
 
 		if err != nil {
-			fmt.Printf("Sound %02d: Analysis error - %v\n", i+1, err)
+			fmt.Printf("Sound %02d: Analysis error\n", i+1)
 			continue
 		}
 
