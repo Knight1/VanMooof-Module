@@ -41,10 +41,8 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
     - [STM32L072CZT6 LQFP48](https://www.mouser.de/datasheet/2/389/stm32l072v8-1851235.pdf)
       - bmsboot (Bootloader)
       - Batteryware
-    - Shifterware (MM32F031F6U6)
-    - Motorware (F2806 / TMS320F28054F)
-    - bleboot (CC2642R1F Bootloader)
-    - bleware (CC2642R1F)
+    - Shifterware [MM32F031F6U6](https://crossic.com/wp-content/uploads/2021/12/DS_MM32F031xx_EN.pdf)
+    - Motorware [TMS320F28054F](https://www.ti.com/lit/ds/symlink/tms320f28054f.pdf)
 - Logs
 - Shell (UART) for 
   - Module
