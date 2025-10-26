@@ -6,7 +6,7 @@ This tool now supports uploading PACK files to VanMoof modules via Y-Modem proto
 ## Features
 - **PACK File Validation**: Ensures the file is a valid PACK file and not an SPI dump
 - **Header Validation**: Verifies PACK magic bytes, offset, and length
-- **Size Check**: Rejects files larger than 2MB (PACK file limit)
+- **Size Check**: Rejects files larger than 2MB
 - **Directory Validation**: Checks PACK directory structure and entries
 - **Y-Modem Upload**: Transfers validated PACK files via serial connection at 115200 baud
 - **Cross-Platform**: Works on Windows, macOS, and Linux
@@ -37,7 +37,7 @@ This tool now supports uploading PACK files to VanMoof modules via Y-Modem proto
 ```
 
 ## Hardware Setup
-1. Connect USB UART adapter to VanMoof module debug port
+1. Connect USB UART adapter to debug port
 2. Use JTAG pinout: Black=GND, Green=TX, Orange=RX, Yellow=NC
 
 ## Platform-Specific Serial Ports
@@ -67,6 +67,6 @@ The tool will reject:
 1. Enter BLE debug shell: `bledebug` in main console
 2. Delete existing PACK: `pack-delete`
 3. Start upload: `pack-upload`
-4. Tool will transfer via Y-Modem
+4. Start tool to Transfer Pack
 5. Process PACK: `pack-process`
 6. System will reboot with new firmware

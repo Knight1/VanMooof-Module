@@ -11,9 +11,12 @@
 - **🏭 Special (60+):** Factory and diagnostic modes
 
 ## 🔋 Battery & Power Issues (Errors 1-21)
-All errors are Battery related
+All errors are Battery related.  
+Level 2 Errors are permanent and need at least a Reset of the BMS.
 
 ### Critical Battery Errors
+
+Fuse tripped. Check Wiring.
 
 | Code   | What It Is    | What It Means                             |
 |--------|---------------|-------------------------------------------|
@@ -37,11 +40,13 @@ All errors are Battery related
 |--------|-----------------------|---------------------------------------------|
 | **8**  | **BAT_COCP1**         | Charge over-current protection (Level 1)    |
 | **9**  | **BAT_COCP2**         | Charge over-current protection (Level 2)    |
-| **10** | **BAT_DOCP2**         | Discharge over-current protection (Level2   |
+| **10** | **BAT_DOCP2**         | Discharge over-current protection (Level 2) |
 | **11** | **BAT_DOCP1**         | Discharge over-current protection (Level 1) |
 | **21** | **NO_CHARGE_CURRENT** | Charger connected but no current detected   |
 
 ### Temperature Problems
+
+Bring the bike back to normal operating Temperatures
 
 | Code   | What It Is   | What It Means                          |
 |--------|--------------|----------------------------------------|
