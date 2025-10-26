@@ -1,7 +1,7 @@
 # Y-Modem PACK Upload Usage
 
 ## Overview
-This tool now supports uploading PACK files to VanMoof modules via Y-Modem protocol over USB UART adapters.
+This tool supports uploading original or your own PACK files via Y-Modem protocol over USB UART adapters.
 
 ## Features
 - **PACK File Validation**: Ensures the file is a valid PACK file and not an SPI dump
