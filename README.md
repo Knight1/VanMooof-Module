@@ -43,6 +43,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
       - Batteryware
     - Shifterware [MM32F031F6U6](https://crossic.com/wp-content/uploads/2021/12/DS_MM32F031xx_EN.pdf)
     - Motorware [TMS320F28054F](https://www.ti.com/lit/ds/symlink/tms320f28054f.pdf)
+    - GSMWare [SARA-G350](https://www.mouser.de/datasheet/3/3699/1/SARA-G3_DataSheet_UBX-13000993.pdf)
 - Logs
 - Shell (UART) for 
   - Module
