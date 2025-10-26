@@ -18,6 +18,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 [BLE UUIDs](BLEUUID.md)  
 [Sound Analysis](SOUND.md)  
 [Usage Examples](EXAMPLES.md)  
+[Error List](ERRORS.md)
 
 ### Features
 - ble keys (read/write)

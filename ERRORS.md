@@ -23,7 +23,7 @@ Fuse tripped. Check Wiring.
 | **0**  | **BAT_SCP**   | Short circuit protection                  |
 | **2**  | **BAT_PDSCP** | Pre-discharge short circuit protection    |
 | **3**  | **BAT_PDOCP** | Pre-discharge overload circuit protection |
-| **16** | **BAT_FP**    | Permanent fault (fuse triggered)          |
+| **16** | **BAT_FP**    | Permanent fault                           |
 
 ### Voltage Problems
 
@@ -46,7 +46,7 @@ Fuse tripped. Check Wiring.
 
 ### Temperature Problems
 
-Bring the bike back to normal operating Temperatures
+Bring the bike back to normal operating temperatures
 
 | Code   | What It Is   | What It Means                          |
 |--------|--------------|----------------------------------------|
@@ -76,23 +76,23 @@ Bring the bike back to normal operating Temperatures
 
 ### OAD Errors (Over-Air Download)
 
-| Code   | What It Is       | What It Means                |
-|--------|------------------|------------------------------|
-| **24** | **OAD_ABORT**    | Transfer aborted             |
-| **25** | **OAD_CRC**      | crc32 error in uploaded file |
-| **26** | **OAD_TRANSFER** | Transfer timeout             |
-| **27** | **OAD_PACK**     | Pack is missing or invalid   |
+| Code   | What It Is       | What It Means                   |
+|--------|------------------|---------------------------------|
+| **24** | **OAD_ABORT**    | Upload aborted                  |
+| **25** | **OAD_CRC**      | Checksum error in uploaded file |
+| **26** | **OAD_TRANSFER** | Transfer timeout                |
+| **27** | **OAD_PACK**     | Pack is missing or invalid      |
 
 ### ICF Errors (Internal Component Flash)
 
-| Code   | What It Is       | What It Means                   |
-|--------|------------------|---------------------------------|
-| **28** | **ICF_TIMEOUT**  | Timeout during flash            |
-| **29** | **ICF_HEADER**   | Header not found                |
-| **30** | **ICF_NO_FILES** | No Files in Pack                |
-| **31** | **ICF_ERASE**    | Flash Erase failed              |
-| **32** | **ICF_WRITE**    | Flash Write failed              |
-| **33** | **ICF_CRC**      | CRC32 invalid from File in Pack |
+| Code   | What It Is       | What It Means                      |
+|--------|------------------|------------------------------------|
+| **28** | **ICF_TIMEOUT**  | Timeout during flash               |
+| **29** | **ICF_HEADER**   | Header not found                   |
+| **30** | **ICF_NO_FILES** | No Files in Pack                   |
+| **31** | **ICF_ERASE**    | Flash Erase failed                 |
+| **32** | **ICF_WRITE**    | Flash Write failed                 |
+| **33** | **ICF_CRC**      | Checksum invalid from File in Pack |
 
 ### PGM Errors (Controller Programming)
 
