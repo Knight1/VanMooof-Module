@@ -49,6 +49,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
   - Module
   - BLE (bledebug)
   - GSM (gsmdebug)
+- At least two Tag Connect Ports (one 6 Pin, one 10 Pin)
 
 ### Special Thanks!
 - Tim
@@ -133,24 +134,15 @@ Tools needed: Torx Screw set. I used my iFixit Kit.
 
 Use flashrom to dump the SPI flash chip. See [EXAMPLES.md](EXAMPLES.md) for detailed command examples.
 
-### Key Extraction
+### Other important Hardware
 
-After dumping the SPI flash, the tool automatically extracts authentication keys and generates checksums:
-
-```bash
-# Dump SPI flash (keys automatically extracted)
-./VanMooof-Module -dump F88A5E4F9ECB,2043531337 -sudo
-# Creates: VMES3-2043531337-F88A5E4F9ECB.bin
-#         VMES3-2043531337-F88A5E4F9ECB.keys  
-#         VMES3-2043531337-F88A5E4F9ECB.sha512
-
-# Extract keys from existing dump
-./VanMooof-Module -f SPI-Flash_20241024-143052.rom -extract-keys
-# Creates: SPI-Flash_20241024-143052.keys
-#         SPI-Flash_20241024-143052.sha512
+```console
+5C604L (6x mosfet)
+AK4430ET (audio controller)
+MAX9768 (class-D audio amp)
+DRV8301 (gate driver)
+TXS0108E (level shifter)
 ```
-
-Files use consistent **YYYYMMDD-HHMMSS** naming format for timestamps.
 
 ### Getting Console Access to my bike
 
