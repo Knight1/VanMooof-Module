@@ -1,6 +1,8 @@
 # VanMoof Module Tool Examples
 
-This document contains practical examples of using the VanMoof Module tool for various operations.
+This Markdown contains practical examples of using the VanMoof Module tool for various operations.  
+
+Output Files use consistent **YYYYMMDD-HHMMSS** naming format for timestamps if no Frame and/or mac is supplied or the tool was unable to extract the mac from the Dump.
 
 ## Basic Operations
 
@@ -293,7 +295,7 @@ Found: Non-VanMoof Chip (0xEF, 0x4017)
 unsupported chip - VanMoof S3 requires MX25L51245G
 ```
 
-## Key Extraction Examples
+## Key Extraction
 
 ### Automatic Key Extraction During Dump
 ```bash
