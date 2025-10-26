@@ -49,7 +49,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
   - Module
   - BLE (bledebug)
   - GSM (gsmdebug)
-- At least two Tag Connect Ports (one 6 Pin, one 10 Pin)
+- Tag Connect Ports (at least one 6 Pin & one 10 Pin)
 
 ### Special Thanks!
 - Tim
@@ -96,6 +96,11 @@ Failed firmware updates can corrupt VM_SOUND entries. These corrupted files:
 ### Module is going into shipping mode outside bike?
 
 Connect the 42Vdc Charger from the Toolbox you got with the bike. 12Vdc also wakes the Module on the normal charging plug.
+
+### Module shows me the Skull outside bike
+
+This means the Bike was locked while the Module was removed or the remote_lock is enabled.  
+Put the Module into a frame, unlock it and then remove it.
 
 ### Module without activation code
 The activation code is bound to the Frame not the Module. A Partner can swap the Module even remotely if you ask nice.
