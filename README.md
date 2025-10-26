@@ -32,10 +32,15 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 - fmna key
   - fmna-rework (if you happen to have access to Apple's FMNA API)
 - all Firmware
-    - mucoboot (STM32F413VGT6 Bootloader)
-    - Mainware (STM32F413VGT6 LQFP100)
-    - bmsboot (STM32L072CZT6 Bootloader)
-    - Batteryware (STM32L072CZT6 LQFP48)
+    - [STM32F413VGT6 LQFP100](https://www.mouser.de/datasheet/2/389/stm32f413cg-1851205.pdf)
+        - mucoboot (Bootloader)
+        - Mainware
+    - [CC2642R1F](https://www.ti.com/lit/ds/symlink/cc2642r.pdf)
+        - bleboot (Bootloader)
+        - bleware
+    - [STM32L072CZT6 LQFP48](https://www.mouser.de/datasheet/2/389/stm32l072v8-1851235.pdf)
+      - bmsboot (Bootloader)
+      - Batteryware
     - Shifterware (MM32F031F6U6)
     - Motorware (F2806 / TMS320F28054F)
     - bleboot (CC2642R1F Bootloader)
@@ -91,6 +96,9 @@ Failed firmware updates can corrupt VM_SOUND entries. These corrupted files:
 ### Module is going into shipping mode outside bike?
 
 Connect the 42Vdc Charger from the Toolbox you got with the bike. 12Vdc also wakes the Module on the normal charging plug.
+
+### Module without activation code
+The activation code is bound to the Frame not the Module. A Partner can swap the Module even remotely if you ask nice.
 
 ### Longevity
 #### Battery
