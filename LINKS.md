@@ -21,13 +21,7 @@ https://github.com/SvenTiigi/VanMoofKit
 https://mikecoats.com/vanmoof-eshifter-reverse-engineering-part-1/  
 
 Err 23
-https://www.reddit.com/r/VanMoofSelfRepair/comments/1itcmsa/s3_error_23_change_bluetooth_chipmac_address/  
-
-Err 44
-https://www.reddit.com/r/vanmoofbicycle/comments/1k2eapb/vanspoof_a_possible_answer_to_your_44_err_woes/  
-https://mikecoats.com/van-spoof-v1-0/  
-https://www.reddit.com/r/VanMoofSelfRepair/comments/1f2fcv3/vanmoof_s3_x3_smd_components/  
-Changing Mainware Settings to disable Shifter
+https://www.reddit.com/r/VanMoofSelfRepair/comments/1itcmsa/s3_error_23_change_bluetooth_chipmac_address/
 
 Dead Module
 https://mikecoats.com/vanmoof-back-to-life-part-1/  
