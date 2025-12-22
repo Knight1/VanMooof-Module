@@ -273,104 +273,8 @@ READ AND DECODE LOGS
 1723060261 GSM_CMD_IDLE
 ```
 
-### Some Communication from the Bike to the VanMoof Backend via self-signed Certs.
-
-The Backend only supports 
-```console
-Hexcode  Cipher Suite Name (OpenSSL)       KeyExch.   Encryption  Bits     Cipher Suite Name (IANA/RFC)
- x3c     AES128-SHA256                     RSA        AES         128      TLS_RSA_WITH_AES_128_CBC_SHA256
-```
-
-The UUID is without dashes, 32 chars, numbers and chars. No duplication checking.
-dist is in kilometers with hectometers. So 5.5 kilometers become 55 here.
-Responds with result true.  
-```console
-curl -vk https://bikecomm.vanmoof.com/ping-response \
--H "Content-Type: application/json" \
--d '{"guid":"UUID","statistics":{"batt":95,"mac":"MAC","swv":"1.6.8","dist":37154}}'
-```
-
-Message Type(s) unknown
-```console
-curl -vk https://bikecomm.vanmoof.com/bike-message 
--H "Content-Type: application/json" 
--d '{"mac_address":"MAC","message_type":"","message_data":""}'
-```
-
-/upload expects UBlox Data. => InvalidUBloxDataException
-
-### m2m.vanmoof.com (SMS the bike sends)
-
-```console
-ALARM_BMS_REMOVED
-SET_SHIPPING
-START_FROM_SHIPPING
-PLAY_FIRE
-RIDING_MODE
-CPU_STOP_MODE
-CPU_STOPPED
-SHOW_LOCK
-AUTOWAKEUP
-CARDRIDGE_REMOVED
-LIPOCHARGE
-RESET
-OAD_FILE_TRF
-OAD_UPDATE
-DIAGNOSE
-DIAG_RDY
-OAD_FINISH
-OAD_FAILED
-OAD_RX_SOUND
-FACTORY_TEST
-PLAY_SHTDN
-PLAY_LOCK_SHTDN
-PLAY_LOCK_FROM_SLEEP
-PLAY_SHTDN_RDY
-ALARM_DELAY_ON
-TURN_ON
-LOW_SOC
-PIN_START
-PIN_STUCK
-PIN_1ST
-PIN_2ND
-PIN_3ND
-PIN_CHECK
-PIN_OK
-PIN_SHOW_OK
-PIN_NOK
-PIN_NOK_SHOW
-UNLOCK
-EXTRA_ALREADY_UNLOCKED
-UNLOCK_COUNT
-UNLOCK_COUNT_TIMEOUT
-LOCK_PLAY_UNLOCK
-LOCK_PLAY_START
-LOCK_DIM_OFF
-LOCK_CLEAR
-LOCK_SETUP
-LOCK_PIC
-LOCK_COUNT
-COUNT_OFF
-COUNT_CLEAR
-FIND_MY_PLAY
-BIKE_SHIPPING_ACCIDENTAL_WAKE
-BIKE_SHIPPING_LIPOCHARGE
-POWERON
-SMS_INIT
-SMS_READ
-SMS_WRITE
-CTX_ACT
-CTX_DEACT
-PING_SEND
-MESSAGE_SEND
-LOCATION_SEND
-POWEROFF
-IDLE
-WST_DISCHARGE_MODE
-WST_CHARGE_MODE
-WST_BYPASS_MODE
-WST_NONE
-```
+### IDA
+This is the Entrypoint (0x080030ec) for IDA!
 
 ### UART
 #### Bootloader
@@ -454,6 +358,16 @@ I2C1 Error
 CMD_BLE_VERSION_INFO
 CMD_BLE_MAC
 ```
+
+#### Reset Find My
+Press the power button 5 times to reset Find My (fmna).
+```console
+fmna-unpair
+```
+
+#### Charging
+As long as the blitz? is flashing the module battery is charging.
+
 
 #### Mainware (Debug Port) Console
 
