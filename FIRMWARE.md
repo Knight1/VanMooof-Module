@@ -237,3 +237,6 @@ length 0x00015610
 date 
 time
 ```
+
+### GSMWare
+08.90 (latest as of August 2017)
