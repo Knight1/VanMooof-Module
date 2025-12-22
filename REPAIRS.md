@@ -9,82 +9,89 @@ When no light is outputted, the BMS is not outputting any voltage.
 
 ### Critical Battery Errors
 
-Main Errors 0, 6, 9, 10, 16
+#### Main Errors 0, 6, 9, 10, 16
+
 Most likely also displayed 17, 20
 
-Fuse SFK40-45 likely open line. 
-Check fuse. Check pack and cell voltages. Check for visual damage & burns. Reset BMS.
-More in the dedicated BMS Repo. Ask me. Not for everyone.
+Fuse SFK40-45 likely open line.  
+Check fuse. Check pack and cell voltages. Check for visual damage & burns. Reset BMS.  
+More in the dedicated BMS Repo. Ask me. Not for everyone.  
 
 ### Voltage Problems (Battery and bike dead)
 
-Errors 4, 5
-When the Module is dead, you will not see them.
+#### Errors 4, 5
+When the Module is dead, you will not see them.  
 
-Battery is likely sitting at 4.2V pack voltage. You need to charge the battery manually. 
-Also, the module battery is likely empty.
+Battery is likely sitting at 4.2V pack voltage. You need to charge the battery manually.  
+Also, the module battery is likely empty.  
 
 ### Temperature Problems
 
-Errors 12 - 15.
+#### Errors 12 - 15
 
-Check temperature sensors in the battery if the problem persists in good temperature conditions.
+Check temperature sensors in the battery if the problem persists in good temperature conditions.  
 
-Check manual for resistance values and please add them.
+Check manual for resistance values and please add them.  
 
 ### System Communication
 
-Error 19
+#### Error 19
 
-There is a chip on the module which translates the BMS and the eShifter communication. 
-When this chip goes bad it might show this error. 
+There is a chip on the module which translates the BMS and the eShifter communication.  
+When this chip goes bad it might show this error.  
 
-Another problem can be that the STM32 on the BMS does enable output but is not communicating or cannot read cell voltages.
-You need to check the capacitors going from the cell monitor lines.
+Another problem can be that the STM32 on the BMS does enable output but is not communicating or cannot read cell voltages.  
+You need to check the capacitors going from the cell monitor lines.  
 
-Another problem can be that the STM32 on the BMS bootloops. In this case you will not get any power.
+Another problem can be that the STM32 on the BMS bootloops. In this case you will not get any power.  
 
 ### Charging & Current Issues
 
-Error 21
+#### Error 21
 
-Make sure the charger is outputting 37 - 43 volts and the battery is not at 80% if charge limit is set.
+Make sure the charger is outputting 37 - 43 volts and the battery is not at 80% if charge limit is set.  
 
 ## 📡 Communication & System Repairs (Errors 22-44)
 
 ### Communication
 
-Error 23
+#### Error 23
 
-TI (BLE) chip firmware corrupted, chip dead, main resistor on PCB open line.
+TI (BLE) chip firmware corrupted, chip dead, main resistor on PCB open line.  
 
 ### Sensors & Components
 
-Error 38
+#### Error 38
 
-Charge module via 12Vdc or charge the module battery directly.
-If you can, check internal resistance to check battery health.
+Charge module via 12Vdc or charge the module battery directly.  
+If you can, check internal resistance to check battery health.  
 
-Otherwise: Replace module battery
+Otherwise: Replace module battery  
 
-Errors 40, 41
-Hardware errors: Button(s) do(es) not work all the time.
+#### Errors 40, 41
 
-Clean button(s) with contact cleaner or replace button(s) (2€ for 5pcs on AliExpress)
+Hardware errors: Button(s) do(es) not work all the time.  
 
-Error 44
+Clean button(s) with contact cleaner or replace button(s) (2€ for 5pcs on AliExpress)  
 
-eShifter likely dead. You need to replace all shorted resistors or replace it with a better PCB.
-You can manually shift the gear into the 2nd gear.
-Remove the wheel from the frame, unscrew the eShifter from the wheel. Keep all screws and rings secure!
+#### Error 44  
 
-In Case you want to repair it. I needed 
+eShifter likely dead. You need to replace all shorted resistors or replace it with a better PCB.  
+You can manually shift the gear into the 2nd gear.  
+Remove the wheel from the frame, unscrew the eShifter from the wheel. Keep all screws and rings secure!  
 
-100 ohm size 0603
-10 K ohm size 0603
-270 K ohm size 0603
-51 K ohm size 0603
-22 ohm size 0603
+In Case you want to repair it. I needed  
+
+- 100 ohm size 0603  
+- 10 K ohm size 0603  
+- 270 K ohm size 0603  
+- 51 K ohm size 0603  
+- 22 ohm size 0603  
+
+https://www.reddit.com/r/vanmoofbicycle/comments/1k2eapb/vanspoof_a_possible_answer_to_your_44_err_woes/  
+https://mikecoats.com/van-spoof-v1-0/  
+https://www.reddit.com/r/VanMoofSelfRepair/comments/1f2fcv3/vanmoof_s3_x3_smd_components/  
+-> Changing Mainware Settings to disable Shifter  
 
 ## ⚙️ Motor Repairs (Errors 45-53)
 
