@@ -115,10 +115,12 @@ WST_BYPASS_MODE
 WST_NONE
 ```
 
-GSM: sms= %d
+### GSM Commands from the Firmware
+```console
+sms= %d
 %02X:%02X:%02X:%02X:%02X:%02X 'mac_address':'%s','message_type':'%s','message_data':'%s'
 'guid':'%s','statistics':{'batt':%d,'mac':'%s','swv':'%s','dist':%d}
-
+```
 
 ### Modem
 To Test!
