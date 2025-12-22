@@ -78,12 +78,21 @@ eShifter likely dead. You need to replace all shorted resistors or replace it wi
 You can manually shift the gear into the 2nd gear.
 Remove the wheel from the frame, unscrew the eShifter from the wheel. Keep all screws and rings secure!
 
+In Case you want to repair it. I needed 
+
+100 ohm size 0603
+10 K ohm size 0603
+270 K ohm size 0603
+51 K ohm size 0603
+22 ohm size 0603
 
 ## ⚙️ Motor Repairs (Errors 45-53)
 
 Error 45
 
 If the motor works this is the pre-announcement of a failing cable boom.
+In this Case the communication cable just failed. 
+You could fix it but you need to remove all cables from the Bike. Which is a fun experience.
 Good luck!
 
 ## 📶 Connectivity Repairs (Errors 54-58)
