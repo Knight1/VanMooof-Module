@@ -6,15 +6,15 @@ AssistNow Live Orbits calculates based on these information the current estimate
 This saves time and the complex calculation to get the bike location. 
 
 
-https://www.u-blox.com/en/product/assistnow
-https://portal.thingstream.io/pricing/laas/assistnow
-https://support.thingstream.io/hc/en-gb/articles/19690127778204-AssistNow-User-guide
-https://www.u-blox.com/en/product/u-center
-https://www.u-blox.com/en/u-center-2
+https://www.u-blox.com/en/product/assistnow  
+https://portal.thingstream.io/pricing/laas/assistnow  
+https://support.thingstream.io/hc/en-gb/articles/19690127778204-AssistNow-User-guide  
+https://www.u-blox.com/en/product/u-center  
+https://www.u-blox.com/en/u-center-2  
 
-https://www.mikrocontroller.net/attachment/243876/u-blox-ATCommands_Manual__UBX-13002752_.pdf
-https://content.u-blox.com/sites/default/files/products/documents/MultiGNSS-Assistance_UserGuide_%28UBX-13004360%29.pdf
-https://content.u-blox.com/sites/default/files/SER-product_Overview_UBX-21029993.pdf
+https://www.mikrocontroller.net/attachment/243876/u-blox-ATCommands_Manual__UBX-13002752_.pdf  
+https://content.u-blox.com/sites/default/files/products/documents/MultiGNSS-Assistance_UserGuide_%28UBX-13004360%29.pdf  
+https://content.u-blox.com/sites/default/files/SER-product_Overview_UBX-21029993.pdf  
 
 ### Some Communication from the Bike to the VanMoof Backend via self-signed Certs.
 
