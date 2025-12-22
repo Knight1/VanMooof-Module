@@ -19,6 +19,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 [Sound Analysis](SOUND.md)  
 [Usage Examples](EXAMPLES.md)  
 [Error List](ERRORS.md)
+[Repair Tips](REPAIRS.md)
 
 ### Features
 - ble keys (read/write)
