@@ -148,5 +148,3 @@ Bring the bike back to normal operating temperatures
 
 **For detailed repair procedures and troubleshooting steps, see [REPAIRS.md](REPAIRS.md)**
 
-*Most errors can be resolved with basic troubleshooting. When in doubt, consult a VanMoof certified technician.*
-

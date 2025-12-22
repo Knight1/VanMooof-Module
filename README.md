@@ -816,6 +816,8 @@ ES3 v1.01.15
 
 ### Update Dynapack BMS Firmware to 1.17 (latest Version)
 
+This can also be used if you want to downgrade the BMS. There is no downgrade check.
+
 I use minicom on the Mac. The easiest way is to go into the Folder with the Firmware and then start minicom.  
 **Make sure that both the Battery and the Module are somewhat charged AND that there are NO Errors related to the Battery**.  
 PLEASE. Do not try to update the BMS when the Fuse is OL (Open Line). It will not fix any BATtery error you have!  
