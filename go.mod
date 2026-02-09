@@ -6,7 +6,7 @@ toolchain go1.25.5
 
 require (
 	github.com/notifai/ymodem v0.3.5
-	golang.org/x/sys v0.40.0
+	golang.org/x/sys v0.41.0
 	periph.io/x/conn/v3 v3.7.2
 	periph.io/x/host/v3 v3.8.5
 )
