@@ -14,17 +14,19 @@ on:
       - 'go.mod'
       - 'go.sum'
 
-jobs:
+permissions: 
+  contents: read
 
+jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.25'
+          go-version: '1.26'
 
       - name: Build
         run: go build -mod=vendor -trimpath -buildmode=pie -ldflags "-w -s" -v ./...
