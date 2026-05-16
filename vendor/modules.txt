@@ -28,8 +28,8 @@ golang.org/x/sys/windows
 # golang.org/x/term v0.38.0
 ## explicit; go 1.24.0
 golang.org/x/term
-# periph.io/x/conn/v3 v3.7.2
-## explicit; go 1.22.6
+# periph.io/x/conn/v3 v3.7.3
+## explicit; go 1.25.0
 periph.io/x/conn/v3
 periph.io/x/conn/v3/driver
 periph.io/x/conn/v3/driver/driverreg
