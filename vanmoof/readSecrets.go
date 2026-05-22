@@ -10,7 +10,7 @@ import (
 
 // External-SPI-flash secrets sector: 128 records × 32 B = 4 KB at 0x5A000.
 // Each record is 28 B payload + 4 B CRC-32/LE (OEM crc32_le, seed
-// 0xFFFFFFFF, no final XOR). See vanmoof/crc.c_ and secrets.c.
+// 0xFFFFFFFF, no final XOR).
 const (
 	secretsSectorBase   int64  = 0x0005A000
 	secretsRecordBytes  int    = 0x20
