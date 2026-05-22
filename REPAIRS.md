@@ -91,16 +91,16 @@ In Case you want to repair it. I needed
 https://www.reddit.com/r/vanmoofbicycle/comments/1k2eapb/vanspoof_a_possible_answer_to_your_44_err_woes/  
 https://mikecoats.com/van-spoof-v1-0/  
 https://www.reddit.com/r/VanMoofSelfRepair/comments/1f2fcv3/vanmoof_s3_x3_smd_components/  
--> Changing Mainware Settings to disable Shifter  
+-> Changing Mainware Settings with Chris repo to disable Shifter but keep display enabled.  
 
 ## ⚙️ Motor Repairs (Errors 45-53)
 
 Error 45
 
-If the motor works this is the pre-announcement of a failing cable boom.
-In this Case the communication cable just failed. 
-You could fix it but you need to remove all cables from the Bike. Which is a fun experience.
-Good luck!
+If the motor works this is the pre-announcement of a failing cable boom.  
+In this Case the communication cable just failed.  
+You could fix it but you need to remove all cables from the Bike. Which is a fun experience.  
+Good luck!  
 
 ## 📶 Connectivity Repairs (Errors 54-58)
 
