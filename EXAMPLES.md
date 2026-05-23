@@ -95,6 +95,90 @@ Log 1:
 1723229120 BIKE_RESET
 ```
 
+### Viewing BLE Permissions (OWNER_PERMS / UKEY records)
+
+The bleware keeps up to 124 keyed permission records in the SPI flash
+secrets sector at `0x5A000`. Each record is 32 bytes — a 28-byte
+payload followed by a CRC-32/LE checksum. The keyed-record API lives
+in `bleware/src/secrets.c` and is matched by `auth_derive_session_key`
+in `bleware/src/auth.c`.
+
+Record layout (`SECRETS_KEY_OFFSET = 0x10`, `SECRETS_TAG_OFFSET = 0x18`):
+
+```
++0x00  16 B  application payload (e.g. "_____OWNER_PERMS")
++0x10   4 B  key id        (uint32 LE — matched by secrets_find_by_key)
++0x14   4 B  permission mask (OWNER_PERMS uses 0xFFFFFFFF = all perms)
++0x18   4 B  record tag    ("UKEY" 0x59454B55 / "M-ID" 0x44492D4D)
++0x1C   4 B  CRC-32/LE of bytes 0..0x1B (zlib poly, no final XOR)
+```
+
+When the firmware sees an *un-provisioned* device — no CRC-valid
+manufacturing key at slot `0x7E`, *and* zero CRC-valid records in
+slots `[0x00, 0x7B]` — it synthesises a default OWNER_PERMS record on
+the fly. From that moment, every BLE client gets full owner
+permissions back regardless of the key id it claims.
+
+To inspect what permissions a dump exposes:
+
+```console
+./cmd -f dump.rom -perms
+```
+
+Each record is rendered as a multi-line block showing the 16-byte
+key material (hex, plus ASCII when meaningful), the key id with a
+human-readable label, the permission mask, and the tag. Known key
+ids are labelled `BikeComm` (1), `Sharing` (2), `Workshop` (3) and
+`OWNER_PERMS` (0).
+
+Sample output for a *provisioned* bike (key bytes redacted):
+
+```console
+Secrets sector @ 0x5A000 — user-keyed records (slots [0x00, 0x7B]):
+
+  slot   0 (0x00):
+    key id    : 0x00000001  (BikeComm)
+    key (hex) : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    perm mask : 0x000003FE
+    tag       : "UKEY" (0x59454B55)
+    crc       : 0x........
+
+  slot   1 (0x01):
+    key id    : 0x00000002  (Sharing)
+    key (hex) : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    perm mask : 0x00000000
+    tag       : "UKEY" (0x59454B55)
+    crc       : 0x........
+
+  slot   2 (0x02):
+    key id    : 0x00000003  (Workshop)
+    key (hex) : XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    perm mask : 0x00000000
+    tag       : "UKEY" (0x59454B55)
+    crc       : 0x........
+
+Manufacturing key (slot 0x7E): PRESENT
+Device state: PROVISIONED — firmware will NOT synthesise the default OWNER_PERMS record.
+```
+
+Sample output for an *un-provisioned* dump (factory-fresh module —
+the firmware will accept any BLE client because it synthesises the
+default `_____OWNER_PERMS` record on the fly):
+
+```console
+Secrets sector @ 0x5A000 — user-keyed records (slots [0x00, 0x7B]):
+
+  (no CRC-valid records found)
+Manufacturing key (slot 0x7E): absent
+Device state: UNPROVISIONED — firmware will synthesise the default OWNER_PERMS record:
+    key id    : 0x00000000  (OWNER_PERMS (default))
+    key (hex) : 5F5F5F5F5F4F574E45525F5045524D53
+    key (ascii): "_____OWNER_PERMS"
+    perm mask : 0xFFFFFFFF
+    tag       : "UKEY" (0x59454B55)
+    crc       : 0x........
+```
+
 ## Encryption/Decryption Operations
 
 ### Decrypt pack File from API
