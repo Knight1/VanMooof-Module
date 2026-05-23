@@ -28,8 +28,9 @@ import (
 	"strings"
 )
 
-// Layout constants for the external-flash secrets sector. See file
-// header above for the on-disk format.
+// External-SPI-flash secrets sector: 128 records × 32 B = 4 KB at 0x5A000.
+// Each record is 28 B payload + 4 B CRC-32/LE (OEM crc32_le, seed
+// 0xFFFFFFFF, no final XOR).
 const (
 	// secretsSectorBase is the external-flash byte offset of the
 	// 4 KB secrets sector.
