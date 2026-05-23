@@ -32,6 +32,7 @@ var (
 	flashInfo       = flag.Bool("flash-info", false, "Read SPI flash chip information and serial number")
 	sudoFlag        = flag.Bool("sudo", false, "Enable SPI hardware access (required for dump and flash-info)")
 	extractKeys     = flag.Bool("extract-keys", false, "Extract keys and generate SHA512 checksum from existing dump file")
+	showPerms       = flag.Bool("perms", false, "Show BLE keyed-record permissions and report OWNER_PERMS fallback state")
 )
 
 func main() {
@@ -52,6 +53,7 @@ func main() {
 		log.Printf("  %s -f dump.rom -verify            # Verify data coverage\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -verify -extra     # Show unaccounted regions\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -extract-keys      # Extract keys and SHA512\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -perms             # Show BLE permissions / OWNER_PERMS state\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -entropy           # Analyze file entropy without decryption\n", os.Args[0])
@@ -254,7 +256,7 @@ func main() {
 		// Check if any file-dependent operations are requested
 		if *showBLESecrets || *showLogs || *changeUnlockKey != "" ||
 			*exportSounds || *exportWAV || *analyzeWAV ||
-			*verifyDump || *checkEntropy || *extractKeys {
+			*verifyDump || *checkEntropy || *extractKeys || *showPerms {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}
@@ -272,6 +274,18 @@ func main() {
 			os.Exit(1)
 		}
 		vanmoof.ReadLogs(file)
+		return
+	}
+
+	if *showPerms {
+		if file == nil {
+			fmt.Println("File path required. Use -f FILE")
+			os.Exit(1)
+		}
+		if err := vanmoof.PrintPerms(file); err != nil {
+			fmt.Printf("Error reading permissions: %v\n", err)
+			os.Exit(1)
+		}
 		return
 	}
 
