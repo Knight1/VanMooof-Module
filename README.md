@@ -76,6 +76,13 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
     - Automatic extraction of BLE authentication keys after SPI dump
     - MAC address validation with MOOF signature
     - SHA512 checksum generation for dump integrity
+- BLE Permission Inspection (`-perms`)
+    - Lists every CRC-valid keyed record in slots `[0x00, 0x7B]`
+      (key id, permission mask, `UKEY`/`M-ID` tag, payload)
+    - Reports whether the manufacturing key (slot `0x7E`) is present
+    - Detects the un-provisioned state in which the bleware
+      `auth_derive_session_key` helper synthesises the default
+      `_____OWNER_PERMS` record and accepts any client key id
 - Untestet: write a new ble authentication Key into the flash
 - Not Implemented: Upload Sound Files
 
