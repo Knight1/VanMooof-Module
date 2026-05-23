@@ -1,5 +1,18 @@
-// crc32.go
-// Go translation of the C utility for computing and verifying VanMoof ware binaries' CRC32
+// crc.go — CRC-32 routines used across the VanMoof firmware ecosystem.
+//
+// Two distinct CRC-32 variants coexist in the OEM stack and both are
+// implemented here:
+//
+//  1. Forward CRC-32 (poly 0x04C11DB7, non-reflected, init 0xFFFFFFFF,
+//     no final XOR). Used to authenticate VanMoof "ware" binaries
+//     (bootloader/firmware images). See CalcCRC and VerifyWareFile.
+//
+//  2. Reflected CRC-32 / Linux-kernel `crc32_le` (poly 0xEDB88320,
+//     init 0xFFFFFFFF, no final XOR). Used by the external-SPI-flash
+//     secrets sector at 0x5A000 to protect each 32-byte record's
+//     28-byte payload. See CalcCRC32LE; readSecrets.go consumes it.
+//
+// Both tables are precomputed in init().
 
 package vanmoof
 
@@ -10,12 +23,27 @@ import (
 )
 
 const (
+	// wareMagic identifies a VanMoof "ware" image (firmware/bootloader)
+	// in the first 4 bytes of its header. Files without this magic are
+	// treated as raw images whose CRC lives in the trailing 4 bytes.
 	wareMagic uint32 = 0xaa55aa55
-	poly      uint32 = 0x04C11DB7
-	initCRC   uint32 = 0xffffffff
-	headSize         = 4*4 + 12 + 12 // magic, version, crc, length + date + time
+
+	// poly is the IEEE 802.3 CRC-32 polynomial in non-reflected form,
+	// used by the ware-binary CRC (see CalcCRC).
+	poly uint32 = 0x04C11DB7
+
+	// initCRC is the standard CRC-32 seed shared by both variants.
+	initCRC uint32 = 0xffffffff
+
+	// headSize is the on-disk size of wareHeader: 4 × uint32 (magic,
+	// version, crc, length) followed by 12-byte date and 12-byte time
+	// strings.
+	headSize = 4*4 + 12 + 12
 )
 
+// wareHeader is the fixed-layout prefix of a VanMoof ware binary. The
+// CRC field covers the header (with CRC and Length blanked to 0xFF)
+// plus the payload up to Length bytes.
 type wareHeader struct {
 	Magic   uint32
 	Version uint32
@@ -30,12 +58,22 @@ type wareHeader struct {
 // 0xFFFFFFFF, no final XOR.
 const polyLE uint32 = 0xEDB88320
 
-// Precomputed CRC tables for performance
+// Precomputed 256-entry lookup tables, populated once in init():
+//
+//   - crcTable:   forward CRC-32 (poly 0x04C11DB7, MSB-first), used by
+//     CalcCRC for the ware-binary format.
+//   - crcTableLE: reflected CRC-32 (poly 0xEDB88320, LSB-first), used
+//     by CalcCRC32LE to match the OEM crc32_le helper.
 var (
-	crcTable   [256]uint32 // forward CRC-32 (ware binary format)
-	crcTableLE [256]uint32 // reflected CRC-32 (OEM crc32_le)
+	crcTable   [256]uint32
+	crcTableLE [256]uint32
 )
 
+// init builds both CRC-32 lookup tables. For each byte value 0..255 it
+// runs 8 polynomial-division steps twice: once MSB-first with poly to
+// fill crcTable (forward CRC), and once LSB-first with polyLE to fill
+// crcTableLE (reflected CRC). Done once at package load so the runtime
+// path is a single table indexing per byte.
 func init() {
 	for i := 0; i < 256; i++ {
 		crc := uint32(i) << 24
@@ -60,10 +98,17 @@ func init() {
 	}
 }
 
-// CalcCRC32LE is the OEM `crc32_le` used by the external-flash secrets
-// store (slot 0 BLE auth key, slot 126 manufacturing key, …). Matches
-// FUN_0002c726 in the firmware: reflected CRC-32, seed taken from the
-// caller, no final XOR. Pass 0xFFFFFFFF as seed for the secrets format.
+// CalcCRC32LE computes the reflected CRC-32 used by the OEM `crc32_le`
+// helper in the external-flash secrets store (slot 0 BLE auth key,
+// slot 126 manufacturing key, ...). It mirrors firmware function
+// FUN_0002c726:
+//
+//	crc = table[(crc ^ byte) & 0xFF] ^ (crc >> 8)
+//
+// The caller supplies the seed (use 0xFFFFFFFF for the secrets-record
+// format) and no final XOR is applied — the returned value is the raw
+// register state, matching what the firmware stores at byte offset
+// 0x1C of each 32-byte record.
 func CalcCRC32LE(seed uint32, data []byte) uint32 {
 	crc := seed
 	for _, b := range data {
@@ -72,7 +117,16 @@ func CalcCRC32LE(seed uint32, data []byte) uint32 {
 	return crc
 }
 
-// CalcCRC performs CRC32 over 32-bit little-endian words using lookup table
+// CalcCRC computes the forward CRC-32 used by VanMoof ware binaries.
+// It consumes data as 32-bit little-endian words: each word is XORed
+// into the running register, then advanced 4 bytes through the
+// MSB-first table (crcTable, poly 0x04C11DB7). A trailing partial word
+// is zero-padded to 4 bytes so the same word-oriented step applies.
+//
+// Use initCRC (0xFFFFFFFF) for `crc` on the first call. No final XOR
+// is applied; the returned register state is compared directly against
+// the value stored in the binary's header (or trailing 4 bytes for
+// bootloader-format files).
 func CalcCRC(crc uint32, data []byte) uint32 {
 	// Process 4-byte words
 	for i := 0; i+4 <= len(data); i += 4 {
@@ -97,7 +151,23 @@ func CalcCRC(crc uint32, data []byte) uint32 {
 	return crc
 }
 
-// VerifyWareFile verifies the CRC32 of a VanMoof ware file
+// VerifyWareFile validates the CRC-32 of a VanMoof ware file on disk.
+//
+// Two on-disk formats are accepted, distinguished by the first 4 bytes:
+//
+//   - wareHeader format (magic == wareMagic): the header's CRC field
+//     covers the header (with the CRC and Length words blanked to
+//     0xFF) plus the payload up to header.Length bytes. The function
+//     reads the header, recomputes the CRC with CalcCRC, and compares
+//     it to header.CRC.
+//
+//   - Bootloader/raw format (any other magic): the CRC sits in the
+//     last 4 little-endian bytes of the file and covers everything
+//     before it. The function recomputes the CRC over data[:size-4]
+//     and compares it to that trailing word.
+//
+// Returns nil on a match, or a descriptive error on mismatch, short
+// reads, or claimed lengths that exceed the file size.
 func VerifyWareFile(filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
