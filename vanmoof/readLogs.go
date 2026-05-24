@@ -3,6 +3,7 @@ package vanmoof
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -37,7 +38,7 @@ func isPrintableASCII(s string) bool {
 }
 
 func ReadLogs(file *os.File) {
-	offset := int64(0x3fdd000)
+	offset := int64(logRegionBase)
 
 	stat, err := file.Stat()
 	if err != nil {
@@ -50,116 +51,77 @@ func ReadLogs(file *os.File) {
 		return
 	}
 
-	availableBytes := fileSize - offset
-	length := int(availableBytes)
-	if length > 1024*1024 {
-		length = 1024 * 1024
+	length := logRegionSize
+	if int(fileSize-offset) < length {
+		length = int(fileSize - offset)
 	}
 
-	fmt.Printf("Reading %d bytes from offset 0x%x (file size: 0x%x)\n", length, offset, fileSize)
+	fmt.Printf("Reading %d bytes from log region @ 0x%X (128 KB circular buffer, 16-byte entries)\n",
+		length, offset)
 
 	buf := readFromFile(file, offset, length)
 	if buf == nil {
 		return
 	}
 
-	blocks := findLogBlocks(buf)
-	totalLines := 0
-	for _, b := range blocks {
-		totalLines += countLogLines(buf[b[0]:b[1]])
+	blocks := countPopulatedBlocks(buf)
+	popStart, popEnd := populatedLogRange(buf)
+	lines := countLogLines(buf[popStart:popEnd])
+
+	fmt.Printf("Log region: %d/%d 16-byte blocks populated, %d \\n-terminated entries\n",
+		blocks, len(buf)/logEntrySize, lines)
+	if popEnd > popStart {
+		fmt.Printf("Populated span: 0x%08X - 0x%08X (%d bytes)\n",
+			offset+int64(popStart), offset+int64(popEnd), popEnd-popStart)
+	}
+	if blocks == 0 {
+		return
 	}
 
-	fmt.Printf("Found %d log blocks containing %d log entries\n", len(blocks), totalLines)
-	for i, b := range blocks {
-		blockBytes := buf[b[0]:b[1]]
-		lines := countLogLines(blockBytes)
-		fmt.Printf("\n--- Block %d @ 0x%08X (%d bytes, %d entries) ---\n",
-			i+1, offset+int64(b[0]), b[1]-b[0], lines)
-		// Print the block as text, with NULs treated as line breaks.
-		text := strings.ReplaceAll(string(blockBytes), "\x00", "\n")
-		fmt.Println(strings.TrimRight(text, "\n"))
-	}
+	// Print the populated portion as text, with NULs treated as line breaks.
+	text := strings.ReplaceAll(string(buf[popStart:popEnd]), "\x00", "\n")
+	fmt.Println("\n--- log contents ---")
+	fmt.Println(strings.TrimRight(text, "\n"))
 }
 
-// logFFGapThreshold is the minimum run of consecutive 0xFF bytes
-// that the log writer leaves between log "blocks" (one per boot
-// cycle / log flush). Anything shorter is treated as content
-// (could be a binary field inside a log line). Tuned empirically:
-// real entries never carry 4 consecutive 0xFF in a row, while
-// inter-block padding is hundreds-to-thousands of bytes long.
-const logFFGapThreshold = 4
+// Log region layout per bleware/src/log_gatt.c (DAT_0001EA34 +
+// LOG_REGION_BASE/SIZE) and bleware/src/monitor/cmd_log.c:
+//
+//   0x03FDC000 - 0x03FDD000   4 KB   cursor persistence sector
+//                                     (circular array of (head, tail)
+//                                      u32 pairs, 8 bytes per write,
+//                                      wraps mod 0x1000)
+//   0x03FDD000 - 0x03FFD000  128 KB  log circular buffer
+//                                     (16-byte entries; lines are
+//                                      \n-terminated ASCII spanning
+//                                      multiple entries)
+//   0x03FFD000 - 0x04000000   12 KB  unaccounted tail
+//
+// Wrap mask for the log region is 0x1FFFF; log_read_entry indexes
+// into it in 16-byte units.
+const (
+	logRegionBase   = 0x03FDD000
+	logRegionSize   = 0x00020000
+	logEntrySize    = 16
+	logCursorSector = 0x03FDC000
+	logCursorSize   = 0x00001000
+)
 
-// findLogBlocks returns the [start, end) byte offsets (relative
-// to buf) of each non-FF "log block" — i.e. each region of the log
-// buffer separated from its neighbours by a run of at least
-// logFFGapThreshold consecutive 0xFF bytes. Blocks that are
-// entirely 0x00 padding are dropped (uninitialised flash that
-// was zeroed rather than erased).
-func findLogBlocks(buf []byte) [][2]int {
-	var blocks [][2]int
-	i, n := 0, len(buf)
-	for i < n {
-		// Skip leading FF padding.
-		for i < n && buf[i] == 0xFF {
-			i++
-		}
-		if i >= n {
-			break
-		}
-		start := i
-		// Advance until we hit a long-enough FF run.
-		for i < n {
-			if buf[i] != 0xFF {
-				i++
-				continue
-			}
-			runStart := i
-			for i < n && buf[i] == 0xFF {
-				i++
-			}
-			if i-runStart >= logFFGapThreshold {
-				blocks = append(blocks, [2]int{start, runStart})
-				start = -1
-				break
-			}
-		}
-		if start >= 0 {
-			blocks = append(blocks, [2]int{start, i})
-		}
-	}
-
-	// Filter out blocks that are entirely 0x00 — those are pre-
-	// initialised flash, not real log data.
-	out := blocks[:0]
-	for _, b := range blocks {
-		nonZero := false
-		for _, c := range buf[b[0]:b[1]] {
-			if c != 0x00 {
-				nonZero = true
-				break
-			}
-		}
-		if nonZero {
-			out = append(out, b)
-		}
-	}
-	return out
-}
-
-// countLogLines counts newline- or null-terminated entries inside
-// a single log block, ignoring lines that aren't substantially
-// printable ASCII. A trailing partial line (no terminator before
-// the FF gap) is counted as one entry.
-func countLogLines(block []byte) int {
+// countLogLines counts \n-terminated entries inside the populated
+// portion of the log buffer. \r and NUL are also treated as line
+// terminators (the firmware emits CRLF on the UART path but plain
+// LF on the BLE-readout path). Lines that aren't substantially
+// printable ASCII are skipped.
+func countLogLines(buf []byte) int {
 	count := 0
 	start := 0
-	for i := 0; i <= len(block); i++ {
-		end := i == len(block) || block[i] == '\n' || block[i] == '\r' || block[i] == 0x00
+	for i := 0; i <= len(buf); i++ {
+		end := i == len(buf) || buf[i] == '\n' || buf[i] == '\r' || buf[i] == 0x00
 		if !end {
 			continue
 		}
 		if start < i {
-			line := strings.TrimSpace(string(block[start:i]))
+			line := strings.TrimSpace(string(buf[start:i]))
 			if line != "" && isPrintableASCII(line) {
 				count++
 			}
@@ -169,12 +131,193 @@ func countLogLines(block []byte) int {
 	return count
 }
 
-// ReadLogsCount summarises the log region: how many distinct log
-// blocks (boot-cycle dumps) were written and how many individual
-// log lines they contain in total. Blocks are recognised by the
-// long 0xFF gaps the firmware leaves between flushes.
+// populatedLogRange returns the byte range [start, end) of the
+// non-0xFF portion of buf (which is exactly the log region). The
+// circular buffer is contiguous on disk — the firmware writes head
+// forward through it, leaving the tail of unwritten bytes at 0xFF.
+// Returns (0, 0) if the buffer is entirely 0xFF.
+//
+// We trim leading and trailing 0xFF only, since intermediate 0xFF
+// bytes can occur naturally (e.g. in binary fields inside a log
+// line that hasn't been escaped). This is a simplification that
+// works as long as the head cursor hasn't wrapped — once it wraps,
+// the populated region is actually the entire buffer and we'd need
+// the persisted (head, tail) pair from the cursor sector to know
+// where the oldest entry starts.
+func populatedLogRange(buf []byte) (int, int) {
+	start := 0
+	for start < len(buf) && buf[start] == 0xFF {
+		start++
+	}
+	end := len(buf)
+	for end > start && buf[end-1] == 0xFF {
+		end--
+	}
+	return start, end
+}
+
+// extractLogLines returns every printable \n-terminated line in
+// the populated portion of the log buffer, in flash order (oldest
+// first under the linear-buffer assumption — see the caveat on
+// populatedLogRange). Used by PrintLogByIndex to support indexed
+// access (first / last / Nth / range / comma-list).
+func extractLogLines(buf []byte) []string {
+	popStart, popEnd := populatedLogRange(buf)
+	if popEnd <= popStart {
+		return nil
+	}
+	var lines []string
+	start := popStart
+	for i := popStart; i <= popEnd; i++ {
+		end := i == popEnd || buf[i] == '\n' || buf[i] == '\r' || buf[i] == 0x00
+		if !end {
+			continue
+		}
+		if start < i {
+			line := strings.TrimSpace(string(buf[start:i]))
+			if line != "" && isPrintableASCII(line) {
+				lines = append(lines, line)
+			}
+		}
+		start = i + 1
+	}
+	return lines
+}
+
+// parseLogSelector resolves a comma-separated selector string like
+// "0,1,2,last" or "0-4,last" into concrete 0-based indices into a
+// slice of `count` lines. Supported tokens:
+//
+//	N        — line index N (negative is rejected)
+//	first    — alias for 0
+//	last     — count-1
+//	N-M      — inclusive range [N, M]; either side may be "first"
+//	           or "last"
+//
+// Duplicates are kept in the order they appear; out-of-range
+// indices return an error rather than being silently clamped so
+// the user notices a typo.
+func parseLogSelector(selector string, count int) ([]int, error) {
+	if count <= 0 {
+		return nil, fmt.Errorf("no log entries to select from")
+	}
+	resolve := func(tok string) (int, error) {
+		switch strings.ToLower(strings.TrimSpace(tok)) {
+		case "first":
+			return 0, nil
+		case "last":
+			return count - 1, nil
+		}
+		n, err := strconv.Atoi(strings.TrimSpace(tok))
+		if err != nil {
+			return 0, fmt.Errorf("invalid log index %q", tok)
+		}
+		if n < 0 || n >= count {
+			return 0, fmt.Errorf("log index %d out of range [0, %d]", n, count-1)
+		}
+		return n, nil
+	}
+	var out []int
+	for _, part := range strings.Split(selector, ",") {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		if i := strings.Index(part, "-"); i > 0 {
+			lo, err := resolve(part[:i])
+			if err != nil {
+				return nil, err
+			}
+			hi, err := resolve(part[i+1:])
+			if err != nil {
+				return nil, err
+			}
+			if lo > hi {
+				lo, hi = hi, lo
+			}
+			for n := lo; n <= hi; n++ {
+				out = append(out, n)
+			}
+			continue
+		}
+		n, err := resolve(part)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, n)
+	}
+	if len(out) == 0 {
+		return nil, fmt.Errorf("empty selector")
+	}
+	return out, nil
+}
+
+// PrintLogByIndex reads the log region and prints the lines named
+// by `selector` (e.g. "0", "last", "0,1,2,last", "0-4"). Always
+// prints the total line count first so the user can see what range
+// is valid. Returns an error if the selector is malformed or out
+// of range.
+func PrintLogByIndex(file *os.File, selector string) error {
+	offset := int64(logRegionBase)
+	stat, err := file.Stat()
+	if err != nil {
+		return fmt.Errorf("stat: %w", err)
+	}
+	fileSize := stat.Size()
+	if offset >= fileSize {
+		return fmt.Errorf("log offset 0x%X beyond file size 0x%X", offset, fileSize)
+	}
+	length := logRegionSize
+	if int(fileSize-offset) < length {
+		length = int(fileSize - offset)
+	}
+	buf := readFromFile(file, offset, length)
+	if buf == nil {
+		return fmt.Errorf("failed to read log region")
+	}
+
+	lines := extractLogLines(buf)
+	fmt.Printf("Log region @ 0x%X: %d \\n-terminated entries (0..%d)\n",
+		offset, len(lines), len(lines)-1)
+	if len(lines) == 0 {
+		return nil
+	}
+
+	picks, err := parseLogSelector(selector, len(lines))
+	if err != nil {
+		return err
+	}
+	for _, idx := range picks {
+		fmt.Printf("[%d] %s\n", idx, lines[idx])
+	}
+	return nil
+}
+
+// countPopulatedBlocks reports how many of the 16-byte entries in
+// the log buffer contain at least one non-0xFF byte. Matches what
+// `cmd_log_count` (`log_block_count()`) reports over the UART
+// monitor.
+func countPopulatedBlocks(buf []byte) int {
+	count := 0
+	for i := 0; i+logEntrySize <= len(buf); i += logEntrySize {
+		for _, b := range buf[i : i+logEntrySize] {
+			if b != 0xFF {
+				count++
+				break
+			}
+		}
+	}
+	return count
+}
+
+// ReadLogsCount summarises the log region. Mirrors what the
+// firmware's `cmd_log_count` reports (the "block count" — number of
+// populated 16-byte entries) and additionally counts the
+// \n-terminated text lines, which is closer to what a human means
+// by "how many logs are saved". Layout constants come from
+// bleware/src/log_gatt.c (LOG_REGION_BASE / LOG_REGION_SIZE).
 func ReadLogsCount(file *os.File) {
-	offset := int64(0x3fdd000)
+	offset := int64(logRegionBase)
 
 	stat, err := file.Stat()
 	if err != nil {
@@ -187,32 +330,27 @@ func ReadLogsCount(file *os.File) {
 		return
 	}
 
-	availableBytes := fileSize - offset
-	length := int(availableBytes)
-	if length > 1024*1024 {
-		length = 1024 * 1024
+	length := logRegionSize
+	if int(fileSize-offset) < length {
+		length = int(fileSize - offset)
 	}
 
-	fmt.Printf("Reading %d bytes from offset 0x%x (file size: 0x%x)\n", length, offset, fileSize)
+	fmt.Printf("Reading %d bytes from log region @ 0x%X (128 KB circular buffer)\n",
+		length, offset)
 
 	buf := readFromFile(file, offset, length)
 	if buf == nil {
 		return
 	}
 
-	blocks := findLogBlocks(buf)
-	totalLines := 0
-	for _, b := range blocks {
-		totalLines += countLogLines(buf[b[0]:b[1]])
-	}
+	blocks := countPopulatedBlocks(buf)
+	popStart, popEnd := populatedLogRange(buf)
+	lines := countLogLines(buf[popStart:popEnd])
 
-	fmt.Printf("Found %d log blocks containing %d log entries\n", len(blocks), totalLines)
-	if len(blocks) == 0 {
-		return
-	}
-	for i, b := range blocks {
-		lines := countLogLines(buf[b[0]:b[1]])
-		fmt.Printf("  block %d: 0x%08X - 0x%08X (%d bytes, %d entries)\n",
-			i+1, offset+int64(b[0]), offset+int64(b[1]), b[1]-b[0], lines)
+	fmt.Printf("Log region: %d/%d 16-byte blocks populated, %d \\n-terminated entries\n",
+		blocks, len(buf)/logEntrySize, lines)
+	if popEnd > popStart {
+		fmt.Printf("Populated span: 0x%08X - 0x%08X (%d bytes)\n",
+			offset+int64(popStart), offset+int64(popEnd), popEnd-popStart)
 	}
 }

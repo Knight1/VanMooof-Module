@@ -141,15 +141,33 @@ func VerifyDump(moduleFileName string, showExtra bool) error {
 		})
 	}
 
-	// Logs region
-	logOffset := 0x3fdd000
-	if fileSize > logOffset {
-		logSize := fileSize - logOffset
+	// Log region — per bleware/src/log_gatt.c:
+	//   0x03FDC000 - 0x03FDD000   4 KB cursor persistence sector
+	//   0x03FDD000 - 0x03FFD000  128 KB circular log buffer
+	// The 12 KB at 0x03FFD000-0x04000000 is NOT part of the log
+	// region and stays unaccounted until we identify it.
+	if fileSize > 0x03FDC000 {
+		end := 0x03FDD000
+		if end > fileSize {
+			end = fileSize
+		}
 		knownRegions = append(knownRegions, MemoryRegion{
-			Name:   "Logs",
-			Start:  logOffset,
-			End:    fileSize,
-			Length: logSize,
+			Name:   "Log Cursor Persist",
+			Start:  0x03FDC000,
+			End:    end,
+			Length: end - 0x03FDC000,
+		})
+	}
+	if fileSize > 0x03FDD000 {
+		end := 0x03FFD000
+		if end > fileSize {
+			end = fileSize
+		}
+		knownRegions = append(knownRegions, MemoryRegion{
+			Name:   "Logs (128 KB circular)",
+			Start:  0x03FDD000,
+			End:    end,
+			Length: end - 0x03FDD000,
 		})
 	}
 
