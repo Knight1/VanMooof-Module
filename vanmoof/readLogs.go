@@ -39,24 +39,21 @@ func isPrintableASCII(s string) bool {
 func ReadLogs(file *os.File) {
 	offset := int64(0x3fdd000)
 
-	// Get file size to avoid EOF
 	stat, err := file.Stat()
 	if err != nil {
 		fmt.Printf("Error getting file info: %v\n", err)
 		return
 	}
-
 	fileSize := stat.Size()
 	if offset >= fileSize {
 		fmt.Printf("Log offset 0x%x is beyond file size 0x%x\n", offset, fileSize)
 		return
 	}
 
-	// Calculate available bytes from offset to end of file
 	availableBytes := fileSize - offset
 	length := int(availableBytes)
 	if length > 1024*1024 {
-		length = 1024 * 1024 // Cap at 1MB
+		length = 1024 * 1024
 	}
 
 	fmt.Printf("Reading %d bytes from offset 0x%x (file size: 0x%x)\n", length, offset, fileSize)
@@ -66,70 +63,134 @@ func ReadLogs(file *os.File) {
 		return
 	}
 
-	// Parse ASCII log entries
-	var logEntries []string
-	start := 0
-
-	for i := 0; i < len(buf)-2; i++ {
-		// Look for null terminator or FFFFFF pattern (end of log entry)
-		if buf[i] == 0x00 || (buf[i] == 0xFF && buf[i+1] == 0xFF) {
-			// Found end marker, extract log entry
-			if start < i {
-				entry := string(buf[start:i])
-				// Clean up the entry and only add non-empty, printable entries
-				entry = strings.TrimSpace(entry)
-				if len(entry) > 0 && isPrintableASCII(entry) {
-					logEntries = append(logEntries, entry)
-				}
-			}
-			// Skip past the marker
-			for i < len(buf) && (buf[i] == 0x00 || buf[i] == 0xFF) {
-				i++
-			}
-			start = i
-		}
+	blocks := findLogBlocks(buf)
+	totalLines := 0
+	for _, b := range blocks {
+		totalLines += countLogLines(buf[b[0]:b[1]])
 	}
 
-	// Check for any remaining entry at the end
-	if start < len(buf) {
-		entry := string(buf[start:])
-		entry = strings.TrimSpace(entry)
-		if len(entry) > 0 && isPrintableASCII(entry) {
-			logEntries = append(logEntries, entry)
-		}
-	}
-
-	// Print log entries
-	fmt.Printf("Found %d log entries:\n", len(logEntries))
-	if len(logEntries) > 0 {
-		for i, entry := range logEntries {
-			fmt.Printf("Log %d: \n%s\n", i+1, entry)
-		}
+	fmt.Printf("Found %d log blocks containing %d log entries\n", len(blocks), totalLines)
+	for i, b := range blocks {
+		blockBytes := buf[b[0]:b[1]]
+		lines := countLogLines(blockBytes)
+		fmt.Printf("\n--- Block %d @ 0x%08X (%d bytes, %d entries) ---\n",
+			i+1, offset+int64(b[0]), b[1]-b[0], lines)
+		// Print the block as text, with NULs treated as line breaks.
+		text := strings.ReplaceAll(string(blockBytes), "\x00", "\n")
+		fmt.Println(strings.TrimRight(text, "\n"))
 	}
 }
 
-// ReadLogsCount only shows the count of log entries for the -show command
+// logFFGapThreshold is the minimum run of consecutive 0xFF bytes
+// that the log writer leaves between log "blocks" (one per boot
+// cycle / log flush). Anything shorter is treated as content
+// (could be a binary field inside a log line). Tuned empirically:
+// real entries never carry 4 consecutive 0xFF in a row, while
+// inter-block padding is hundreds-to-thousands of bytes long.
+const logFFGapThreshold = 4
+
+// findLogBlocks returns the [start, end) byte offsets (relative
+// to buf) of each non-FF "log block" — i.e. each region of the log
+// buffer separated from its neighbours by a run of at least
+// logFFGapThreshold consecutive 0xFF bytes. Blocks that are
+// entirely 0x00 padding are dropped (uninitialised flash that
+// was zeroed rather than erased).
+func findLogBlocks(buf []byte) [][2]int {
+	var blocks [][2]int
+	i, n := 0, len(buf)
+	for i < n {
+		// Skip leading FF padding.
+		for i < n && buf[i] == 0xFF {
+			i++
+		}
+		if i >= n {
+			break
+		}
+		start := i
+		// Advance until we hit a long-enough FF run.
+		for i < n {
+			if buf[i] != 0xFF {
+				i++
+				continue
+			}
+			runStart := i
+			for i < n && buf[i] == 0xFF {
+				i++
+			}
+			if i-runStart >= logFFGapThreshold {
+				blocks = append(blocks, [2]int{start, runStart})
+				start = -1
+				break
+			}
+		}
+		if start >= 0 {
+			blocks = append(blocks, [2]int{start, i})
+		}
+	}
+
+	// Filter out blocks that are entirely 0x00 — those are pre-
+	// initialised flash, not real log data.
+	out := blocks[:0]
+	for _, b := range blocks {
+		nonZero := false
+		for _, c := range buf[b[0]:b[1]] {
+			if c != 0x00 {
+				nonZero = true
+				break
+			}
+		}
+		if nonZero {
+			out = append(out, b)
+		}
+	}
+	return out
+}
+
+// countLogLines counts newline- or null-terminated entries inside
+// a single log block, ignoring lines that aren't substantially
+// printable ASCII. A trailing partial line (no terminator before
+// the FF gap) is counted as one entry.
+func countLogLines(block []byte) int {
+	count := 0
+	start := 0
+	for i := 0; i <= len(block); i++ {
+		end := i == len(block) || block[i] == '\n' || block[i] == '\r' || block[i] == 0x00
+		if !end {
+			continue
+		}
+		if start < i {
+			line := strings.TrimSpace(string(block[start:i]))
+			if line != "" && isPrintableASCII(line) {
+				count++
+			}
+		}
+		start = i + 1
+	}
+	return count
+}
+
+// ReadLogsCount summarises the log region: how many distinct log
+// blocks (boot-cycle dumps) were written and how many individual
+// log lines they contain in total. Blocks are recognised by the
+// long 0xFF gaps the firmware leaves between flushes.
 func ReadLogsCount(file *os.File) {
 	offset := int64(0x3fdd000)
 
-	// Get file size to avoid EOF
 	stat, err := file.Stat()
 	if err != nil {
 		fmt.Printf("Error getting file info: %v\n", err)
 		return
 	}
-
 	fileSize := stat.Size()
 	if offset >= fileSize {
 		fmt.Printf("Log offset 0x%x is beyond file size 0x%x\n", offset, fileSize)
 		return
 	}
 
-	// Calculate available bytes from offset to end of file
 	availableBytes := fileSize - offset
 	length := int(availableBytes)
 	if length > 1024*1024 {
-		length = 1024 * 1024 // Cap at 1MB
+		length = 1024 * 1024
 	}
 
 	fmt.Printf("Reading %d bytes from offset 0x%x (file size: 0x%x)\n", length, offset, fileSize)
@@ -139,39 +200,19 @@ func ReadLogsCount(file *os.File) {
 		return
 	}
 
-	// Parse ASCII log entries (same logic as ReadLogs but only count)
-	var logCount int
-	start := 0
-
-	for i := 0; i < len(buf)-2; i++ {
-		// Look for null terminator or FFFFFF pattern (end of log entry)
-		if buf[i] == 0x00 || (buf[i] == 0xFF && buf[i+1] == 0xFF) {
-			// Found end marker, extract log entry
-			if start < i {
-				entry := string(buf[start:i])
-				// Clean up the entry and only count non-empty, printable entries
-				entry = strings.TrimSpace(entry)
-				if len(entry) > 0 && isPrintableASCII(entry) {
-					logCount++
-				}
-			}
-			// Skip past the marker
-			for i < len(buf) && (buf[i] == 0x00 || buf[i] == 0xFF) {
-				i++
-			}
-			start = i
-		}
+	blocks := findLogBlocks(buf)
+	totalLines := 0
+	for _, b := range blocks {
+		totalLines += countLogLines(buf[b[0]:b[1]])
 	}
 
-	// Check for any remaining entry at the end
-	if start < len(buf) {
-		entry := string(buf[start:])
-		entry = strings.TrimSpace(entry)
-		if len(entry) > 0 && isPrintableASCII(entry) {
-			logCount++
-		}
+	fmt.Printf("Found %d log blocks containing %d log entries\n", len(blocks), totalLines)
+	if len(blocks) == 0 {
+		return
 	}
-
-	// Only print the count
-	fmt.Printf("Found %d log entries:\n", logCount)
+	for i, b := range blocks {
+		lines := countLogLines(buf[b[0]:b[1]])
+		fmt.Printf("  block %d: 0x%08X - 0x%08X (%d bytes, %d entries)\n",
+			i+1, offset+int64(b[0]), offset+int64(b[1]), b[1]-b[0], lines)
+	}
 }
