@@ -112,20 +112,20 @@ func AnalyzeVMSoundWAVs(moduleFileName string) error {
 	baseFileName := filepath.Base(moduleFileName)
 	baseFileName = baseFileName[:len(baseFileName)-len(filepath.Ext(baseFileName))]
 
-	for i, sound := range sounds {
+	for _, sound := range sounds {
 		soundData := data[sound.Offset : sound.Offset+sound.Length]
 
 		wavData, err := ExtractWAVFromVMSound(soundData)
 		if err != nil {
-			fmt.Printf("Sound %02d: Error - failed to extract WAV\n", i+1)
+			fmt.Printf("Slot %02d: Error - failed to extract WAV\n", sound.Slot)
 			continue
 		}
 
 		// Write temp file for analysis
 		tempDir := os.TempDir()
-		tempFile := filepath.Join(tempDir, fmt.Sprintf("temp_%02d.wav", i+1))
+		tempFile := filepath.Join(tempDir, fmt.Sprintf("temp_slot%02d.wav", sound.Slot))
 		if err := os.WriteFile(tempFile, wavData, 0644); err != nil {
-			fmt.Printf("Sound %02d: Failed to write temp file\n", i+1)
+			fmt.Printf("Slot %02d: Failed to write temp file\n", sound.Slot)
 			continue
 		}
 
@@ -135,12 +135,12 @@ func AnalyzeVMSoundWAVs(moduleFileName string) error {
 		}
 
 		if err != nil {
-			fmt.Printf("Sound %02d: Analysis error\n", i+1)
+			fmt.Printf("Slot %02d: Analysis error\n", sound.Slot)
 			continue
 		}
 
-		fmt.Printf("Sound %02d: %d Hz, %d-bit, %d ch, %.2fs, %d bytes\n",
-			i+1, info.SampleRate, info.BitsPerSample, info.Channels, info.Duration, len(wavData))
+		fmt.Printf("Slot %02d: %d Hz, %d-bit, %d ch, %.2fs, %d bytes\n",
+			sound.Slot, info.SampleRate, info.BitsPerSample, info.Channels, info.Duration, len(wavData))
 	}
 
 	return nil
