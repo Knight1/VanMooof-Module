@@ -38,28 +38,74 @@ func VerifyDump(moduleFileName string, showExtra bool) error {
 	// Define known regions
 	var knownRegions []MemoryRegion
 
-	// BLE Secrets
-	knownRegions = append(knownRegions, MemoryRegion{
-		Name:   "BLE Secrets",
-		Start:  0x005A000,
-		End:    0x005A000 + 60,
-		Length: 60,
-	})
+	// Secrets sector (0x5A000, 4 KB) — 128 × 32-byte CRC-protected
+	// records. Layout derived from bleware/src/secrets.c and auth.c.
+	// We label one region per slot group so every byte of the sector
+	// is accounted for in the -verify output.
+	const (
+		secretsBase    = 0x0005A000
+		recordBytes    = 0x20
+		uKeyFirstSlot  = 1   // slots 1..123 are the user-keyed range
+		uKeyLastSlot   = 123 // (slot 0 holds the BLE auth key)
+		midSlot        = 124
+		reservedSlot   = 125
+		mfgSlot        = 126
+		macSlot        = 127
+	)
+	slotAddr := func(slot int) int { return secretsBase + slot*recordBytes }
 
-	// M-ID/M-KEY
-	knownRegions = append(knownRegions, MemoryRegion{
-		Name:   "M-ID/M-KEY",
-		Start:  0x005af80,
-		End:    0x005af80 + 60,
-		Length: 60,
-	})
+	knownRegions = append(knownRegions,
+		MemoryRegion{
+			Name:   "BLE Auth Key (slot 0)",
+			Start:  slotAddr(0),
+			End:    slotAddr(1),
+			Length: recordBytes,
+		},
+		MemoryRegion{
+			Name:   "UKEY Records (slots 1-123)",
+			Start:  slotAddr(uKeyFirstSlot),
+			End:    slotAddr(uKeyLastSlot + 1),
+			Length: (uKeyLastSlot - uKeyFirstSlot + 1) * recordBytes,
+		},
+		MemoryRegion{
+			Name:   "M-ID Record (slot 124)",
+			Start:  slotAddr(midSlot),
+			End:    slotAddr(midSlot + 1),
+			Length: recordBytes,
+		},
+		MemoryRegion{
+			Name:   "Reserved (slot 125)",
+			Start:  slotAddr(reservedSlot),
+			End:    slotAddr(reservedSlot + 1),
+			Length: recordBytes,
+		},
+		MemoryRegion{
+			Name:   "Manufacturing Key (slot 126)",
+			Start:  slotAddr(mfgSlot),
+			End:    slotAddr(mfgSlot + 1),
+			Length: recordBytes,
+		},
+		MemoryRegion{
+			Name:   "MAC Address (slot 127)",
+			Start:  slotAddr(macSlot),
+			End:    slotAddr(macSlot + 1),
+			Length: recordBytes,
+		},
+	)
 
-	// MAC Address + MOOF
+	// BLEBoot OAD staging area — the BIM walks 44 candidate slots at
+	// a 4 KB stride (see bleboot/src/oad.c — bim_full_scan_and_launch),
+	// so the full range 0x0000..0x2C000 is reserved for OAD images
+	// regardless of which slots happen to be populated. Always mark
+	// the staging area as known so it doesn't bleed into the
+	// unaccounted-regions output; populated slots get reported with
+	// their version + status separately via PrintBLEBootImage.
+	bleStagingLen := BLEBootSlotCount * int(BLEBootSlotStride)
 	knownRegions = append(knownRegions, MemoryRegion{
-		Name:   "MAC Address",
-		Start:  0x0005AFE0,
-		End:    0x0005AFE0 + 16,
-		Length: 16,
+		Name:   fmt.Sprintf("BLEBoot OAD Staging (slots 0-%d)", BLEBootSlotCount-1),
+		Start:  0,
+		End:    bleStagingLen,
+		Length: bleStagingLen,
 	})
 
 	// Find PACK region
@@ -83,11 +129,12 @@ func VerifyDump(moduleFileName string, showExtra bool) error {
 		}
 	}
 
-	// Find VM_SOUND files
+	// Find VM_SOUND files. Slot indices match the firmware's
+	// `audio_play <index>` argument (0..0x7A inclusive).
 	sounds := FindVMSounds(data)
-	for i, sound := range sounds {
+	for _, sound := range sounds {
 		knownRegions = append(knownRegions, MemoryRegion{
-			Name:   fmt.Sprintf("VM_SOUND_%02d", i+1),
+			Name:   fmt.Sprintf("VM_SOUND slot %d", sound.Slot),
 			Start:  sound.Offset,
 			End:    sound.Offset + sound.Length,
 			Length: sound.Length,
@@ -117,11 +164,18 @@ func VerifyDump(moduleFileName string, showExtra bool) error {
 		totalKnown += region.Length
 	}
 
+	zeroPct, ffPct := paddingComposition(data, 0, fileSize)
+	otherPct := 100 - zeroPct - ffPct
+
 	fmt.Printf("=== SPI Dump Verification ===\n")
 	fmt.Printf("File size: %d bytes (0x%X)\n", fileSize, fileSize)
 	fmt.Printf("Known regions: %d\n", len(knownRegions))
 	fmt.Printf("Total known data: %d bytes (0x%X)\n", totalKnown, totalKnown)
 	fmt.Printf("Coverage: %.2f%%\n", float64(totalKnown)/float64(fileSize)*100)
+	fmt.Printf("Byte composition: zeros %.2f%%, FFs %.2f%%, other %.2f%%\n",
+		zeroPct, ffPct, otherPct)
+
+	PrintBLEBootImage(file, fileSize)
 
 	fmt.Printf("\nKnown regions:\n")
 	for _, region := range knownRegions {
@@ -161,36 +215,60 @@ func findUnaccountedRegions(knownRegions []MemoryRegion, fileSize int, data []by
 
 	// Check for gap at the beginning
 	if knownRegions[0].Start > 0 {
-		size := knownRegions[0].Start
-		if isSignificantRegion(data, 0, size) {
-			fmt.Printf("  0x%08X - 0x%08X (%d bytes) - Unknown data\n",
-				0, knownRegions[0].Start, size)
-		}
+		reportUnaccounted(data, 0, knownRegions[0].Start)
 	}
 
 	// Check for gaps between regions
 	for i := 0; i < len(knownRegions)-1; i++ {
 		currentEnd := knownRegions[i].End
 		nextStart := knownRegions[i+1].Start
-
 		if nextStart > currentEnd {
-			size := nextStart - currentEnd
-			if isSignificantRegion(data, currentEnd, size) {
-				fmt.Printf("  0x%08X - 0x%08X (%d bytes) - Unknown data\n",
-					currentEnd, nextStart, size)
-			}
+			reportUnaccounted(data, currentEnd, nextStart)
 		}
 	}
 
 	// Check for gap at the end
 	lastRegion := knownRegions[len(knownRegions)-1]
 	if lastRegion.End < fileSize {
-		size := fileSize - lastRegion.End
-		if isSignificantRegion(data, lastRegion.End, size) {
-			fmt.Printf("  0x%08X - 0x%08X (%d bytes) - Unknown data\n",
-				lastRegion.End, fileSize, size)
+		reportUnaccounted(data, lastRegion.End, fileSize)
+	}
+}
+
+// reportUnaccounted prints one [start, end) gap when its contents are
+// substantive (see isSignificantRegion). The "Unknown data" line is
+// suffixed with the zero/FF ratios so it's obvious whether what
+// survived the filter is structured data or trailing padding.
+func reportUnaccounted(data []byte, start, end int) {
+	size := end - start
+	if !isSignificantRegion(data, start, size) {
+		return
+	}
+	zeroPct, ffPct := paddingComposition(data, start, size)
+	fmt.Printf("  0x%08X - 0x%08X (%d bytes) - Unknown data (zeros %.1f%%, FFs %.1f%%)\n",
+		start, end, size, zeroPct, ffPct)
+}
+
+// paddingComposition returns the percentage of 0x00 and 0xFF bytes
+// in data[offset:offset+size], clamped to len(data).
+func paddingComposition(data []byte, offset, size int) (zeroPct, ffPct float64) {
+	if offset+size > len(data) {
+		size = len(data) - offset
+	}
+	if size <= 0 {
+		return 0, 0
+	}
+	zeroCount := 0
+	ffCount := 0
+	for i := offset; i < offset+size && i < len(data); i++ {
+		switch data[i] {
+		case 0x00:
+			zeroCount++
+		case 0xFF:
+			ffCount++
 		}
 	}
+	return float64(zeroCount) * 100 / float64(size),
+		float64(ffCount) * 100 / float64(size)
 }
 
 // isSignificantRegion checks if a region contains non-zero/non-FF data
@@ -207,19 +285,33 @@ func isSignificantRegion(data []byte, offset, size int) bool {
 		return false
 	}
 
-	// Check if region contains significant data (not all 0x00 or 0xFF)
+	// Count padding bytes (0x00 and 0xFF) in a single pass.
 	zeroCount := 0
 	ffCount := 0
-
 	for i := offset; i < offset+size && i < len(data); i++ {
-		if data[i] == 0x00 {
+		switch data[i] {
+		case 0x00:
 			zeroCount++
-		} else if data[i] == 0xFF {
+		case 0xFF:
 			ffCount++
 		}
 	}
 
-	// Consider significant if less than 95% is padding bytes
+	// Filter out regions that are essentially all 0x00 — those are
+	// uninitialised flash and tell us nothing about the on-disk
+	// layout. The threshold is intentionally tight (99.9%) so that
+	// any actual structure embedded in a mostly-zero region still
+	// surfaces.
+	if float64(zeroCount)/float64(size) >= 0.999 {
+		return false
+	}
+
+	// Same idea for 0xFF (erased NOR flash).
+	if float64(ffCount)/float64(size) >= 0.999 {
+		return false
+	}
+
+	// Consider significant if less than 95% is mixed padding bytes.
 	paddingRatio := float64(zeroCount+ffCount) / float64(size)
 	return paddingRatio < 0.95
 }
