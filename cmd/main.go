@@ -33,6 +33,7 @@ var (
 	sudoFlag        = flag.Bool("sudo", false, "Enable SPI hardware access (required for dump and flash-info)")
 	extractKeys     = flag.Bool("extract-keys", false, "Extract keys and generate SHA512 checksum from existing dump file")
 	showPerms       = flag.Bool("perms", false, "Show BLE keyed-record permissions and report OWNER_PERMS fallback state")
+	logIndex        = flag.String("log", "", "Show specific log blocks (FF-separated sessions) by index — accepts \"first\", \"last\", a number, a range \"N-M\", or a comma-separated list (e.g. \"0,1,2,last\")")
 )
 
 func main() {
@@ -54,6 +55,9 @@ func main() {
 		log.Printf("  %s -f dump.rom -verify -extra     # Show unaccounted regions\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -extract-keys      # Extract keys and SHA512\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -perms             # Show BLE permissions / OWNER_PERMS state\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -log last          # Show only the last log block (count printed)\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -log 0,1,2,last    # Show blocks 0,1,2 and the last\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -log 0-9           # Show blocks 0 through 9\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -decrypt KEY       # Decrypt PACK file with AES ECB\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -encrypt KEY       # Encrypt PACK file with AES ECB\n", os.Args[0])
 		log.Printf("  %s -f pack.bin -entropy           # Analyze file entropy without decryption\n", os.Args[0])
@@ -256,7 +260,8 @@ func main() {
 		// Check if any file-dependent operations are requested
 		if *showBLESecrets || *showLogs || *changeUnlockKey != "" ||
 			*exportSounds || *exportWAV || *analyzeWAV ||
-			*verifyDump || *checkEntropy || *extractKeys || *showPerms {
+			*verifyDump || *checkEntropy || *extractKeys || *showPerms ||
+			*logIndex != "" {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}
@@ -284,6 +289,18 @@ func main() {
 		}
 		if err := vanmoof.PrintPerms(file); err != nil {
 			fmt.Printf("Error reading permissions: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	if *logIndex != "" {
+		if file == nil {
+			fmt.Println("File path required. Use -f FILE")
+			os.Exit(1)
+		}
+		if err := vanmoof.PrintLogByIndex(file, *logIndex); err != nil {
+			fmt.Printf("Error reading log: %v\n", err)
 			os.Exit(1)
 		}
 		return
