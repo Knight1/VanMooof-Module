@@ -44,17 +44,17 @@ func ExportVMSoundsAsWAV(moduleFileName string) error {
 	baseFileName := filepath.Base(moduleFileName)
 	baseFileName = baseFileName[:len(baseFileName)-len(filepath.Ext(baseFileName))]
 
-	for i, sound := range sounds {
+	for _, sound := range sounds {
 		soundData := data[sound.Offset : sound.Offset+sound.Length]
 
 		// Extract WAV data
 		wavData, err := ExtractWAVFromVMSound(soundData)
 		if err != nil {
-			fmt.Printf("Error extracting WAV from sound %d: %v\n", i+1, err)
+			fmt.Printf("Error extracting WAV from slot %d: %v\n", sound.Slot, err)
 			continue
 		}
 
-		filename := fmt.Sprintf("%s_sound_%02d.wav", baseFileName, i+1)
+		filename := fmt.Sprintf("%s_sound_slot%02d.wav", baseFileName, sound.Slot)
 
 		err = os.WriteFile(filename, wavData, 0644)
 		if err != nil {
