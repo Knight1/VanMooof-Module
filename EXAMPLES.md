@@ -428,6 +428,15 @@ All files use **YYYYMMDD-HHMMSS** format:
 - `VMES3-2043531337-XXXX.bin` - Tool dump format
 
 ## Hardware Dump with flashrom
+| Pin # | MX25 | RPi(GPIO) |
+| --- | --- | --- |
+| 2 | VCC | 17 |
+| 7 | CS | 24 |
+| 8 | SO | 21 |
+| 10 | GND | 25 |
+| 15 | SI | 19 |
+| 16 | CLK | 23 |
+
 ```console
 # sudo flashrom -p linux_spi:dev=/dev/spidev0.0 -r rom.rom
 flashrom v1.2 on Linux 6.1.21+ (armv6l)
