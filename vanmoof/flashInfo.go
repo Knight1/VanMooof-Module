@@ -63,10 +63,11 @@ func ReadFlashInfo(sudo bool) (*FlashInfo, error) {
 
 // readJEDECID reads the JEDEC manufacturer and device ID
 func readJEDECID(conn spi.Conn, info *FlashInfo) error {
-	cmd := []byte{cmdReadID}
 	response := make([]byte, 3)
-
-	if err := conn.Tx(cmd, response); err != nil {
+	if err := conn.TxPackets([]spi.Packet{
+		{W: []byte{cmdReadID}, KeepCS: true},
+		{R: response},
+	}); err != nil {
 		return err
 	}
 
@@ -99,11 +100,12 @@ func readJEDECID(conn spi.Conn, info *FlashInfo) error {
 
 // readMacronixSerialNumber reads Macronix-specific serial number
 func readMacronixSerialNumber(conn spi.Conn, info *FlashInfo) error {
-	// Macronix serial number command (if supported)
 	cmd := []byte{cmdReadSN, 0x00, 0x00, 0x00, 0x00} // Command + 4 dummy bytes
-	response := make([]byte, 8)                      // 8-byte serial number
-
-	if err := conn.Tx(cmd, response); err != nil {
+	response := make([]byte, 8)                       // 8-byte serial number
+	if err := conn.TxPackets([]spi.Packet{
+		{W: cmd, KeepCS: true},
+		{R: response},
+	}); err != nil {
 		return err
 	}
 
@@ -129,9 +131,11 @@ func readMacronixSerialNumber(conn spi.Conn, info *FlashInfo) error {
 // readUniqueID reads the unique ID if supported
 func readUniqueID(conn spi.Conn, info *FlashInfo) error {
 	cmd := []byte{cmdReadUID, 0x00, 0x00, 0x00, 0x00} // Command + 4 dummy bytes
-	response := make([]byte, 8)                       // 8-byte unique ID
-
-	if err := conn.Tx(cmd, response); err != nil {
+	response := make([]byte, 8)                        // 8-byte unique ID
+	if err := conn.TxPackets([]spi.Packet{
+		{W: cmd, KeepCS: true},
+		{R: response},
+	}); err != nil {
 		return err
 	}
 

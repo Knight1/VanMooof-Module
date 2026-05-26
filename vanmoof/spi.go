@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"periph.io/x/conn/v3/physic"
 	"periph.io/x/conn/v3/spi"
 	"periph.io/x/conn/v3/spi/spireg"
 	"periph.io/x/host/v3"
@@ -39,27 +40,20 @@ func waitForWriteComplete(conn spi.Conn) error {
 	}
 }
 
-func spiConnect() (conn spi.Conn, err error) {
+func spiConnect() (spi.Conn, error) {
 	if _, err := host.Init(); err != nil {
-		fmt.Printf("Failed to initialize host: %v\n", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to initialize host: %v", err)
 	}
 
 	p, err := spireg.Open("")
 	if err != nil {
-		fmt.Printf("Failed to open SPI port: %v\n", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to open SPI port: %v", err)
 	}
-	defer func() {
-		if closeErr := p.Close(); closeErr != nil {
-			fmt.Printf("Failed to close SPI port: %v\n", closeErr)
-		}
-	}()
 
-	conn, err = p.Connect(10000000, spi.Mode0, 8)
+	conn, err := p.Connect(10*physic.MegaHertz, spi.Mode0, 8)
 	if err != nil {
-		fmt.Printf("Failed to configure SPI connection: %v\n", err)
-		return nil, err
+		p.Close()
+		return nil, fmt.Errorf("failed to configure SPI connection: %v", err)
 	}
 
 	if *debugLogging {
@@ -116,20 +110,26 @@ func writeDisable(conn spi.Conn) error {
 
 // readStatusRegister reads the main status register (RDSR - 0x05)
 func readStatusRegister(conn spi.Conn) (byte, error) {
-	status := make([]byte, 1)
-	if err := conn.Tx([]byte{0x05}, status); err != nil {
+	response := make([]byte, 1)
+	if err := conn.TxPackets([]spi.Packet{
+		{W: []byte{0x05}, KeepCS: true},
+		{R: response},
+	}); err != nil {
 		return 0, fmt.Errorf("failed to read status register: %v", err)
 	}
-	return status[0], nil
+	return response[0], nil
 }
 
 // readSecurityRegister reads the security register (RDSCUR - 0x2B)
 func readSecurityRegister(conn spi.Conn) (byte, error) {
-	status := make([]byte, 1)
-	if err := conn.Tx([]byte{0x2B}, status); err != nil {
+	response := make([]byte, 1)
+	if err := conn.TxPackets([]spi.Packet{
+		{W: []byte{0x2B}, KeepCS: true},
+		{R: response},
+	}); err != nil {
 		return 0, fmt.Errorf("failed to read security register: %v", err)
 	}
-	return status[0], nil
+	return response[0], nil
 }
 
 // verifyWriteEnable checks if the Write Enable Latch (WEL) bit is set.

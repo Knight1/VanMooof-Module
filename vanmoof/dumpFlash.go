@@ -16,7 +16,9 @@ import (
 const (
 	readCommand = 0x03             // Low-speed read command
 	flashSize   = 64 * 1024 * 1024 // 64 MB (MX25L51245G - VanMoof S3)
-	chunkSize   = 4096             // 4KB chunks for better performance
+	// sysfs-spi counts cmd+addr (4 bytes) + data toward the 4096-byte kernel limit.
+	// 2048 is the largest power-of-2 that divides 64 MB evenly and keeps total <= 4096.
+	chunkSize = 2048
 )
 
 // DumpFlash reads the entire SPI flash chip and saves it to a file
@@ -25,7 +27,7 @@ func DumpFlash(macAddress, frameNumber string, sudo bool) error {
 		return fmt.Errorf("SPI flash dump requires -sudo flag for hardware access")
 	}
 
-	filename := fmt.Sprintf("VMES3-%s-%s.bin", frameNumber, macAddress)
+	filename := fmt.Sprintf("VMES3-%d-%s.bin", time.Now().Unix(), macAddress)
 
 	// Check if file exists and warn about overwrite
 	if _, err := os.Stat(filename); err == nil {
@@ -81,7 +83,10 @@ func DumpFlash(macAddress, frameNumber string, sudo bool) error {
 		cmd := append([]byte{readCommand}, address...)
 		data := make([]byte, chunkSize)
 
-		if err := conn.Tx(cmd, data); err != nil {
+		if err := conn.TxPackets([]spi.Packet{
+			{W: cmd, KeepCS: true},
+			{R: data},
+		}); err != nil {
 			return fmt.Errorf("SPI read failed at 0x%06X: %v", offset, err)
 		}
 
@@ -216,7 +221,13 @@ func extractMACAndRename(filename, originalMAC, frameNumber string) error {
 		return nil
 	}
 
-	newFilename := fmt.Sprintf("VMES3-%s-%s.bin", frameNumber, macAddress)
+	// Preserve the timestamp from the original filename (VMES3-<ts>-<mac>.bin)
+	timestamp := ""
+	parts := strings.SplitN(strings.TrimSuffix(filename, ".bin"), "-", 3)
+	if len(parts) >= 2 {
+		timestamp = parts[1]
+	}
+	newFilename := fmt.Sprintf("VMES3-%s-%s.bin", timestamp, macAddress)
 	if newFilename == filename {
 		return nil // No change needed
 	}
@@ -294,7 +305,10 @@ func calculateSPISHA512(conn spi.Conn) ([]byte, error) {
 		cmd := append([]byte{readCommand}, address...)
 		data := make([]byte, chunkSize)
 
-		if err := conn.Tx(cmd, data); err != nil {
+		if err := conn.TxPackets([]spi.Packet{
+			{W: cmd, KeepCS: true},
+			{R: data},
+		}); err != nil {
 			return nil, fmt.Errorf("SPI read failed at 0x%06X: %v", offset, err)
 		}
 
@@ -349,7 +363,10 @@ func readBLEKeyFromSPI(conn spi.Conn) ([]byte, error) {
 	cmd := append([]byte{readCommand}, address...)
 	bleKey := make([]byte, 60) // 60 bytes BLE secrets
 
-	if err := conn.Tx(cmd, bleKey); err != nil {
+	if err := conn.TxPackets([]spi.Packet{
+		{W: cmd, KeepCS: true},
+		{R: bleKey},
+	}); err != nil {
 		return nil, err
 	}
 
@@ -468,10 +485,11 @@ func validateChipCompatibility(conn spi.Conn) error {
 	fmt.Printf("🔍 Validating chip compatibility...\n")
 
 	// Read JEDEC ID
-	cmd := []byte{0x9F} // Read JEDEC ID command
 	response := make([]byte, 3)
-
-	if err := conn.Tx(cmd, response); err != nil {
+	if err := conn.TxPackets([]spi.Packet{
+		{W: []byte{0x9F}, KeepCS: true},
+		{R: response},
+	}); err != nil {
 		return fmt.Errorf("failed to read chip ID: %v", err)
 	}
 
