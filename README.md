@@ -219,7 +219,8 @@ batteryware.bin
 0x0002000 ?
 0x005A000 BLE Secrets (60)
 0x005af80 M-ID/M-KEY (60)
-0x007c000 
+0x007b000 FMNA swap sector (Find My)
+0x007c000 FMNA factory blob (Find My) — see FMNA.md
 0x0280000 VM_SOUND
 0x0300000 VM_SOUND
 0x0380000 VM_SOUND
@@ -372,6 +373,11 @@ Press the power button 5 times to reset Find My (fmna).
 ```console
 fmna-unpair
 ```
+
+To decode the Find My (FMNA) factory blob from a flash dump — serial number,
+software-auth token, UUID and server keys — use `-f dump.rom -fmna`. See
+[FMNA.md](FMNA.md) for the on-flash layout, the device-bound AES key derivation,
+and the firmware cross-reference.
 
 #### Charging
 As long as the blitz? is flashing the module battery is charging.

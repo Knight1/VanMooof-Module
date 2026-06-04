@@ -43,14 +43,14 @@ func VerifyDump(moduleFileName string, showExtra bool) error {
 	// We label one region per slot group so every byte of the sector
 	// is accounted for in the -verify output.
 	const (
-		secretsBase    = 0x0005A000
-		recordBytes    = 0x20
-		uKeyFirstSlot  = 1   // slots 1..123 are the user-keyed range
-		uKeyLastSlot   = 123 // (slot 0 holds the BLE auth key)
-		midSlot        = 124
-		reservedSlot   = 125
-		mfgSlot        = 126
-		macSlot        = 127
+		secretsBase   = 0x0005A000
+		recordBytes   = 0x20
+		uKeyFirstSlot = 1   // slots 1..123 are the user-keyed range
+		uKeyLastSlot  = 123 // (slot 0 holds the BLE auth key)
+		midSlot       = 124
+		reservedSlot  = 125
+		mfgSlot       = 126
+		macSlot       = 127
 	)
 	slotAddr := func(slot int) int { return secretsBase + slot*recordBytes }
 
@@ -92,6 +92,21 @@ func VerifyDump(moduleFileName string, showExtra bool) error {
 			Length: recordBytes,
 		},
 	)
+
+	// Find My (FMNA) provisioning store — a 16 KB NV region at
+	// 0x7B000..0x7F000 in the FMI builds (the four sectors the firmware's
+	// fmna-erase-external wipes as a unit). The live v2 record sits in the
+	// 0x7C000 main sector; 0x7B000 is the compaction swap and
+	// 0x7D000..0x7F000 the legacy v1 spill. Only accounted when a
+	// SHA-256-valid blob is present — most bikes ship without Find My
+	// provisioning, leaving the region erased. See FMNA.md.
+	if FMNAProvisioned(data) {
+		knownRegions = append(knownRegions,
+			MemoryRegion{Name: "FMNA Swap (0x7B000)", Start: 0x7B000, End: 0x7C000, Length: 0x1000},
+			MemoryRegion{Name: "FMNA Factory Blob (0x7C000)", Start: 0x7C000, End: 0x7D000, Length: 0x1000},
+			MemoryRegion{Name: "FMNA NV Spill v1 (0x7D000)", Start: 0x7D000, End: 0x7F000, Length: 0x2000},
+		)
+	}
 
 	// BLEBoot OAD staging area — the BIM walks 44 candidate slots at
 	// a 4 KB stride (see bleboot/src/oad.c — bim_full_scan_and_launch),

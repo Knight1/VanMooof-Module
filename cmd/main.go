@@ -34,6 +34,9 @@ var (
 	extractKeys     = flag.Bool("extract-keys", false, "Extract keys and generate SHA512 checksum from existing dump file")
 	showPerms       = flag.Bool("perms", false, "Show BLE keyed-record permissions and report OWNER_PERMS fallback state")
 	logIndex        = flag.String("log", "", "Show specific log blocks (FF-separated sessions) by index — accepts \"first\", \"last\", a number, a range \"N-M\", or a comma-separated list (e.g. \"0,1,2,last\")")
+	showFMNA        = flag.Bool("fmna", false, "Decode the Find My (FMNA) factory blob at 0x7C000 from a dump (-f)")
+	fmnaMAC         = flag.String("fmna-mac", "", "Override BLE MAC for FMNA key derivation (e.g. 24:9F:89:86:A9:1F)")
+	fmnaOut         = flag.String("fmna-out", "", "Write decrypted FMNA record + token to <prefix>.fmna.bin / <prefix>.fmna-token.bin")
 )
 
 func main() {
@@ -55,6 +58,8 @@ func main() {
 		log.Printf("  %s -f dump.rom -verify -extra     # Show unaccounted regions\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -extract-keys      # Extract keys and SHA512\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -perms             # Show BLE permissions / OWNER_PERMS state\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -fmna              # Decode the Find My (FMNA) factory blob\n", os.Args[0])
+		log.Printf("  %s -f dump.rom -fmna -fmna-out bike  # …and write the decrypted record + token\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -log last          # Show only the last log block (count printed)\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -log 0,1,2,last    # Show blocks 0,1,2 and the last\n", os.Args[0])
 		log.Printf("  %s -f dump.rom -log 0-9           # Show blocks 0 through 9\n", os.Args[0])
@@ -261,7 +266,7 @@ func main() {
 		if *showBLESecrets || *showLogs || *changeUnlockKey != "" ||
 			*exportSounds || *exportWAV || *analyzeWAV ||
 			*verifyDump || *checkEntropy || *extractKeys || *showPerms ||
-			*logIndex != "" {
+			*logIndex != "" || *showFMNA {
 			fmt.Println("File path required. Use -f FILE")
 			os.Exit(1)
 		}
@@ -301,6 +306,18 @@ func main() {
 		}
 		if err := vanmoof.PrintLogByIndex(file, *logIndex); err != nil {
 			fmt.Printf("Error reading log: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
+
+	if *showFMNA {
+		if file == nil {
+			fmt.Println("File path required. Use -f FILE")
+			os.Exit(1)
+		}
+		if err := vanmoof.DumpFMNA(file, *fmnaMAC, *fmnaOut); err != nil {
+			fmt.Printf("Error decoding FMNA blob: %v\n", err)
 			os.Exit(1)
 		}
 		return
