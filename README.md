@@ -142,9 +142,10 @@ Tools needed: Torx Screw set. I used my iFixit Kit.
     2. If you do not unlock the bike, the alarm stays on and will annoy you. I used duct tape to cover the speaker if I forgot it.
 2. Open module and unscrew all internal screws of the PCB to remove the PCB. Make sure you unplug the Matrix LCD cable carefully! You can replace the cable if you break it. 
 3. On the backside of the PCB is the Macronix 16 Pin SPI Flash Chip near the port for the backlight. 
-4. Dump that Flash with a 16 Pin! SPI Flash Chip clamp and a Pi  
-    1. I used a Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
-5. When you screw it back together, make sure to use 99% alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the AC voltage to the motor is high especially if the battery has low charge thus low voltage. If a screw gets loose while you ride you would create little sparks. 
+4. Dump that Flash with a 16 Pin! SPI Flash Chip clamp and a Pi
+    1. The wiring is documented here [EXAMPLES.md](EXAMPLES.md#hardware-dump-with-flashrom)
+    2. I used a Raspberry Pi Zero v1.1. There you have to enable the SPI Interface with raspi-config
+6. When you screw it back together, make sure to use 99% alcohol to clean the contacts and some threadlocker like Loctite. The (in)rush current from/to the battery and the AC voltage to the motor is high especially if the battery has low charge thus low voltage. If a screw gets loose while you ride you would create little sparks. 
 
 Use flashrom to dump the SPI flash chip. See [EXAMPLES.md](EXAMPLES.md) for detailed command examples.
 
@@ -369,7 +370,8 @@ CMD_BLE_MAC
 ```
 
 #### Reset Find My
-Press the power button 5 times to reset Find My (fmna).
+
+Press the power button 5 times to reset Find My (fmna). Does not unprovision it!
 ```console
 fmna-unpair
 ```
