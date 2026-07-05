@@ -430,6 +430,7 @@ All files use **YYYYMMDD-HHMMSS** format:
 ## Hardware Dump with flashrom
   
 Pin # is the leg count from the beginning of the spi chip. Begins with 1 where the dot is on the chip.  
+One side is 1-8, the other then 9-16. Count from top to bottom not left to right. 
 RPi Numbering is left to right the actual pin count not the gpio names. So you just have to count not lookup another table.  
   
 | Pin # | MX25 | RPi(GPIO) |
@@ -440,6 +441,20 @@ RPi Numbering is left to right the actual pin count not the gpio names. So you j
 | 10 | GND | 25 |
 | 15 | SI | 19 |
 | 16 | CLK | 23 |
+
+#### ASCII Art for the spi chip
+
+                    SPI Flash (16-pin SOP)
+                +---------------------------+
+      NC/SIO3 --| 1                     16 |-- SCLK  ---- MCU SPI SCK
+          VCC --| 2                     15 |-- SI/SIO0 - MCU SPI MOSI
+      RESET# --| 3                     14 |-- NC
+           NC --| 4                     13 |-- NC
+          DNU --| 5                     12 |-- DNU
+          DNU --| 6                     11 |-- DNU
+          CS# --| 7                     10 |-- GND  ---- GND
+      SO/SIO1 --| 8                      9 |-- WP#/SIO2
+                +---------------------------+
 
 ```console
 # sudo flashrom -p linux_spi:dev=/dev/spidev0.0 -r rom.rom
