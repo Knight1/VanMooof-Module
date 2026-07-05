@@ -428,6 +428,10 @@ All files use **YYYYMMDD-HHMMSS** format:
 - `VMES3-2043531337-XXXX.bin` - Tool dump format
 
 ## Hardware Dump with flashrom
+  
+Pin # is the leg count from the beginning of the spi chip. Begins with 1 where the dot is on the chip.  
+RPi Numbering is left to right the actual pin count not the gpio names. So you just have to count not lookup another table.  
+  
 | Pin # | MX25 | RPi(GPIO) |
 | --- | --- | --- |
 | 2 | VCC | 17 |
