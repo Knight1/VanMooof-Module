@@ -448,7 +448,7 @@ RPi Numbering is left to right the actual pin count not the gpio names. So you j
                 +---------------------------+
       NC/SIO3 --| 1                     16 |-- SCLK  ---- MCU SPI SCK
           VCC --| 2                     15 |-- SI/SIO0 - MCU SPI MOSI
-      RESET# --| 3                     14 |-- NC
+       RESET# --| 3                     14 |-- NC
            NC --| 4                     13 |-- NC
           DNU --| 5                     12 |-- DNU
           DNU --| 6                     11 |-- DNU
