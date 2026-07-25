@@ -88,6 +88,11 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 For detailed usage examples, see [EXAMPLES.md](EXAMPLES.md).
 
+### S2 Module
+
+TM4C123GH6PMI7  
+SARA-G350  
+
 ### What about the Cartridge?
 
 The correct Name VanMoof internally and in the Fixie App used is Module.
