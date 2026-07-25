@@ -91,7 +91,7 @@ For detailed usage examples, see [EXAMPLES.md](EXAMPLES.md).
 ### VanMoof S2 Module (Cartridge) Components  
 
 TM4C123GH6PMI7 (Main) -> CON3 Port  
-SARA-G350 (same SIM Prefix as S3)  
+SARA-G350 (Modem, SIM has same ICCID Prefix as S3)  
 CC2640F128 (BLE)  
 
 **other Components**
