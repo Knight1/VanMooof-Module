@@ -88,7 +88,7 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 For detailed usage examples, see [EXAMPLES.md](EXAMPLES.md).
 
-### VanMoof S2 Module (Cartridge) Components
+### VanMoof S2 Module (Cartridge) Components  
 
 TM4C123GH6PMI7 (Main) -> CON3 Port  
 SARA-G350 (same SIM Prefix as S3)  
