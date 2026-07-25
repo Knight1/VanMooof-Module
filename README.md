@@ -91,7 +91,7 @@ For detailed usage examples, see [EXAMPLES.md](EXAMPLES.md).
 ### S2 Module
 
 TM4C123GH6PMI7  (Main)
-SARA-G350  
+SARA-G350  (same SIM Prefix as S3)
 CC2640F128 (BLE)  
 
 ### What about the Cartridge?
