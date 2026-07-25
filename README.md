@@ -88,12 +88,19 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 For detailed usage examples, see [EXAMPLES.md](EXAMPLES.md).
 
-### S2 Module
+### VanMoof S2 Module (Cartridge) Components
 
 TM4C123GH6PMI7 (Main) -> CON3 Port  
 SARA-G350 (same SIM Prefix as S3)  
 CC2640F128 (BLE)  
-LGEBMH11865 (1x Battery)
+
+**other Components**
+LGEBMH11865 (1x Battery)  
+STK850  
+TPS54360  
+sonix (Likely SPI) -> CON2  
+PWM Driver IC  
+
 
 ### What about the Cartridge?
 
