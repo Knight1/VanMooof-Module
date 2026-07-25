@@ -88,13 +88,13 @@ If you need in-depth Information about the Firmware (ex: Enable Offroad aka. :) 
 
 For detailed usage examples, see [EXAMPLES.md](EXAMPLES.md).
 
-### VanMoof S2 Module (Cartridge) Components  
+### VanMoof S2 Module (Cartridge) Components
 
 TM4C123GH6PMI7 (Main) -> CON3 Port  
 SARA-G350 (Modem, SIM has same ICCID Prefix as S3)  
 CC2640F128 (BLE)  
 
-**other Components**
+**other Components**  
 LGEBMH11865 (1x Battery)  
 STK850  (Power regulator
 TPS54360  (Power regulator)
