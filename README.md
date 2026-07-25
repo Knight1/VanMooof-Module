@@ -96,8 +96,9 @@ CC2640F128 (BLE)
 
 **other Components**
 LGEBMH11865 (1x Battery)  
-STK850  
-TPS54360  
+STK850  (Power regulator
+TPS54360  (Power regulator)
+ESMT AD51652  (Sound amplifier)
 sonix (Likely SPI) -> CON2  
 PWM Driver IC  
 
