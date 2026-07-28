@@ -57,8 +57,12 @@ The charger on the S3 does not check for any conditions to be met.
 ### Communication
 
 #### Error 23
-  
-TI (BLE) chip firmware corrupted, chip dead, main resistor on PCB over limit.  
+
+Error Condition:
+
+Possible causes: TI (BLE) chip firmware corrupted, chip dead, resistor on PCB over limit. 
+
+
   
 Flashing a new firmware
   
@@ -82,6 +86,29 @@ This is labeled JTAG1 with a marking 1 and 10. This marks the pin numbers.
 There is also JTAG2 on the PCB which is the wrong one.  
   
 ##### JTAG1 Pin Layout
+
+Underside of the PCB, module held in the orientation it sits in the frame:
+front of the bike to the **left**, rear to the **right**. The frontlight and
+rearlight connectors run in that same order, so use them to confirm you are
+not looking at the board upside down.
+
+```
+                   FRONT of bike                REAR of bike
+                 (frontlight side)            (rearlight side)
+
+                     +-------------------------------+
+ *   RESET_N       --|  10 o                   o  5  |-- GND
+     CC2642 pin 27 --|   9 o                   o  4  |-- unknown
+     CC2642 pin 26 --|   8 o                   o  3  |-- GND
+ *   JTAG_TCKC     --|   7 o                   o  2  |-- GND                   *
+ *   JTAG_TMSC     --|   6 o                   o  1  |-- VTref / VDDS (3.3 V)  *
+                     +-------------------------------+
+
+ *  = the five pins you actually wire to the XDS110 (1, 2, 6, 7, 10)
+
+ The silkscreen "10" marks the top-left pad and "1" the bottom-right pad
+ in this orientation. Remember JTAG2 elsewhere on the PCB is the wrong header.
+```
 
 | JTAG1 | Signal | Status |
 | --- | --- | --- |
