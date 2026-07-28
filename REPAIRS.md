@@ -58,6 +58,9 @@ The charger on the S3 does not check for any conditions to be met.
 
 #### Error 23
 
+The bike shows "Err 23" and the app is unable to connect to the bike.  
+In the meantime, you can still unlock the bike via the backup code.  
+
 Potential impact: No communication with the bike via the app possible.  
 Set condition: The STM32 chip is unable to communicate with the Texas Instruments CC2642 chip.  
 Clear condition: The STM32 chip is able to communicate again.  
