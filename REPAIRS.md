@@ -62,7 +62,7 @@ The bike shows "Err 23" and the app is unable to connect to the bike.
 In the meantime, you can still unlock the bike via the backup code.  
 
 Potential impact: No communication with the bike via the app possible.  
-Set condition: The STM32 chip is unable to communicate with the Texas Instruments CC2642 chip.  
+Set condition: The STM32 chip is unable to communicate with the Texas Instruments CC2642 chip and resets the chip.  
 Clear condition: The STM32 chip is able to communicate again.  
 Possible causes:  
 - Firmware corrupted  
@@ -274,24 +274,36 @@ https://www.reddit.com/r/VanMoofSelfRepair/comments/1f2fcv3/vanmoof_s3_x3_smd_co
 
 ## ⚙️ Motor Repairs (Errors 45-53)
 
-Error 45
+### Error 45
 
-If the motor works, this is the pre-announcement of a failing cable boom.  
-In this case the communication cable just failed.  
-You could fix it, but you need to remove all cables from the bike. Which is a fun experience.  
-Good luck!  
+No Motor Communication.  
+"Err 45" is shown on the bike which indicates that motorware was not able to establish communication with the motor.  
+
+Potential impact: failing Cable Boom 
+Set condition: No communication with Motorcontroller (TMS320F28054F) is possible.  
+Clear condition: Restore communication  
+
+**If the motor still works, this is the pre-announcement of a failing cable boom!**  
+With bad luck this could ruin the entire bike.  
+Only longterm solution is to replace the entire cable boom to the new version.  
 
 ## 📶 Connectivity Repairs (Errors 54-58)
 
-Errors 54, 56, 57
+### Error 54
 
-SIM card error.
+SIM Card not detected.  
+
+Potential impact: Err 23 is shown on the Bike, with Ride Pro theft protection no longer active.  
+Set condition: Modem responds but no SIM card in slot detected.  
+Clear condition: Modem detects valid SIM card. 
 
 
-In MODEM.md are examples on how to check the SIM. 
-Check if the SIM card works in another modem. The PIN is in the firmware. 
-If the SIM card is dead, which happens, you are out of luck. But you can use another one from another bike.
-The identification is done with the MAC from the BLE chip.
+Check if the SIM card works in another modem. The PIN is in the firmware.  
+If the SIM card is dead, which happens, you are out of luck. But you can use another one from another bike.  
+The identification is done with the MAC from the BLE chip.  
+In MODEM.md are examples on how to check the SIM.  
+
+Errors 56, 57
 
 Error 58
 
@@ -300,13 +312,25 @@ GSM modem might be dead. Check the output from GSMdebug. The good thing is this 
 
 ### Firmware Recovery
 
-1. Enter bootloader mode (press ESC until the Bootloader is shown)
-2. Use YMODEM to upload the firmware
+#### Mainware
 
-If no bootloader is shown or there is no output at all: 
-First check the cabling, module battery, module voltages, resistors. Check if Vcc on the STM32 has voltage!
-Either the STM32 chip is dead or the bootloader got corrupted. Fixing the bootloader is only done via SWD. 
-If the chip is detected with SWD, you are good. If the chip is not even shown in SWD, the chip is likely dead. 
+Bike seems dead, BLE connects, no unlock possible.
+
+1. Connect to Debug Port on the Module as shown in README.md
+1. Enter bootloader mode 
+    a. press ESC until the bootloader is shown
+    b. power down the pcb (remove battery and charger) press ESC while connecting the PCB to power
+3. ea -> erase application
+4. ua -> upload application
+5. Use YMODEM to upload the firmware 
+5. st -> start application
+
+If no bootloader is shown or there is no output at all:  
+
+First check the cabling, module battery, module voltages, resistors. Check if Vcc on the STM32 has voltage!  
+Either the STM32 chip is dead or the bootloader got corrupted. Fixing the bootloader is only done via SWD.  
+To connect via SWD you need a TAG-Conntect Adapter.   
+If the chip is detected with SWD, you are good. If the chip is not even shown in SWD, the chip is likely dead.  
 
 ---
 
