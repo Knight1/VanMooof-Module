@@ -49,15 +49,90 @@ Another problem can be that the STM32 on the BMS bootloops. In this case you wil
 
 #### Error 21
 
-Make sure the charger is outputting 37 - 43 volts and the battery is not at 80% if charge limit is set.  
+Make sure the charger is outputting 42 volts and the battery is not at 80% if charge limit is set.  
+The charger on the S3 does not check for any conditions to be met.  
 
 ## 📡 Communication & System Repairs (Errors 22-44)
 
 ### Communication
 
 #### Error 23
+  
+TI (BLE) chip firmware corrupted, chip dead, main resistor on PCB over limit.  
+  
+Flashing a new Firmware 
+  
+1. Getting all the Tools you need
+    a. XDS110 Adapter  
+    b. Torx Screwdrivers  
+    c. Hotiron  
+    d. small wires  
+    e. for now a Windows PC  
+    f. A Texas Instruments Account to download the Software  
+    g. possibly a USB Extension cord.  
+    h. Loctight  
+    i. If you do not want to solder the Wires a 10Pin pogo pin clamp  
+    j. 12Vdc permanently attached to the charging port of the PCB (or another method to supply all power rails of the CR26xx chip)  
+  
+2. Setting up the Hardware
+  
+You have to open the Module completly and remove the PCB from the Housing.  
+On the underside of the PCB you will find the modem with the big white sticker on it. Next to it is a 2x5 Gold plate pin array with 10 pins.  
+This is labeld JTAG1 with a marking 1 and 10. This marks the Pin numbers.  
+There is also JTAG2 on the PCB which is the wrong one.  
+  
+##### JTAG1 Pin Layout
 
-TI (BLE) chip firmware corrupted, chip dead, main resistor on PCB open line.  
+| JTAG1 | Signal | Status |
+| --- | --- | --- |
+| **1** | **VTref / VDDS (3.3 V)**
+| **2** | **GND**
+| **3** | **GND**
+| **4** | Unknown
+| **5** | **GND**
+| **6** | **JTAG_TMSC**
+| **7** | **JTAG_TCKC**
+| **8** | CC2642 pin 26 (GPIO)
+| **9** | CC2642 pin 27 (GPIO)
+| **10** | **RESET_N**
+
+##### XDS110 connection
+
+| XDS110 | JTAG1 |
+| --- | --- |
+| VTref | **1** |
+| GND | **2** (or 3/5) |
+| TMSC | **6** |
+| TCKC | **7** |
+| RESET | **10** |
+
+You only need to connect these 5 pins. GND can be any GND from the board.  
+
+3. Prepare to flash the chip
+
+    a. On windows you need to download the [SmartRF Flash Programmer 2](https://www.ti.com/tool/de-de/download/FLASH-PROGRAMMER-2/1.8.2) to "Force Mass Erase" the CR26xx chip.  
+    *For the Download you need a TI Account.*  
+    b. Open the Flash Programmer.  
+    c. If you connected everything correctly the XDS110 should show up in the left sidebar.  
+    d. Click on the XDS110. 
+    e. When you want to connect to the chip the Tool will already tell you that the chip is locked and that Access to the device is blocked.  
+    f. Just click OK.  
+    g. It will now warn you that a Forced Mass Erase will be performed.  
+    h. "Just" click OK. -> *This will reset only the BLE chip to factory defaults no other chip or flash is affected.*  
+    After a while the bottom progress bar will turn green and show "Success!".  
+    On the bottom left the selected Target state MUST be "Connected".  
+    **If one or both of the previous operations failed you can't continue.**  
+
+    
+4. Finally flash the chip
+
+    a. On the page "Main" select "Single" and leave Address untouched if you merged bleboot and bleware into one flashable image with [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools) OR use "Multiple" if you have just the Images. Use Address 0x00056000 for bleboot and 0x0 for bleware. If you have a Find My Bike you need 2.4.01 if you do not you can use both but factory default is the 1.4.01 version.
+    b. Actions "Program" should be preselected. Kepp everything else untouched.  
+    c. Press the play button.  
+    *wait patiantly*  
+    d. If the flash was sucessfull and you used the modified single Image the chip will stay unlocked. If you flashed the original images the chip will become locked again.  
+    c. You can check if you already can connect to the Bike again. If the flash was sucessfull the Chip should already be ready to accept commands. At least it announces the ES3-MAC via BLE.
+
 
 ### Sensors & Components
 
