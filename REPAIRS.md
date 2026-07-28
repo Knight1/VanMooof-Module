@@ -58,13 +58,16 @@ The charger on the S3 does not check for any conditions to be met.
 
 #### Error 23
 
-Error Condition:
+Potential impact: No communication with the bike via the app possible.  
+Set condition: The STM32 chip is unable to communicate with the Texas Instruments CC2642 chip.  
+Clear condition: The STM32 chip is able to communicate again.  
+Possible causes:  
+- Firmware corrupted  
+- Chip dead  
+- No voltage input  
 
-Possible causes: TI (BLE) chip firmware corrupted, chip dead, resistor on PCB over limit. 
-
-
-  
-Flashing a new firmware
+This explains how to flash new firmware.  
+If your chip is dead, you need to solder a new one onto the PCB with a hot air station, change the secondary MAC and change the bleware to use it.
   
 1. Getting all the tools you need
     a. XDS110 Adapter  
@@ -88,9 +91,8 @@ There is also JTAG2 on the PCB which is the wrong one.
 ##### JTAG1 Pin Layout
 
 Underside of the PCB, module held in the orientation it sits in the frame:
-front of the bike to the **left**, rear to the **right**. The frontlight and
-rearlight connectors run in that same order, so use them to confirm you are
-not looking at the board upside down.
+front of the bike to the **left**, rear to the **right**. In this view the  
+charging plug is to the left.  
 
 ```
                    FRONT of bike                REAR of bike
