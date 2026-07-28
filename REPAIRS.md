@@ -72,17 +72,23 @@ Possible causes:
 This explains how to flash new firmware.  
 If your chip is dead, you need to solder a new one onto the PCB with a hot air station, change the secondary MAC and change the bleware to use it.
   
-1. Getting all the tools you need
-    a. XDS110 Adapter  
-    b. Torx Screwdrivers  
-    c. Soldering iron  
-    d. Small wires  
-    e. for now a Windows PC  
-    f. A Texas Instruments account to download the software  
-    g. Possibly a USB extension cord  
-    h. Loctite  
-    i. If you do not want to solder the wires, a 10-pin pogo pin clamp  
-    j. 12Vdc permanently attached to the charging port of the PCB (or another method to supply all power rails of the CC26xx chip)  
+1. Getting all the tools you need  
+    a. XDS110 adapter from your friendly Chinese supplier  
+    b. Torx screwdrivers  
+    c. For now, a Windows PC  
+    d. A Texas Instruments account to download the software  
+    e. Possibly a USB extension cord  
+    f. Loctite  
+    g. 12Vdc permanently attached to the charging port of the PCB (or another method to supply all power rails of the CC26xx chip)  
+
+For the clip:  
+    h. Test stand PCB clip with 2x5 pins  
+
+
+For soldering:  
+    h. Soldering iron with small tip  
+    i. Small wires  
+    
   
 2. Setting up the Hardware
   
@@ -226,6 +232,10 @@ chip pins 26 and 27 (DIO_16 / DIO_17), both high-drive capable GPIOs.
     *wait patiently*  
     d. If the flash was successful and you used the modified single image the chip will stay unlocked. If you flashed the original images the chip will become locked again.  
     e. You can check if you can already connect to the bike again. If the flash was successful the chip should already be ready to accept commands. At least it announces the ES3-MAC via BLE.
+
+5. Assembly
+
+    a. Please use Loctite on the 5 big wires. They do transfer a lot of Energy while you ride or charge. Make sure the 
 
 
 ### Sensors & Components
