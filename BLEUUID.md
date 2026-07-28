@@ -1,6 +1,9 @@
 # VanMooof ES3 + ES5 + S6 BLE UUID's
 
-Every 128-bit UUID observed on VanMoof ES3 / ES5 / S6 modules. They
+Every 128-bit UUID observed on VanMoof ES3 / ES5 / S6 modules — 172
+distinct UUIDs in the latest dump. Characteristics that the firmware
+declares but never exposes are tracked in
+[Missing / unknown](#missing--unknown--consolidated). They
 fall into a small number of *families* — each family shares a common
 base and only a few hex digits change per entry. To make those
 relationships visible, entries are grouped by base UUID and the
@@ -253,7 +256,7 @@ characteristic mainware treats as the tracking/modem time field.
 |---------|--------------|-----------------|
 | `5571` | `module_forward_async(0x5571, idx)` — audio play forward to motor | **W:** play notify/sound — `channel_notify_with_status(payload[0])` |
 | `5572` | `module_publish_command(0x5572, payload, 12)` — per-channel volume mask | **W:** backup-code / group set (ctx+0xF4/0xF8/0xFC, the audio/group words; `FUN_08033914` = digit count) + config-persist + ack. **R:** backup-code group words |
-| `5573` | (bridge only) | — |
+| `5573` | **not present in any dump** — declared by the char count, never enumerated | — (no dispatch case) |
 | `5574` | Also routes to `0x5571` on write | **W:** horn file select (ctx+0x318) + save record + ack. **R:** horn file (ctx+0x318) |
 
 ### Service `5580` — lights
@@ -262,22 +265,28 @@ characteristic mainware treats as the tracking/modem time field.
 |---------|--------------|-----------------|
 | `5581` | 1-byte forward | **W:** light mode (ctx+0x10C: 0=auto, 1=on, 2=off); config-persist + display request. **R:** light mode |
 | `5582` | 3-byte typed publish | **W:** LED control — three channels on/off via `FUN_0803C5FC`/`FUN_0803C5F0`/`FUN_0803C608`. **R:** LED states (`FUN_08037A68`×3) |
-| `5583` | (bridge only) | — |
+| `5583` | 1-byte forward (enumerated, no dispatch case) | — |
 | `5584` | 2-byte `ssp_relay_u16` | **W:** dark/light threshold (ctx+0x102) + config-persist. **R:** light sensor (ctx+0x102) |
 
 ### Service `5590` — characteristics
 
-`5591`, `5592` — typed publish bridge. No mainware dispatch cases;
-reserved / sparse.
+`5591`, `5592` — typed publish bridge, declared by the char count but
+**never enumerated in a dump** and with no mainware dispatch cases.
+Reserved / sparse; purpose unknown.
 
 ### Service `55A0` — factory test
 
-| Char id | mainware action |
-|---------|-----------------|
-| `55A1` | set two flag bits (ctx+0xF0/0xF1) |
-| `55A2` | **testmode config A** — build a hw-CRC descriptor {1, 10, 1, 0x100} and copy a 0x20-byte payload block |
-| `55A3` | **testmode config B** — descriptor {0x0B, 9, 1, 0x100} + 0x20-byte payload block |
-| `55A4` | (bridge only) |
+**None of these characteristics appear in a GATT dump** — the service
+advertises but exposes nothing. Three of the four are nonetheless
+implemented in mainware, so they are reachable over the inter-module bus
+and presumably over GATT once factory/test mode is entered.
+
+| Char id | In dump | mainware action |
+|---------|---------|-----------------|
+| `55A1` | no | set two flag bits (ctx+0xF0/0xF1) |
+| `55A2` | no | **testmode config A** — build a hw-CRC descriptor {1, 10, 1, 0x100} and copy a 0x20-byte payload block |
+| `55A3` | no | **testmode config B** — descriptor {0x0B, 9, 1, 0x100} + 0x20-byte payload block |
+| `55A4` | no | **unknown** — no dispatch case either |
 
 ### Service `55C0` — log characteristics
 
@@ -287,19 +296,28 @@ reserved / sparse.
 | `55C2` | `log_total_size_byte()` (effective total byte size = `(byte & 0xFFF) << 4`) | — |
 | `55C3` | Log dump readout / control | — |
 
-### Short ids observed on disk
+### Short ids observed in the latest GATT dump
 
-Services: `5500`, `5510`, `5520`, `5530`, `5540`, `5560`, `5570`, `5580`,
-`5590`, `55A0`, `55C0`.
+All 11 services advertise: `5500`, `5510`, `5520`, `5530`, `5540`, `5560`,
+`5570`, `5580`, `5590`, `55A0`, `55C0`.
 
-Characteristics:
-`5501..5505`, `5511..5513`, `5521..5524`, `5531..5536`, `5539..553B`,
-`5541..554E`, `5550..5552`, `5561..5569`, `5571..5574`, `5581..5584`,
-`55C1..55C3`.
+Characteristics actually enumerated:
+`5501..5505`, `5511..5513`, `5521..5524`, `5531..553B`, `5541..5552`,
+`5561..5569`, `5571..5572`, `5574`, `5581..5584`, `55C1..55C3`.
 
-Gaps in that scan (`5537`, `5538`, `554F`) are filled in by the mainware
-dispatch map and by the `svc+idx+1` counts — they exist, the on-disk
-scan just did not surface them.
+Measured against the characteristic counts in bleware's service table,
+**9 of the 67 declared characteristics never appear in the dump**:
+
+| Missing short id | Declared by | Status |
+|------------------|-------------|--------|
+| `5573` | `5570` service (4 chars, only 3 enumerated) | **unknown** — no mainware dispatch case either; the only hole in an otherwise contiguous sound service |
+| `5591`, `5592` | `5590` service (2 chars, 0 enumerated) | **unknown** — service advertises but exposes nothing; no mainware cases. Consistent with "reserved / sparse" |
+| `55A1`, `55A2`, `55A3`, `55A4` | `55A0` service (4 chars, 0 enumerated) | **hidden** — `55A1`/`55A2`/`55A3` *are* implemented in mainware (`ble_cmd_dispatch`: flag bits, testmode config A/B) but the factory-test service exposes no characteristics in a normal dump. Likely gated behind factory/test mode. `55A4` has no mainware case |
+
+Everything else in the `6ACC` family is complete and contiguous — including
+`5537`, `5538` and `554F`, which earlier notes listed as scan gaps. They are
+present; the earlier short-id list was wrong. Conversely `5573` was listed
+as present and is not.
 
 ### Non-UUID command ids on the same dispatcher
 
@@ -338,16 +356,31 @@ Each `0x55xx` write is acked back to the phone with
 278D**XXXX**-4692-039F-3445-A23FC55333D0
 ```
 
-Mirrors the `6ACC` short-id layout 1:1 — likely an older / parallel
+Mirrors the `6ACC` short-id layout — likely an older / parallel
 advertisement so older Fixie app versions still see the bike. The
 `svc+idx+1` rule and the command map above apply unchanged.
 
-Short ids observed (services and their characteristics, identical to
-the `6ACC` family above):
+All 11 services advertise, same shorts as `6ACC`. Characteristics
+enumerated:
 
-`5500..5505`, `5510..5513`, `5520..5524`, `5530..553B`,
-`5540..554E`, `5550..5552`, `5560..5569`, `5570..5574`,
-`5580..5584`, `5590`, `55A0`, `55C0..55C3`.
+`5501..5505`, `5511..5513`, `5521..5524`, `5531..5536`, `5539..553B`,
+`5541..554E`, `5550..5552`, `5561..5569`, `5571..5572`, `5574`,
+`5581..5584`, `55C1..55C3`.
+
+**This family is narrower than `6ACC`** — it is missing three
+characteristics that `6ACC` does enumerate, on top of the six gaps both
+families share:
+
+| Missing short id | Note |
+|------------------|------|
+| `5537` | speed "moments" — present in `6ACC`, absent here |
+| `5538` | transmission auto/manual — present in `6ACC`, absent here |
+| `554F` | shifter version — present in `6ACC`, absent here |
+| `5573`, `5591`, `5592`, `55A1..55A4` | same gaps as `6ACC` |
+
+That is consistent with `278D` being the older revision: the three
+extras in `6ACC` are exactly the kind of settings added later (speed
+points, transmission mode, shifter version reporting).
 
 ---
 
@@ -363,10 +396,23 @@ earlier bike-model namespace. Fewer entries observed.
 Short ids: `5501..5505`, `5507`, `5508`, `5511..5515`, `5522..5525`,
 `5531..5533`.
 
-Note that `5507`, `5508`, `5514`, `5515` and `5525` fall outside the
-characteristic counts of the current `6ACC` services — this family used
-a wider (or differently sized) table, so the current command map does
-not transfer id-for-id.
+Two structural differences from the other VanMoof families:
+
+- **No service-level UUIDs are advertised at all** — no `5500`, `5510`,
+  `5520`, `5530`. Only characteristic shorts appear, so the service
+  grouping here is inferred, not observed.
+- `5507`, `5508`, `5514`, `5515` and `5525` fall **outside** the
+  characteristic counts of the current `6ACC` services. This family used
+  a wider (or differently sized) table, so the current command map does
+  not transfer id-for-id.
+
+Missing / unknown in this family:
+
+| Short id | Note |
+|----------|------|
+| `5506` | gap between `5505` and `5507` — unknown whether it ever existed |
+| `5521` | **notable** — `5522..5525` are present but the first characteristic of the lock service is not. In `6ACC` this is the lock command |
+| `5500`, `5510`, `5520`, `5530` | service UUIDs, never advertised (see above) |
 
 ---
 
@@ -383,6 +429,7 @@ the OAD stack.
 |----------|------|
 | `5500` | Likely a TI service shadow |
 | `FFC1`, `FFC2`, `FFC4` | TI OAD characteristics |
+| `FFC3` | **missing** — in TI's stock OAD profile the four characteristics are `FFC1` identify / `FFC2` block / `FFC3` control-status / `FFC4` image-status. `FFC3` is absent from every dump, so either it is not instantiated in this build or the OAD control path is served through the `5510` service instead |
 
 ---
 
@@ -395,6 +442,10 @@ the OAD stack.
 Only the last byte of the leading word varies (2 hex digits).
 
 Short ids: `50`, `51`, `53`, `54`.
+
+Missing / unknown: **`52`** — the sequence is otherwise contiguous
+`50..54`, so a fifth entry very likely exists and simply was not
+enumerated. Purpose of the family as a whole is still unidentified.
 
 ---
 
@@ -431,3 +482,33 @@ Short ids: `0`, `1`.
 This is the standard Bluetooth SIG 128-bit form of the 16-bit UUID
 `0xFF00` (a vendor-defined "user data" range). No family; this is the
 only entry.
+
+---
+
+## Missing / unknown — consolidated
+
+The latest dump contains **172 distinct UUIDs**. Everything below is
+either declared-but-never-enumerated, or a hole in an otherwise
+contiguous run. Nothing here has been observed on a bike — these are
+the open ends.
+
+| UUID | Family | Why it is expected | Status |
+|------|--------|--------------------|--------|
+| `6ACC5573-E631-4069-944D-B8CA7598AD50` | `6ACC` | `5570` declares 4 chars, 3 enumerated | unknown, no dispatch case |
+| `6ACC5591-…AD50`, `6ACC5592-…AD50` | `6ACC` | `5590` declares 2 chars, 0 enumerated | unknown, no dispatch cases |
+| `6ACC55A1-…AD50`, `6ACC55A2-…AD50`, `6ACC55A3-…AD50` | `6ACC` | `55A0` declares 4 chars, 0 enumerated | **implemented in mainware**, hidden from GATT — likely factory-mode gated |
+| `6ACC55A4-…AD50` | `6ACC` | `55A0` char count | unknown, no dispatch case |
+| `278D5537-…33D0`, `278D5538-…33D0`, `278D554F-…33D0` | `278D` | present in `6ACC`, absent here | older revision predates these |
+| `278D5573`, `278D5591`, `278D5592`, `278D55A1..55A4` | `278D` | mirrors the `6ACC` gaps | same status as `6ACC` |
+| `6ACB5506-…AD50` | `6ACB` | gap between `5505` and `5507` | unknown |
+| `6ACB5521-…AD50` | `6ACB` | `5522..5525` present, first char absent | unknown |
+| `6ACB5500/5510/5520/5530-…AD50` | `6ACB` | every other family advertises services | never advertised in this family |
+| `F000FFC3-0451-4000-B000-000000000000` | `F000` | TI stock OAD profile has `FFC1..FFC4` | not instantiated, or served via `5510` |
+| `8E7F1A52-087A-44C9-B292-A2C628FDD9AA` | `8E7F1A` | `50..54` otherwise contiguous | unknown |
+
+Families with **no** apparent gaps: `6567` (`0001..0003`), `E3D8`
+(`0000..0001`), and the SIG `0000FF00` entry.
+
+The highest-value unknowns to chase are `55A1..55A3` (already decompiled
+in mainware — just need the GATT-side trigger) and `6ACB5521`, which
+would confirm whether the older namespace used the same lock command.
