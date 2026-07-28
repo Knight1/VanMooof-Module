@@ -235,7 +235,7 @@ chip pins 26 and 27 (DIO_16 / DIO_17), both high-drive capable GPIOs.
 
 5. Assembly
 
-    a. Please use Loctite on the 5 big wires. They do transfer a lot of Energy while you ride or charge. Make sure the 
+    a. Use Loctite on the screws of the 5 big wires — they carry a lot of current and must not work loose. Keep it off the contact faces: the top of the round aluminium post and the round metal plate on the wire. Those must stay clean.  
 
 
 ### Sensors & Components
