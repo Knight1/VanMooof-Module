@@ -5,7 +5,7 @@
 ## 🔋 Battery & Power Repairs (Errors 0-21)
 
 The first thing I recommend is setting the lights to always on if the module still has power.
-When no light is outputted, the BMS is not outputting any voltage.
+When no light comes on, the BMS is not outputting any voltage.
 
 ### Critical Battery Errors
 
@@ -13,14 +13,14 @@ When no light is outputted, the BMS is not outputting any voltage.
 
 Most likely also displayed 17, 20
 
-Fuse SFK40-45 likely open line.  
+Fuse SFK40-45 likely an open line.  
 Check fuse. Check pack and cell voltages. Check for visual damage & burns. Reset BMS.  
 More in the dedicated BMS Repo. Ask me. Not for everyone.  
 
 ### Voltage Problems (Battery and bike dead)
 
 #### Errors 4, 5
-When the Module is dead, you will not see them.  
+When the module is dead, you will not see them.  
 
 Battery is likely sitting at 4.2V pack voltage. You need to charge the battery manually.  
 Also, the module battery is likely empty.  
@@ -38,18 +38,18 @@ Check manual for resistance values and please add them.
 #### Error 19
 
 There is a chip on the module which translates the BMS and the eShifter communication.  
-When this chip goes bad it might show this error.  
+When this chip goes bad, it might show this error.  
 
-Another problem can be that the STM32 on the BMS does enable output but is not communicating or cannot read cell voltages.  
+Another problem can be that the STM32 on the BMS does enable output, but is not communicating or cannot read cell voltages.  
 You need to check the capacitors going from the cell monitor lines.  
 
-Another problem can be that the STM32 on the BMS bootloops. In this case you will not get any power.  
+Another problem can be that the STM32 on the BMS bootloops. In this case, you will not get any power.  
 
 ### Charging & Current Issues
 
 #### Error 21
 
-Make sure the charger is outputting 42 volts and the battery is not at 80% if charge limit is set.  
+Make sure the charger is outputting 42 volts and the battery is not at 80% if a charge limit is set.  
 The charger on the S3 does not check for any conditions to be met.  
 
 ## 📡 Communication & System Repairs (Errors 22-44)
@@ -60,25 +60,25 @@ The charger on the S3 does not check for any conditions to be met.
   
 TI (BLE) chip firmware corrupted, chip dead, main resistor on PCB over limit.  
   
-Flashing a new Firmware 
+Flashing a new firmware
   
-1. Getting all the Tools you need
+1. Getting all the tools you need
     a. XDS110 Adapter  
     b. Torx Screwdrivers  
-    c. Hotiron  
-    d. small wires  
+    c. Soldering iron  
+    d. Small wires  
     e. for now a Windows PC  
-    f. A Texas Instruments Account to download the Software  
-    g. possibly a USB Extension cord.  
-    h. Loctight  
-    i. If you do not want to solder the Wires a 10Pin pogo pin clamp  
-    j. 12Vdc permanently attached to the charging port of the PCB (or another method to supply all power rails of the CR26xx chip)  
+    f. A Texas Instruments account to download the software  
+    g. Possibly a USB extension cord  
+    h. Loctite  
+    i. If you do not want to solder the wires, a 10-pin pogo pin clamp  
+    j. 12Vdc permanently attached to the charging port of the PCB (or another method to supply all power rails of the CC26xx chip)  
   
 2. Setting up the Hardware
   
-You have to open the Module completly and remove the PCB from the Housing.  
-On the underside of the PCB you will find the modem with the big white sticker on it. Next to it is a 2x5 Gold plate pin array with 10 pins.  
-This is labeld JTAG1 with a marking 1 and 10. This marks the Pin numbers.  
+You have to open the module completely and remove the PCB from the housing.  
+On the underside of the PCB you will find the modem with the big white sticker on it. Next to it is a 2x5 gold-plated pin array with 10 pins.  
+This is labeled JTAG1 with a marking 1 and 10. This marks the pin numbers.  
 There is also JTAG2 on the PCB which is the wrong one.  
   
 ##### JTAG1 Pin Layout
@@ -110,28 +110,28 @@ You only need to connect these 5 pins. GND can be any GND from the board.
 
 3. Prepare to flash the chip
 
-    a. On windows you need to download the [SmartRF Flash Programmer 2](https://www.ti.com/tool/de-de/download/FLASH-PROGRAMMER-2/1.8.2) to "Force Mass Erase" the CR26xx chip.  
-    *For the Download you need a TI Account.*  
+    a. On Windows you need to download the [SmartRF Flash Programmer 2](https://www.ti.com/tool/de-de/download/FLASH-PROGRAMMER-2/1.8.2) to "Force Mass Erase" the CC26xx chip.  
+    *For the download you need a TI account.*  
     b. Open the Flash Programmer.  
     c. If you connected everything correctly the XDS110 should show up in the left sidebar.  
-    d. Click on the XDS110. 
-    e. When you want to connect to the chip the Tool will already tell you that the chip is locked and that Access to the device is blocked.  
+    d. Click on the XDS110.  
+    e. When you want to connect to the chip the tool will already tell you that the chip is locked and that access to the device is blocked.  
     f. Just click OK.  
-    g. It will now warn you that a Forced Mass Erase will be performed.  
-    h. "Just" click OK. -> *This will reset only the BLE chip to factory defaults no other chip or flash is affected.*  
+    g. It will now warn you that a forced mass erase will be performed.  
+    h. "Just" click OK. -> *This will reset only the BLE chip to factory defaults, no other chip or flash is affected.*  
     After a while the bottom progress bar will turn green and show "Success!".  
-    On the bottom left the selected Target state MUST be "Connected".  
+    On the bottom left the selected target state MUST be "Connected".  
     **If one or both of the previous operations failed you can't continue.**  
 
     
 4. Finally flash the chip
 
-    a. On the page "Main" select "Single" and leave Address untouched if you merged bleboot and bleware into one flashable image with [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools) OR use "Multiple" if you have just the Images. Use Address 0x00056000 for bleboot and 0x0 for bleware. If you have a Find My Bike you need 2.4.01 if you do not you can use both but factory default is the 1.4.01 version.
-    b. Actions "Program" should be preselected. Kepp everything else untouched.  
+    a. On the page "Main" select "Single" and leave Address untouched if you merged bleboot and bleware into one flashable image with [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools) OR use "Multiple" if you have just the images. Use address 0x00056000 for bleboot and 0x0 for bleware. If you have a Find My Bike you need 2.4.01, if you do not you can use both, but the factory default is the 1.4.01 version.
+    b. Actions "Program" should be preselected. Keep everything else untouched.  
     c. Press the play button.  
-    *wait patiantly*  
-    d. If the flash was sucessfull and you used the modified single Image the chip will stay unlocked. If you flashed the original images the chip will become locked again.  
-    c. You can check if you already can connect to the Bike again. If the flash was sucessfull the Chip should already be ready to accept commands. At least it announces the ES3-MAC via BLE.
+    *wait patiently*  
+    d. If the flash was successful and you used the modified single image the chip will stay unlocked. If you flashed the original images the chip will become locked again.  
+    e. You can check if you can already connect to the bike again. If the flash was successful the chip should already be ready to accept commands. At least it announces the ES3-MAC via BLE.
 
 
 ### Sensors & Components
@@ -145,17 +145,17 @@ Otherwise: Replace module battery
 
 #### Errors 40, 41
 
-Hardware errors: Button(s) do(es) not work all the time.  
+Hardware error: button(s) do not work all the time.  
 
 Clean button(s) with contact cleaner or replace button(s) (2€ for 5pcs on AliExpress)  
 
 #### Error 44  
 
 eShifter likely dead. You need to replace all shorted resistors or replace it with a better PCB.  
-You can manually shift the gear into the 2nd gear.  
+You can manually shift into the 2nd gear.  
 Remove the wheel from the frame, unscrew the eShifter from the wheel. Keep all screws and rings secure!  
 
-In Case you want to repair it. I needed  
+In case you want to repair it, I needed  
 
 - 100 ohm size 0603  
 - 10 K ohm size 0603  
@@ -166,15 +166,15 @@ In Case you want to repair it. I needed
 https://www.reddit.com/r/vanmoofbicycle/comments/1k2eapb/vanspoof_a_possible_answer_to_your_44_err_woes/  
 https://mikecoats.com/van-spoof-v1-0/  
 https://www.reddit.com/r/VanMoofSelfRepair/comments/1f2fcv3/vanmoof_s3_x3_smd_components/  
--> Changing Mainware Settings with Chris repo to disable Shifter but keep display enabled.  
+-> Changing mainware settings with Chris' repo to disable the shifter but keep the display enabled.  
 
 ## ⚙️ Motor Repairs (Errors 45-53)
 
 Error 45
 
-If the motor works this is the pre-announcement of a failing cable boom.  
-In this Case the communication cable just failed.  
-You could fix it but you need to remove all cables from the Bike. Which is a fun experience.  
+If the motor works, this is the pre-announcement of a failing cable boom.  
+In this case the communication cable just failed.  
+You could fix it, but you need to remove all cables from the bike. Which is a fun experience.  
 Good luck!  
 
 ## 📶 Connectivity Repairs (Errors 54-58)
@@ -184,12 +184,12 @@ Errors 54, 56, 57
 SIM card error.
 
 
-In the modem.md are examples on how to check the SIM. 
+In MODEM.md are examples on how to check the SIM. 
 Check if the SIM card works in another modem. The PIN is in the firmware. 
-If the SIM card is dead which happens you are out of luck. But you can use another one from another bike.
+If the SIM card is dead, which happens, you are out of luck. But you can use another one from another bike.
 The identification is done with the MAC from the BLE chip.
 
-Errors 58. 
+Error 58
 
 GSM modem might be dead. Check the output from GSMdebug. The good thing is this chip is easy to get.
 
@@ -197,12 +197,12 @@ GSM modem might be dead. Check the output from GSMdebug. The good thing is this 
 ### Firmware Recovery
 
 1. Enter bootloader mode (press ESC until the Bootloader is shown)
-2. Use Y-modem to upload firmware
+2. Use YMODEM to upload the firmware
 
 If no bootloader is shown or there is no output at all: 
 First check the cabling, module battery, module voltages, resistors. Check if Vcc on the STM32 has voltage!
 Either the STM32 chip is dead or the bootloader got corrupted. Fixing the bootloader is only done via SWD. 
-If the chip is detected with SWD you are good. If the chip is not even shown in SWD, the chip is likely dead. 
+If the chip is detected with SWD, you are good. If the chip is not even shown in SWD, the chip is likely dead. 
 
 ---
 
@@ -211,7 +211,7 @@ If the chip is detected with SWD you are good. If the chip is not even shown in 
 **⚠️ CRITICAL SAFETY NOTES:**
 - Always disconnect power before repairs
 - Use proper ESD protection
-- Never bypass safety systems especially the fuse in the BMS
+- Never bypass safety systems, especially the fuse in the BMS
 
 **🔴 STOP IMMEDIATELY:**
 - Any burning smell, excessive heat, smoke or flames
