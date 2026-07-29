@@ -49,12 +49,39 @@ Another problem can be that the STM32 on the BMS bootloops. In this case, you wi
 
 #### Error 21
 
+No current detected while in charing state.  
+
+Potential impact: Bike no longer charges  
+Set condition: Charger detected but no current  
+Clear condition: Charger detected with current  
+
 Make sure the charger is outputting 42 volts and the battery is not at 80% if a charge limit is set.  
-The charger on the S3 does not check for any conditions to be met.  
+The charger on the S3 does not check for any conditions to be met to supply voltage.  
 
 ## 📡 Communication & System Repairs (Errors 22-44)
 
 ### Communication
+
+#### Error 22
+
+No communication with the motor controller (TMS320F28054F).  
+The module sends telemetry requests to the motor over the internal module bus and gets no
+answer back. Every message is retried, and once more than four go unanswered the bike raises 22.
+
+Potential impact: no assist. Motor temperature and motor firmware version stop updating.
+Set condition: more than four messages to the motor left unacknowledged.  
+Clear condition: any valid reply from the motor - it clears itself immediately.  
+
+The bike tries to fix this on its own: while parked it pulses the motor reset line and
+re-announces. On the debug console you will see `Resetting motor` followed by `Recover Motor ok`
+if that worked. A bike that loops on `Resetting motor` has a motor controller that is not
+coming back.
+
+Check with `motorstatus` on the console; `Motor no resp` means nothing is answering at all.
+Possible causes:
+- Motorware update interrupted or corrupted (if you tried that)
+- TMS320F28054F dead or firmware broken -> JTAG2
+- No voltage input
 
 #### Error 23
 
