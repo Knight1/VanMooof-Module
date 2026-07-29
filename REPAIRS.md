@@ -303,14 +303,24 @@ https://www.reddit.com/r/VanMoofSelfRepair/comments/1f2fcv3/vanmoof_s3_x3_smd_co
 
 ### Error 45
 
-No Motor Communication.  
-"Err 45" is shown on the bike which indicates that motorware was not able to establish communication with the motor.  
+Motor temperature sensor open circuit.  
+Inside the motor is a small PCB carrying a temperature probe and a hall sensor.  
 
-Potential impact: failing Cable Boom 
-Set condition: No communication with Motorcontroller (TMS320F28054F) is possible.  
-Clear condition: Restore communication  
+Potential impact: **the motor loses its overheat protection.** Normally power is throttled back above 90 °C.
+Set condition: motor temperature line reads open circuit, seen while riding.  
+Clear condition: sensor reads sane again - but the code only updates **during an actual ride**,
+so after a repair take the bike out before assuming it did not work. It will not clear standing still.  
+
+Motor temperature in the app reads ~239 °C instead of blank.  
+
+The hall sensor gives you a free field test: **spin the front wheel and
+watch the matrix.** If the speed comes up, the hall line through the boom is still intact. It
+feeds the speed display, the odometer and the alarm's movement trigger, and it has **no error
+code of its own** — it just dies quietly. Error 45 *and* no speed on the matrix means the boom
+is further gone than the temperature sensor alone would tell you.
 
 **If the motor still works, this is the pre-announcement of a failing cable boom!**  
+The thermistor wires breaking is stage one, the Hall line and the phase wires are next.  
 With bad luck this could ruin the entire bike.  
 Only longterm solution is to replace the entire cable boom to the new version.  
 
@@ -325,7 +335,7 @@ Set condition: Modem responds but no SIM card in slot detected.
 Clear condition: Modem detects valid SIM card. 
 
 
-Check if the SIM card works in another modem. The PIN is in the firmware.  
+Check if the SIM card works in another modem, Phone, Smartphone.    
 If the SIM card is dead, which happens, you are out of luck. But you can use another one from another bike.  
 The identification is done with the MAC from the BLE chip.  
 In MODEM.md are examples on how to check the SIM.  
@@ -344,9 +354,9 @@ GSM modem might be dead. Check the output from GSMdebug. The good thing is this 
 Bike seems dead, BLE connects, no unlock possible.
 
 1. Connect to Debug Port on the Module as shown in README.md
-1. Enter bootloader mode 
-    a. press ESC until the bootloader is shown
-    b. power down the pcb (remove battery and charger) press ESC while connecting the PCB to power
+1. Enter bootloader mode  
+    a. press ESC until the bootloader is shown  
+    b. power down the pcb (remove battery and charger) press ESC while connecting the PCB to power  
 3. ea -> erase application
 4. ua -> upload application
 5. Use YMODEM to upload the firmware 
