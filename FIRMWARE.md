@@ -100,6 +100,8 @@ mainware:1.9.1,bms:1.23.1
 (Part 2)
 - Other important updates in battery management, firmware, error management and sounds.
 
+BLEWare 1.02.07  
+
 ## Known Firmware File SHA512 Sums
 
 ### Mainware (muco) boot
