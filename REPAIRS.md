@@ -346,6 +346,13 @@ Error 58
 
 GSM modem might be dead. Check the output from GSMdebug. The good thing is this chip is easy to get.
 
+## Other Errors
+
+### No speed on Display  
+
+-> See Error 45  
+These are tree Wires but the speed wire does not feature an error code.  
+
 
 ### Firmware Recovery
 
