@@ -174,6 +174,37 @@ charging plug is to the left.
 
 You only need to connect these 5 pins. GND can be any GND from the board.  
 
+3. Prepare to flash the chip
+
+    a. On Windows you need to download the [SmartRF Flash Programmer 2](https://www.ti.com/tool/de-de/download/FLASH-PROGRAMMER-2/1.8.2) to "Force Mass Erase" the CC26xx chip.  
+    *For the download you need a TI account.*  
+    b. Open the Flash Programmer.  
+    c. If you connected everything correctly the XDS110 should show up in the left sidebar.  
+    d. Click on the XDS110.  
+    e. When you want to connect to the chip the tool will already tell you that the chip is locked and that access to the device is blocked.  
+    f. Just click OK.  
+    g. It will now warn you that a forced mass erase will be performed.  
+    h. "Just" click OK. -> *This will reset only the BLE chip to factory defaults, no other chip or flash is affected.*  
+    After a while the bottom progress bar will turn green and show "Success!".  
+    On the bottom left the selected target state MUST be "Connected".  
+    **If one or both of the previous operations failed you can't continue.**  
+
+    
+4. Finally flash the chip
+
+    a. On the page "Main" select "Single" and leave Address untouched if you merged bleboot and bleware into one flashable image with [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools) OR use "Multiple" if you have just the images. Use address 0x00056000 for bleboot and 0x0 for bleware. If you have a Find My Bike you need 2.4.01, if you do not you can use both, but the factory default is the 1.4.01 version.
+    b. Actions "Program" should be preselected. Keep everything else untouched.  
+    c. Press the play button.  
+    *wait patiently*  
+    d. If the flash was successful and you used the modified single image the chip will stay unlocked. If you flashed the original images the chip will become locked again.  
+    e. You can check if you can already connect to the bike again. If the flash was successful the chip should already be ready to accept commands. At least it announces the ES3-MAC via BLE.
+
+5. Assembly
+
+    a. Use Loctite on the screws of the 5 big wires. They carry a lot of current and must not work loose. Keep it off the contact faces: the top of the round aluminium post and the round metal plate on the wire. Those must stay clean.  
+  
+
+
 ##### CC2642R chip pinout
 
 Only needed if the JTAG1 pads are damaged and you have to go to the chip
@@ -236,34 +267,204 @@ Note pin numbers here are the **chip** pins, not the JTAG1 header pins. The
 two use overlapping numbers and are easy to confuse. JTAG1 pin 8 and 9 land on
 chip pins 26 and 27 (DIO_16 / DIO_17), both high-drive capable GPIOs.
 
-3. Prepare to flash the chip
+##### Building the flash image with vanmoof-tools
 
-    a. On Windows you need to download the [SmartRF Flash Programmer 2](https://www.ti.com/tool/de-de/download/FLASH-PROGRAMMER-2/1.8.2) to "Force Mass Erase" the CC26xx chip.  
-    *For the download you need a TI account.*  
-    b. Open the Flash Programmer.  
-    c. If you connected everything correctly the XDS110 should show up in the left sidebar.  
-    d. Click on the XDS110.  
-    e. When you want to connect to the chip the tool will already tell you that the chip is locked and that access to the device is blocked.  
-    f. Just click OK.  
-    g. It will now warn you that a forced mass erase will be performed.  
-    h. "Just" click OK. -> *This will reset only the BLE chip to factory defaults, no other chip or flash is affected.*  
-    After a while the bottom progress bar will turn green and show "Success!".  
-    On the bottom left the selected target state MUST be "Connected".  
-    **If one or both of the previous operations failed you can't continue.**  
+Both images are prepared with [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools);
+`make` builds every tool in the repo.
 
-    
-4. Finally flash the chip
+**`ble-merge` - bleware + bleboot as one image, debug port left open**
 
-    a. On the page "Main" select "Single" and leave Address untouched if you merged bleboot and bleware into one flashable image with [chwdt/vanmoof-tools](https://github.com/chwdt/vanmoof-tools) OR use "Multiple" if you have just the images. Use address 0x00056000 for bleboot and 0x0 for bleware. If you have a Find My Bike you need 2.4.01, if you do not you can use both, but the factory default is the 1.4.01 version.
-    b. Actions "Program" should be preselected. Keep everything else untouched.  
-    c. Press the play button.  
-    *wait patiently*  
-    d. If the flash was successful and you used the modified single image the chip will stay unlocked. If you flashed the original images the chip will become locked again.  
-    e. You can check if you can already connect to the bike again. If the flash was successful the chip should already be ready to accept commands. At least it announces the ES3-MAC via BLE.
+```
+usage: ble-merge [-k] [-v] [-x] <blewarefile> <blebootfile> [<outfile>]
+```
 
-5. Assembly
+```
+ble-merge bleware_2.4.01.bin bleboot_1.0.1.bin cc2642r1f.bin
+```
 
-    a. Use Loctite on the screws of the 5 big wires — they carry a lot of current and must not work loose. Keep it off the contact faces: the top of the round aluminium post and the round metal plate on the wire. Those must stay clean.  
+Produces a 352 KB image with bleware at `0x00000000` and bleboot at `0x00056000`
+and `0xff` in between, which is the "Single" file with the address left alone in
+step 4a. Both images are copied byte for byte; the only bytes that differ from
+the inputs are three CCFG words in the last flash page:
+
+| Address | Field | VanMoof | ble-merge |
+| --- | --- | --- | --- |
+| 0x57fe0 | `CCFG_TI_OPTIONS` | 0xffffff00 | 0xffffffc5 |
+| 0x57fe4 | `CCFG_TAP_DAP_0` | 0xff000000 | 0xffc5c5c5 |
+| 0x57fe8 | `CCFG_TAP_DAP_1` | 0xff000000 | 0xffc5c5c5 |
+
+That is what keeps the chip accessible after flashing (step 4d). A TAP is
+enabled only by the exact value `0xc5` and VanMoof ships `0x00` in every TAP
+field, which is why the original images lock the chip again.
+
+| Option | |
+| --- | --- |
+| `-k` | keep the CCFG unchanged - reproduces the factory image, chip re-locks itself on first boot |
+| `-v` | also print all 22 CCFG fields by name |
+| `-x` | write Intel HEX instead of a raw binary (also implied by a `.hex` output name) |
+
+The order of the two input files does not matter, both are recognised by
+content, and the boot loader file may also be a full 352 KB flash dump - its
+last page is used. Given no output file the tool writes nothing and only reports
+what it found, which is how you check whether a given bleboot image locks the
+debug port.
+
+It also reports whether the boot loader will actually launch the bleware you
+paired it with, and verifies the image CRC-32:
+
+```
+bleware : bleware_2.4.01.bin
+          OAD NVM1, 217884 B (0x3531c), version 2.04.01, image type 0x07
+          crc32 0x884a9283 over [0x0c..0x3531c)  ok
+          bim 3, meta 1, copy status 0xff, crc status 0xff -> boot loader launches this image
+```
+
+**`ble-patch -m` - read the MAC address from CCFG instead of FCFG1 (experimental)**
+
+```
+usage: ble-patch [-v] [-m] <blewarefile>
+```
+
+The CC2642R1F cannot change its primary MAC address, it is factory programmed
+read-only into FCFG1 at `0x500012e8`. It does have a customer programmable
+secondary address in CCFG at `0x50004fd0`, and CCFG is part of the boot loader
+page. `-m` rewrites every literal reference to the FCFG1 register into a
+reference to the CCFG one and restamps the OAD CRC-32 afterwards:
+
+```
+$ ble-patch -v -m bleware_2.4.01.bin
+ble-patch: EXPERIMENTAL: taking the BLE MAC address from CCFG instead of FCFG1
+ble-patch: apply "mac source": @0x0000240c: 0x500012e8 -> 0x50004fd0
+ble-patch: apply "mac source": @0x00006b6c: 0x500012e8 -> 0x50004fd0
+...
+bleware_2.4.01.bin: mac source: 8 reference(s) 0x500012e8 -> 0x50004fd0 in [0x00000090..0x0003531c)
+```
+
+Eight references in 2.4.01. The file is patched in place, so work on a copy. On
+1.4.01 and 2.4.01 the `-m` patch is applied on top of ble-patch's normal debug
+console patch; on any other version it is applied on its own.
+
+The address itself is not written by the tool - it would make the image specific
+to one bike. It goes into CCFG `IEEE_BLE_0/1` at flash `0x00057fd0`, which is
+offset `0x1fd0` in the boot loader page, six bytes low byte first followed by
+`ff ff`:
+
+```
+MAC=f8:8a:5e:4f:13:37
+printf "$(echo $MAC | awk -F: '{for (i=6;i>=1;i--) printf "\\x%s", $i}')\xff\xff" |
+    dd of=bleboot_1.0.1.bin bs=1 seek=$((0x1fd0)) conv=notrunc
+```
+
+`ble-merge -v` then shows the result, and is the last chance to catch a wrong
+address before it is in flash:
+
+```
+$ ble-merge -v bleware_2.4.01.bin bleboot_1.0.0.bin cc2642r1f.bin | grep IEEE_BLE
+          0x57fd0  IEEE_BLE_0         0x5e4f1337
+          0x57fd4  IEEE_BLE_1         0xfffff88a
+```
+
+Without that byte patch the radio comes up as `ff:ff:ff:ff:ff:ff`: after `-m`
+the firmware never reads FCFG1 again, so there is no fallback to the chip's own
+address.
+
+## Replacing the BLE chip (MAC transplant)
+
+A replacement CC2642R1F arrives with its own factory MAC address, so a bike
+fitted with one no longer matches the address stored for it in the VanMoof
+backend and the app stops recognising the bike. The chip's primary address
+cannot be changed (it is factory programmed read-only into FCFG1) but the
+secondary address in CCFG can be, and `ble-patch -m` makes the firmware read
+that one instead. From then on the bike, the app and the backend treat the
+secondary address as the bike's address, exactly as they treated the address of
+the chip that was replaced.
+
+That is also why the address is **not** an option of `ble-merge`: an image
+carrying a MAC address is an image for exactly one bike. The merged image stays
+generic, and the address is stamped into the boot loader page as a separate,
+per-bike step.
+
+Everything below is for repairing a bike you own. Reflashing a chip so it claims
+an address that belongs to somebody else's bike is a different matter entirely.
+
+### 1. Recover the original address
+
+Any of these gives you the address of the chip being replaced:
+
+- The backside of the Handbook where the QR Code is.
+- On the underside of the Module.
+- The bike's previous Bluetooth device name, `ES3-F88A5E4F9ECB`, the address without
+  separators.
+- Key `0x7f` on the external SPI flash, which reads `F88A5E4F9ECBMOOF` in ASCII
+  (`dump keys` in the bledebug console, see [ble-patch](#ble-patch)). The keys
+  live on the SPI flash next to the BLE chip, not inside it, so the address is
+  still recoverable from a dead chip: dump the SPI flash and search for
+  `MOOF`.
+- `dump mem 500012e8 8` in the bledebug console, if the old chip still runs.
+  That is FCFG1 `MAC_BLE_0/1`, the primary address, low byte first.
+- Your VanMoof account via the API.
+
+### 2. Stamp it into the boot loader page
+
+CCFG `IEEE_BLE_0/1` sits at flash `0x00057fd0`, which is offset `0x1fd0` inside
+the 8 KB boot loader page. The address is stored low byte first, and the unused
+top half of the 64-bit field stays `ff ff`:
+
+```
+cp bleboot_1.0.0.bin bleboot_f88a5e4f9ecb.bin
+MAC=f8:8a:5e:4f:9e:cb
+printf "$(echo $MAC | awk -F: '{for (i=6;i>=1;i--) printf "\\x%s", $i}')\xff\xff" |
+    dd of=bleboot_f88a5e4f9ecb.bin bs=1 seek=$((0x1fd0)) conv=notrunc
+```
+
+The `awk` reverses the six bytes; check the result before going on:
+
+```
+$ xxd -s 0x1fd0 -l 8 bleboot_f88a5e4f9ecb.bin
+00001fd0: cb9e 4f5e 8af8 ffff                      ..O^....
+```
+
+Six bytes change in the page and nothing else. Note that this is a plain
+byte-for-byte patch of the OEM boot loader. It carries no CRC or signature of
+its own, so nothing needs restamping.
+
+### 3. Point the firmware at it
+
+```
+cp bleware_2.4.01.bin bleware_2.4.01_mac.bin
+ble-patch -v -m bleware_2.4.01_mac.bin
+```
+
+`-v` lists every redirected reference. The OAD CRC-32 is restamped by the tool.
+
+### 4. Merge, check, flash
+
+```
+ble-merge -v bleware_2.4.01_mac.bin bleboot_f88a5e4f9ecb.bin cc2642r1f.hex
+```
+
+The `-v` CCFG dump is the last chance to catch a wrong address. For
+`f8:8a:5e:4f:9e:cb` it must read:
+
+```
+0x57fd0  IEEE_BLE_0         0x5e4f9ecb
+0x57fd4  IEEE_BLE_1         0xfffff88a
+```
+
+Then flash as described under [ble-merge](#ble-merge). Do not erase the external
+SPI flash while you are in there: it holds the bike's keys, and they are what
+make the bike answer to your app at all.
+
+### 5. Confirm on the bike
+
+- It advertises as `ES3-F88A5E4F9ECB` again.
+- The bledebug console password follows the new address: the last three bytes
+  in hex plus `DeBug`, so `4F9ECBDeBug` for the address above.
+- `info` in the bledebug console prints the BLE MAC address it is using.
+
+
+
+
 
 
 ### Sensors & Components
