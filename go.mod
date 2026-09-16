@@ -1,12 +1,10 @@
 module VanMooof-Module
 
-go 1.25.0
-
-toolchain go1.25.5
+go 1.26.0
 
 require (
 	github.com/notifai/ymodem v0.3.5
-	golang.org/x/sys v0.47.0
+	golang.org/x/sys v0.48.0
 	periph.io/x/conn/v3 v3.7.3
 	periph.io/x/host/v3 v3.8.5
 )
